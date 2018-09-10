@@ -20,4 +20,11 @@ if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.SerializeContainer = class extends Runtime.CoreObject{
 	getClassName(){return "Runtime.SerializeContainer";}
 	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this.display_class_name = true;
+		this.indent = "  ";
+		this.space = " ";
+		this.crlf = "\n";
+	}
 }

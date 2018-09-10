@@ -20,11 +20,6 @@ if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
 Runtime.Interfaces.SerializeInterface = class{
 	/**
-	 * Returns new Instance
-	 */
-	createNewInstance(){
-	}
-	/**
 	 * Returns classname of the object
 	 * @return string
 	 */

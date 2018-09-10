@@ -20,6 +20,10 @@ if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.ModuleDescription = class{
 	getClassName(){return "Runtime.ModuleDescription";}
 	static getParentClassName(){return "";}
+	_init(){
+		if (this.__implements__ == undefined){this.__implements__ = [];}
+		this.__implements__.push(Runtime.Interfaces.ModuleDescriptionInterface);
+	}
 	/**
 	 * Returns module name
 	 * @return string
@@ -32,7 +36,7 @@ Runtime.ModuleDescription = class{
 	 * @return string
 	 */
 	static getModuleVersion(){
-		return "0.4.2";
+		return "0.5.0";
 	}
 	/**
 	 * Returns required modules

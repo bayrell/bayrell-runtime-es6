@@ -160,7 +160,9 @@ Runtime.rtl = class{
 	static correct(value, type_value, def_value, type_template){
 		if (def_value == undefined) def_value=null;
 		if (type_template == undefined) type_template="";
-		/* check value */
+		if (type_value == "mixed" || type_value == "var"){
+			return value;
+		}
 		if (Runtime.rtl.checkValue(value, type_value)){
 			if ((type_value == "Runtime.Vector" || type_value == "Runtime.Map") && type_template != ""){
 				
@@ -238,11 +240,18 @@ Runtime.rtl = class{
 			return val.cloneNode(true);
 		}
 		else if (typeof val == 'object' && 
-			val.createNewInstance && typeof val.createNewInstance == "function" &&
+			val.getClassName && typeof val.getClassName == "function" &&
 			val.assignObject && typeof val.assignObject == "function")
 		{
-			var res = val.createNewInstance();
-			res.assignObject(val);
+			var res = null;
+			if (val.createNewInstance && typeof val.createNewInstance == "function"){
+				res = val.createNewInstance();
+			}
+			else{
+				if (isBrowser()) res = Runtime.rtl.newInstance( val.getClassName() );
+				else res = rtl.newInstance( val.getClassName() );
+			}
+			if (res) res.assignObject(val);
 			return res;
 		}
 		else if (Array.isArray(val)){	
@@ -432,5 +441,37 @@ Runtime.rtl = class{
 	
 	static time(){
 		return Math.round((new Date()).getTime() / 1000);
+	}
+	/**
+	 * Convert module name to node js package
+	 */
+	
+	static convertNodeJSModuleName(name){
+		name = new String(name);
+		var arr = "qazwsxedcrfvtgbyhnujmikolp0123456789";
+		var res = "";
+		var sz = name.length;
+		var previsbig = false;
+		for (var i = 0; i < sz; i++){
+			var ch = name[i];
+			var ch2 = ch.toUpperCase();
+			var ch3 = ch.toLowerCase();
+			var isAlphaNum = arr.indexOf(ch3) != -1;
+			if (i > 0 && ch == ch2 && !previsbig && isAlphaNum){
+				res += "-";
+			}
+			res += ch3;
+			if (ch == ch2 && isAlphaNum){
+				previsbig = true;
+			}
+			else {
+				previsbig = false;
+			}
+			if (!isAlphaNum){
+				previsbig = true;
+			}
+		}
+		res += "-nodejs";
+		return res;
 	}
 }

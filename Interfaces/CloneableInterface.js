@@ -22,8 +22,7 @@ Runtime.Interfaces.CloneableInterface = class{
 	/**
 	 * Returns new Instance
 	 */
-	createNewInstance(){
-	}
+	/* public CoreObject createNewInstance(); */
 	/**
 	 * Assign and clone data from other object
 	 * @param CoreObject obj

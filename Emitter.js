@@ -20,6 +20,11 @@ if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.Emitter = class extends Runtime.CoreObject{
 	getClassName(){return "Runtime.Emitter";}
 	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this.methods = null;
+		this.subscribers = null;
+	}
 	/**
 	 * Constructor
 	 */

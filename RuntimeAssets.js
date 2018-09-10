@@ -20,6 +20,10 @@ if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.RuntimeAssets = class{
 	getClassName(){return "Runtime.RuntimeAssets";}
 	static getParentClassName(){return "";}
+	_init(){
+		if (this.__implements__ == undefined){this.__implements__ = [];}
+		this.__implements__.push(Runtime.Interfaces.AssetsInterface);
+	}
 	/**
 	 * Returns required assets
 	 * @return Map<string, string>

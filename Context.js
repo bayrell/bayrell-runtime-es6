@@ -20,6 +20,15 @@ if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.Context = class extends Runtime.CoreObject{
 	getClassName(){return "Runtime.Context";}
 	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this._locale = "";
+		this._modules = null;
+		this._managers = null;
+		this._providers_names = null;
+		if (this.__implements__ == undefined){this.__implements__ = [];}
+		this.__implements__.push(Runtime.Interfaces.ContextInterface);
+	}
 	/**
 	 * Constructor
 	 */

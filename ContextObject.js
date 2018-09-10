@@ -20,6 +20,10 @@ if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.ContextObject = class extends Runtime.CoreObject{
 	getClassName(){return "Runtime.ContextObject";}
 	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this._context = null;
+	}
 	/**
 	 * Returns context provider
 	 *
