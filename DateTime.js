@@ -17,9 +17,9 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.DateTime = class extends CoreObject{
+Runtime.DateTime = class extends Runtime.CoreObject{
 	getClassName(){return "Runtime.DateTime";}
-	static getParentClassName(){return "CoreObject";}
+	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){
 		super._init();
 		this.year = 0;
