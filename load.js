@@ -38,6 +38,7 @@ $load([
 ])
 
 .load([
+	"/assets/Runtime/DateTime.js",
 	"/assets/Runtime/Context.js",
 	"/assets/Runtime/ContextObject.js",
 	"/assets/Runtime/Emitter.js",
