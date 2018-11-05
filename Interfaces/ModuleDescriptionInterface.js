@@ -20,18 +20,6 @@ if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
 Runtime.Interfaces.ModuleDescriptionInterface = class{
 	/**
-	 * Init context
-	 * @param ContextInterface context
-	 */
-	static initContext(context){
-	}
-	/**
-	 * Called then module registed in context
-	 * @param ContextInterface context
-	 */
-	static onRegister(context){
-	}
-	/**
 	 * Returns module name
 	 * @return string
 	 */
@@ -48,5 +36,24 @@ Runtime.Interfaces.ModuleDescriptionInterface = class{
 	 * @return Map<string, string>
 	 */
 	static getRequiredModules(context){
+	}
+	/**
+	 * Called then module registed in context
+	 * @param ContextInterface context
+	 */
+	static onRegister(context){
+	}
+	/**
+	 * Called then context read config
+	 * @param ContextInterface context
+	 * @param Map<mixed> config
+	 */
+	static onReadConfig(context, config){
+	}
+	/**
+	 * Init context
+	 * @param ContextInterface context
+	 */
+	static initContext(context){
 	}
 }

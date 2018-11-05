@@ -31,10 +31,24 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 	constructor(val){
 		if (val == undefined) val=null;
 		super();
-		this.methods = new Runtime.Vector();
-		this.subscribers = new Runtime.Vector();
+		this.methods = new Runtime.Map();
+		this.subscribers = new Runtime.Map();
 		if (val != null){
-			this.methods.push(val);
+			this.addMethod(val);
+		}
+	}
+	/**
+	 * Add method by name
+	 * @param callback f
+	 * @param string name
+	 */
+	addMethodByName(f, name){
+		if (!this.methods.has(name)){
+			this.methods.set(name, new Runtime.Vector());
+		}
+		var v = this.methods.item(name);
+		if (v.indexOf(f) == -1){
+			v.push(f);
 		}
 	}
 	/**
@@ -45,15 +59,46 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 	 */
 	addMethod(f, events){
 		if (events == undefined) events=null;
-		this.methods.push(f);
+		if (events == null){
+			this.addMethodByName(f, "");
+		}
+		else {
+			events.each((item) => {
+				this.addMethodByName(f, item);
+			});
+		}
 		return f;
 	}
 	/**
 	 * Remove method
 	 * @param callback f
 	 */
-	removeMethod(f){
-		this.methods.removeItem(f);
+	removeMethod(f, events){
+		if (events == undefined) events=null;
+		if (events == null){
+			events = this.methods.keys();
+		}
+		events.each((name) => {
+			var v = this.methods.get(name, null);
+			if (v == null){
+				return ;
+			}
+			v.removeItem(f);
+		});
+	}
+	/**
+	 * Add object by name
+	 * @param callback f
+	 * @param string name
+	 */
+	addObjectByName(f, name){
+		if (!this.subscribers.has(name)){
+			this.subscribers.set(name, new Runtime.Vector());
+		}
+		var v = this.subscribers.item(name);
+		if (v.indexOf(f) == -1){
+			v.push(f);
+		}
 	}
 	/**
 	 * Add object
@@ -62,38 +107,71 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 	 */
 	addObject(f, events){
 		if (events == undefined) events=null;
-		this.subscribers.push(f);
+		if (events == null){
+			this.addObjectByName(f, "");
+		}
+		else {
+			events.each((item) => {
+				this.addObjectByName(f, item);
+			});
+		}
+		return f;
 	}
 	/**
 	 * Remove object
 	 * @param SubscribeInterface f
 	 */
-	removeObject(f){
-		this.subscribers.removeItem(f);
+	removeObject(f, events){
+		if (events == undefined) events=null;
+		if (events == null){
+			events = this.subscribers.keys();
+		}
+		events.each((name) => {
+			var v = this.subscribers.get(name, null);
+			if (v == null){
+				return ;
+			}
+			v.removeItem(f);
+		});
 	}
 	/**
 	 * Dispatch event
-	 * @param var e
+	 * @param CoreEvent e
 	 */
 	emit(e){
 		this.dispatch(e);
 	}
 	/**
 	 * Dispatch event
-	 * @param var e
+	 * @param CoreEvent e
 	 */
 	dispatch(e){
+		/* Copy items */
+		var methods = this.methods.map((key, items) => {
+			return items.slice();
+		});
+		var subscribers = this.subscribers.map((key, items) => {
+			return items.slice();
+		});
 		/* Call self handler */
 		this.handlerEvent(e);
 		/* Call methods */
-		var methods = this.methods.slice();
-		methods.each((f) => {
-			Runtime.rtl.call(f, e);
+		methods.each((key, items) => {
+			if (key != "" && e.getClassName() != key){
+				return ;
+			}
+			items.each((f) => {
+				Runtime.rtl.call(f, (new Runtime.Vector()).push(e));
+			});
 		});
 		/* Call subscribers */
-		var subscribers = this.subscribers.slice();
-		subscribers.each((obj) => {
-			obj.handlerEvent(e);
+		subscribers.each((key, items) => {
+			if (key != "" && e.getClassName() != key){
+				return ;
+			}
+			items.each((obj) => {
+				obj.handlerEvent(e);
+			});
 		});
 	}
 	/**

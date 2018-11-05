@@ -19,8 +19,8 @@
 
 var isBrowser=function(){return typeof window !== "undefined" && this === window;}
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Utils = class{
-	getClassName(){return "Runtime.Utils";}
+Runtime.RuntimeUtils = class{
+	getClassName(){return "Runtime.RuntimeUtils";}
 	static getParentClassName(){return "";}
 	/**
 	 * Returns global context
@@ -28,8 +28,8 @@ Runtime.Utils = class{
 	 */
 	static globalContext(){
 		
-		if (isBrowser()) return Runtime.Utils._global_context;
-		return Utils._global_context;
+		if (isBrowser()) return Runtime.RuntimeUtils._global_context;
+		return RuntimeUtils._global_context;
 	}
 	/**
 	 * Set global context
@@ -37,8 +37,8 @@ Runtime.Utils = class{
 	 */
 	static setGlobalContext(context){
 		
-		if (isBrowser()) Runtime.Utils._global_context = context;
-		else Utils._global_context = context;
+		if (isBrowser()) Runtime.RuntimeUtils._global_context = context;
+		else RuntimeUtils._global_context = context;
 		return context;
 	}
 	/**
@@ -46,7 +46,7 @@ Runtime.Utils = class{
 	 * @param Context context
 	 */
 	static getGlobalContext(){
-		return Runtime.Utils.globalContext();
+		return Runtime.RuntimeUtils.globalContext();
 	}
 	/**
 	 * Register global Context
@@ -66,9 +66,9 @@ Runtime.Utils = class{
 	 */
 	static registerGlobalContext(modules){
 		if (modules == undefined) modules=null;
-		var context = Runtime.Utils.createContext(modules);
+		var context = Runtime.RuntimeUtils.createContext(modules);
 		context.init();
-		Runtime.Utils.setGlobalContext(context);
+		Runtime.RuntimeUtils.setGlobalContext(context);
 		return context;
 	}
 	/**
@@ -184,7 +184,7 @@ Runtime.Utils = class{
 		if (locale == undefined) locale="";
 		if (context == undefined) context=null;
 		if (context == null){
-			context = Runtime.Utils.globalContext();
+			context = Runtime.RuntimeUtils.globalContext();
 		}
 		if (context != null){
 			var args = (new Runtime.Vector()).push(message).push(params).push(locale);
@@ -227,12 +227,12 @@ Runtime.Utils = class{
 		}
 		if (obj instanceof Runtime.Vector){
 			return obj.map((value) => {
-				return Runtime.Utils.ObjectToPrimitive(value);
+				return Runtime.RuntimeUtils.ObjectToPrimitive(value);
 			});
 		}
 		if (obj instanceof Runtime.Map){
 			obj = obj.map((key, value) => {
-				return Runtime.Utils.ObjectToPrimitive(value);
+				return Runtime.RuntimeUtils.ObjectToPrimitive(value);
 			});
 			return obj;
 		}
@@ -242,7 +242,7 @@ Runtime.Utils = class{
 			obj.getVariablesNames(names);
 			names.each((variable_name) => {
 				var value = obj.takeValue(variable_name, null);
-				var value = Runtime.Utils.ObjectToPrimitive(value);
+				var value = Runtime.RuntimeUtils.ObjectToPrimitive(value);
 				values.set(variable_name, value);
 			});
 			values.set("__class_name__", obj.getClassName());
@@ -255,25 +255,21 @@ Runtime.Utils = class{
 	 * @param SerializeContainer container
 	 * @return mixed
 	 */
-	static PrimitiveToObject(obj, context){
-		if (context == undefined) context=null;
+	static PrimitiveToObject(obj){
 		if (obj === null){
 			return null;
 		}
 		if (Runtime.rtl.isScalarValue(obj)){
 			return obj;
 		}
-		if (context == null){
-			context = Runtime.Utils.globalContext();
-		}
 		if (obj instanceof Runtime.Vector){
 			return obj.map((value) => {
-				return Runtime.Utils.PrimitiveToObject(value, context);
+				return Runtime.RuntimeUtils.PrimitiveToObject(value);
 			});
 		}
 		if (obj instanceof Runtime.Map){
 			obj = obj.map((key, value) => {
-				return Runtime.Utils.PrimitiveToObject(value, context);
+				return Runtime.RuntimeUtils.PrimitiveToObject(value);
 			});
 			if (!obj.has("__class_name__")){
 				return obj;
@@ -312,7 +308,7 @@ Runtime.Utils = class{
 	
 	static json_encode(value, convert){
 		if (convert == undefined) convert = true;
-		var _Utils=null;if (isBrowser()) _Utils=Runtime.Utils; else _Utils=Utils;
+		var _Utils=null;if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=RuntimeUtils;
 		var _Vector=null;if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
 		var _Map=null;if (isBrowser()) _Map=Runtime.Map; else _Map=Map;
 		var _rtl=null;if (isBrowser()) _rtl=Runtime.rtl; else _rtl=rtl;
@@ -333,7 +329,7 @@ Runtime.Utils = class{
 	static json_decode(s, context){
 		if (context == undefined) context = null;
 		try{
-			var _Utils=null;if (isBrowser()) _Utils=Runtime.Utils; else _Utils=Utils;
+			var _Utils=null;if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=RuntimeUtils;
 			var _Vector=null;if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
 			var _Map=null;if (isBrowser()) _Map=Runtime.Map; else _Map=Map;			
 			var obj = JSON.parse(s, function (key, value){
@@ -356,7 +352,7 @@ Runtime.Utils = class{
 	static NativeToPrimitive(value){
 		
 		var _rtl = null; if (isBrowser()) _rtl=Runtime.rtl; else _rtl=rtl;
-		var _Utils = null; if (isBrowser()) _Utils=Runtime.Utils; else _Utils=Utils;
+		var _Utils = null; if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=RuntimeUtils;
 		var _Vector=null; if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
 		var _Map=null; if (isBrowser()) _Map=Runtime.Map; else _Map=Map;
 		
@@ -383,7 +379,7 @@ Runtime.Utils = class{
 	static PrimitiveToNative(value){
 		
 		var _rtl = null; if (isBrowser()) _rtl=Runtime.rtl; else _rtl=rtl;
-		var _Utils = null; if (isBrowser()) _Utils=Runtime.Utils; else _Utils=Utils;
+		var _Utils = null; if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=Utils;
 		var _Vector=null; if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
 		var _Map=null; if (isBrowser()) _Map=Runtime.Map; else _Map=Map;
 		
@@ -408,13 +404,13 @@ Runtime.Utils = class{
 		return value;
 	}
 	static ObjectToNative(value){
-		value = Runtime.Utils.ObjectToPrimitive(value);
-		value = Runtime.Utils.PrimitiveToNative(value);
+		value = Runtime.RuntimeUtils.ObjectToPrimitive(value);
+		value = Runtime.RuntimeUtils.PrimitiveToNative(value);
 		return value;
 	}
 	static NativeToObject(value){
-		value = Runtime.Utils.NativeToPrimitive(value);
-		value = Runtime.Utils.PrimitiveToObject(value);
+		value = Runtime.RuntimeUtils.NativeToPrimitive(value);
+		value = Runtime.RuntimeUtils.PrimitiveToObject(value);
 		return value;
 	}
 	/*
@@ -474,4 +470,4 @@ Runtime.Utils = class{
 		return window.atob($s);
 	}
 }
-Runtime.Utils._global_context = null;
+Runtime.RuntimeUtils._global_context = null;

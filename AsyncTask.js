@@ -1,6 +1,6 @@
 "use strict;"
 /*!
- *  Bayrell Runtime Library 
+ *  Bayrell Runtime Library
  *
  *  (c) Copyright 2016-2018 "Ildar Bikmamatov" <support@bayrell.org>
  *
@@ -17,13 +17,13 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
-Runtime.Exceptions.IndexOutOfRange = class extends Runtime.Exceptions.RuntimeException{
-	getClassName(){return "Runtime.Exceptions.IndexOutOfRange";}
-	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
-	constructor(context, prev){
-		if (context == undefined) context=null;
-		if (prev == undefined) prev=null;
-		super(Runtime.RuntimeUtils.translate("ERROR_INDEX_OUT_OF_RANGE", null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
+Runtime.AsyncTask = class extends Runtime.CoreObject{
+	getClassName(){return "Runtime.AsyncTask";}
+	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this.pos = null;
+		this.f = null;
+		this.catch_stack = null;
 	}
 }

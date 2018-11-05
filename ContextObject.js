@@ -61,7 +61,7 @@ Runtime.ContextObject = class extends Runtime.CoreObject{
 		super();
 		this._context = context;
 		if (!Runtime.rtl.exists(this._context)){
-			this._context = Runtime.Utils.globalContext();
+			this._context = Runtime.RuntimeUtils.globalContext();
 		}
 	}
 }

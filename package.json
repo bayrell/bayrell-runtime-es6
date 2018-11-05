@@ -7,5 +7,5 @@
   ],
   "main": "index.js",
   "name": "bayrell-runtime-es6",
-  "version": "0.5.0"
+  "version": "0.5.1"
 }

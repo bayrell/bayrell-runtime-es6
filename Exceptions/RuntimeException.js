@@ -36,14 +36,14 @@ Runtime.Exceptions.RuntimeException = class extends Runtime.Exceptions.ClassExce
 		this.line = -1;
 		this.pos = -1;
 	}
-	constructor(context, message, code, prev){
-		if (context == undefined) context=null;
+	constructor(message, code, context, prev){
 		if (message == undefined) message="";
 		if (code == undefined) code=0;
+		if (context == undefined) context=null;
 		if (prev == undefined) prev=null;
 		super(message, code, prev);
 		if (context == null){
-			context = Runtime.Utils.globalContext();
+			context = Runtime.RuntimeUtils.globalContext();
 		}
 		this.error_str = message;
 		this.context = context;

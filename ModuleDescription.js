@@ -36,7 +36,7 @@ Runtime.ModuleDescription = class{
 	 * @return string
 	 */
 	static getModuleVersion(){
-		return "0.5.0";
+		return "0.5.1";
 	}
 	/**
 	 * Returns required modules
@@ -46,18 +46,24 @@ Runtime.ModuleDescription = class{
 		return null;
 	}
 	/**
-	 * Init context
-	 * @param ContextInterface context
-	 */
-	static initContext(context){
-	}
-	/**
 	 * Called then module registed in context
 	 * @param ContextInterface context
 	 */
 	static onRegister(context){
-		context.registerManager("Runtime.Dispatcher", new Runtime.Emitter());
 		context.registerManager("Runtime.Config", new Runtime.Map());
+	}
+	/**
+	 * Called then context read config
+	 * @param ContextInterface context
+	 * @param Map<mixed> config
+	 */
+	static onReadConfig(context, config){
+	}
+	/**
+	 * Init context
+	 * @param ContextInterface context
+	 */
+	static initContext(context){
 	}
 }
 Runtime.ModuleDescription.__static_implements__ = [];

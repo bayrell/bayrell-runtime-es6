@@ -45,7 +45,7 @@ Runtime.DateTime = class extends Runtime.CoreObject{
 			this.ms = Runtime.rtl._clone(obj.ms);
 			this.tz = Runtime.rtl._clone(obj.tz);
 		}
-		super.assign(obj);
+		super.assignObject(obj);
 	}
 	assignValue(variable_name, value){
 		if (variable_name == "y") this.y = Runtime.rtl.correct(value, "int", 0, "");
