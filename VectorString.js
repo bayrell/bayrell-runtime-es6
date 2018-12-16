@@ -18,6 +18,7 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.VectorString = class extends Runtime.Vector{
+	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.VectorString";}
 	static getParentClassName(){return "Runtime.Vector";}
 }

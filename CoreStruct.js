@@ -17,23 +17,32 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreEvent = class extends Runtime.CoreObject{
-	constructor(sender){
-		if (sender == undefined) sender=null;
+Runtime.CoreStruct = class extends Runtime.CoreObject{
+	/** 
+	 * Constructor
+	 */
+	constructor(obj){
+		if (obj == undefined) obj=null;
 		super();
-		this.sender = sender;
+		this.assignMap(obj);
+	}
+	/**
+	 * Clone this object
+	 * @return CoreStruct
+	 */
+	clone(){
+		var instance = rtl.newInstance(this.getClassName());
+		instance.assignObject(this);
+		return instance;
 	}
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.CoreEvent";}
+	getClassName(){return "Runtime.CoreStruct";}
 	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){
 		super._init();
-		this.sender = null;
 		if (this.__implements__ == undefined){this.__implements__ = [];}
-		this.__implements__.push(Runtime.Interfaces.CloneableInterface);
 		this.__implements__.push(Runtime.Interfaces.SerializeInterface);
 	}
 }
-Runtime.CoreEvent.__static_implements__ = [];
-Runtime.CoreEvent.__static_implements__.push(Runtime.Interfaces.CloneableInterface)
-Runtime.CoreEvent.__static_implements__.push(Runtime.Interfaces.SerializeInterface)
+Runtime.CoreStruct.__static_implements__ = [];
+Runtime.CoreStruct.__static_implements__.push(Runtime.Interfaces.SerializeInterface)

@@ -38,6 +38,7 @@ $load([
 ])
 
 .load([
+	"/assets/Runtime/CoreStruct.js",
 	"/assets/Runtime/DateTime.js",
 	"/assets/Runtime/Context.js",
 	"/assets/Runtime/ContextObject.js",
@@ -51,6 +52,7 @@ $load([
 
 .load([
 	"/assets/Runtime/ModuleDescription.js",
+	"/assets/Runtime/IntrospectionInfo.js",
 ])
 
 .success(function(){

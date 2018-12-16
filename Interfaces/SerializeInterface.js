@@ -52,4 +52,5 @@ Runtime.Interfaces.SerializeInterface = class{
 	takeValue(variable_name, default_value){
 		if (default_value == undefined) default_value=null;
 	}
+	/* ======================= Class Init Functions ======================= */
 }

@@ -23,19 +23,6 @@ Runtime.Exceptions.ClassException = class extends Error { _init(){} }
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
 Runtime.Exceptions.RuntimeException = class extends Runtime.Exceptions.ClassException{
-	getClassName(){return "Runtime.Exceptions.RuntimeException";}
-	static getParentClassName(){return "Runtime.Exceptions.ClassException";}
-	_init(){
-		super._init();
-		this.context = null;
-		this.prev = null;
-		this.error_str = "";
-		this.message = "";
-		this.code = 0;
-		this.file = "";
-		this.line = -1;
-		this.pos = -1;
-	}
 	constructor(message, code, context, prev){
 		if (message == undefined) message="";
 		if (code == undefined) code=0;
@@ -92,5 +79,19 @@ Runtime.Exceptions.RuntimeException = class extends Runtime.Exceptions.ClassExce
 		if (this.file != ""){
 			this.message += " in file:'"+Runtime.rtl.toString(this.file)+"'";
 		}
+	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.Exceptions.RuntimeException";}
+	static getParentClassName(){return "Runtime.Exceptions.ClassException";}
+	_init(){
+		super._init();
+		this.context = null;
+		this.prev = null;
+		this.error_str = "";
+		this.message = "";
+		this.code = 0;
+		this.file = "";
+		this.line = -1;
+		this.pos = -1;
 	}
 }

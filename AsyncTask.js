@@ -18,6 +18,7 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.AsyncTask = class extends Runtime.CoreObject{
+	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.AsyncTask";}
 	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){

@@ -20,8 +20,6 @@
 var isBrowser=function(){return typeof window !== "undefined" && this === window;}
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.rs = class{
-	getClassName(){return "Runtime.rs";}
-	static getParentClassName(){return "";}
 	/**
 	 * Returns string lenght
 	 * @param string s The string
@@ -203,4 +201,7 @@ Runtime.rs = class{
 		};
 		return (new String(s)).replace(/[<>&"'`=]/g, function(v){ return obj[v]; });
 	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.rs";}
+	static getParentClassName(){return "";}
 }

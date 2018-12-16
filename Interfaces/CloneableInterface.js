@@ -29,4 +29,5 @@ Runtime.Interfaces.CloneableInterface = class{
 	 */
 	assignObject(obj){
 	}
+	/* ======================= Class Init Functions ======================= */
 }

@@ -99,4 +99,5 @@ Runtime.Interfaces.ContextInterface = class{
 	 */
 	setValue(name, value){
 	}
+	/* ======================= Class Init Functions ======================= */
 }

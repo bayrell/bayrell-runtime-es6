@@ -25,4 +25,5 @@ Runtime.Interfaces.SubscribeInterface = class{
 	 */
 	handlerEvent(e){
 	}
+	/* ======================= Class Init Functions ======================= */
 }

@@ -19,11 +19,12 @@
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
 Runtime.Exceptions.IndexOutOfRange = class extends Runtime.Exceptions.RuntimeException{
-	getClassName(){return "Runtime.Exceptions.IndexOutOfRange";}
-	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 	constructor(context, prev){
 		if (context == undefined) context=null;
 		if (prev == undefined) prev=null;
 		super(Runtime.RuntimeUtils.translate("ERROR_INDEX_OUT_OF_RANGE", null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
 	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.Exceptions.IndexOutOfRange";}
+	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 }

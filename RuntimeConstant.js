@@ -18,8 +18,6 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.RuntimeConstant = class{
-	getClassName(){return "Runtime.RuntimeConstant";}
-	static getParentClassName(){return "";}
 	/* Log level */
 	/**
 	 * Fatal error. Application stoped
@@ -44,6 +42,9 @@ Runtime.RuntimeConstant = class{
 	 */
 	/* Status codes */
 	/* Errors */
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.RuntimeConstant";}
+	static getParentClassName(){return "";}
 }
 Runtime.RuntimeConstant.LOG_FATAL = 0;
 Runtime.RuntimeConstant.LOG_CRITICAL = 2;

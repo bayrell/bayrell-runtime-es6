@@ -35,4 +35,5 @@ Runtime.Interfaces.AssetsInterface = class{
 	 */
 	static assetsAsyncLoad(context){
 	}
+	/* ======================= Class Init Functions ======================= */
 }

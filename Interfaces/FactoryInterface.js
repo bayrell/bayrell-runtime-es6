@@ -25,4 +25,5 @@ Runtime.Interfaces.FactoryInterface = class{
 	newInstance(context){
 		if (context == undefined) context=null;
 	}
+	/* ======================= Class Init Functions ======================= */
 }

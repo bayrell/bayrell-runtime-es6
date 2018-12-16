@@ -56,4 +56,5 @@ Runtime.Interfaces.ModuleDescriptionInterface = class{
 	 */
 	static initContext(context){
 	}
+	/* ======================= Class Init Functions ======================= */
 }

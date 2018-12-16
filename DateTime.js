@@ -18,69 +18,6 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.DateTime = class extends Runtime.CoreObject{
-	getClassName(){return "Runtime.DateTime";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		this.y = 0;
-		this.m = 0;
-		this.d = 0;
-		this.h = 0;
-		this.u = 0;
-		this.s = 0;
-		this.ms = 0;
-		this.tz = "UTC";
-		if (this.__implements__ == undefined){this.__implements__ = [];}
-		this.__implements__.push(Runtime.Interfaces.CloneableInterface);
-		this.__implements__.push(Runtime.Interfaces.SerializeInterface);
-	}
-	assignObject(obj){
-		if (obj instanceof Runtime.DateTime){
-			this.y = Runtime.rtl._clone(obj.y);
-			this.m = Runtime.rtl._clone(obj.m);
-			this.d = Runtime.rtl._clone(obj.d);
-			this.h = Runtime.rtl._clone(obj.h);
-			this.u = Runtime.rtl._clone(obj.u);
-			this.s = Runtime.rtl._clone(obj.s);
-			this.ms = Runtime.rtl._clone(obj.ms);
-			this.tz = Runtime.rtl._clone(obj.tz);
-		}
-		super.assignObject(obj);
-	}
-	assignValue(variable_name, value){
-		if (variable_name == "y") this.y = Runtime.rtl.correct(value, "int", 0, "");
-		else if (variable_name == "m") this.m = Runtime.rtl.correct(value, "int", 0, "");
-		else if (variable_name == "d") this.d = Runtime.rtl.correct(value, "int", 0, "");
-		else if (variable_name == "h") this.h = Runtime.rtl.correct(value, "int", 0, "");
-		else if (variable_name == "u") this.u = Runtime.rtl.correct(value, "int", 0, "");
-		else if (variable_name == "s") this.s = Runtime.rtl.correct(value, "int", 0, "");
-		else if (variable_name == "ms") this.ms = Runtime.rtl.correct(value, "int", 0, "");
-		else if (variable_name == "tz") this.tz = Runtime.rtl.correct(value, "string", "UTC", "");
-		else super.assignValue(variable_name, value);
-	}
-	takeValue(variable_name, default_value){
-		if (default_value == undefined) default_value = null;
-		if (variable_name == "y") return this.y;
-		else if (variable_name == "m") return this.m;
-		else if (variable_name == "d") return this.d;
-		else if (variable_name == "h") return this.h;
-		else if (variable_name == "u") return this.u;
-		else if (variable_name == "s") return this.s;
-		else if (variable_name == "ms") return this.ms;
-		else if (variable_name == "tz") return this.tz;
-		return super.takeValue(variable_name, default_value);
-	}
-	getVariablesNames(names){
-		super.getVariablesNames(names);
-		names.push("y");
-		names.push("m");
-		names.push("d");
-		names.push("h");
-		names.push("u");
-		names.push("s");
-		names.push("ms");
-		names.push("tz");
-	}
 	/**
 	 * Set date
 	 * @param int y - Year
@@ -455,6 +392,40 @@ Runtime.DateTime = class extends Runtime.CoreObject{
 		return y + "-" + m + "-" + d + " " +
 			h + ":" + i + ":" + s;
 		return "";
+	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.DateTime";}
+	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this.y = 0;
+		this.m = 0;
+		this.d = 0;
+		this.h = 0;
+		this.u = 0;
+		this.s = 0;
+		this.ms = 0;
+		this.tz = "UTC";
+		if (this.__implements__ == undefined){this.__implements__ = [];}
+		this.__implements__.push(Runtime.Interfaces.CloneableInterface);
+		this.__implements__.push(Runtime.Interfaces.SerializeInterface);
+	}
+	assignObject(obj){
+		if (obj instanceof Runtime.DateTime){
+		}
+		super.assignObject(obj);
+	}
+	assignValue(variable_name, value){
+		super.assignValue(variable_name, value);
+	}
+	takeValue(variable_name, default_value){
+		if (default_value == undefined) default_value = null;
+		return super.takeValue(variable_name, default_value);
+	}
+	static getFieldsList(names){
+	}
+	static getFieldInfoByName(field_name){
+		return null;
 	}
 }
 Runtime.DateTime.__static_implements__ = [];

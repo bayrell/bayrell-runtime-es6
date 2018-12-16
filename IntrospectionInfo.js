@@ -17,23 +17,16 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreEvent = class extends Runtime.CoreObject{
-	constructor(sender){
-		if (sender == undefined) sender=null;
-		super();
-		this.sender = sender;
-	}
+Runtime.IntrospectionInfo = class extends Runtime.CoreStruct{
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.CoreEvent";}
-	static getParentClassName(){return "Runtime.CoreObject";}
+	getClassName(){return "Runtime.IntrospectionInfo";}
+	static getParentClassName(){return "Runtime.CoreStruct";}
 	_init(){
 		super._init();
-		this.sender = null;
-		if (this.__implements__ == undefined){this.__implements__ = [];}
-		this.__implements__.push(Runtime.Interfaces.CloneableInterface);
-		this.__implements__.push(Runtime.Interfaces.SerializeInterface);
+		this.kind = "";
+		this.name = "";
+		this.annotations = null;
 	}
 }
-Runtime.CoreEvent.__static_implements__ = [];
-Runtime.CoreEvent.__static_implements__.push(Runtime.Interfaces.CloneableInterface)
-Runtime.CoreEvent.__static_implements__.push(Runtime.Interfaces.SerializeInterface)
+Runtime.IntrospectionInfo.ITEM_FIELD = "field";
+Runtime.IntrospectionInfo.ITEM_METHOD = "method";

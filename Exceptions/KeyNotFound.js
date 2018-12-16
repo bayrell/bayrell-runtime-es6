@@ -19,12 +19,13 @@
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
 Runtime.Exceptions.KeyNotFound = class extends Runtime.Exceptions.RuntimeException{
-	getClassName(){return "Runtime.Exceptions.KeyNotFound";}
-	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 	constructor(key, context, prev){
 		if (context == undefined) context=null;
 		if (prev == undefined) prev=null;
 		/* RuntimeUtils::translate("ERROR_KEY_NOT_FOUND", null, "", context),  */
 		super("Key '"+Runtime.rtl.toString(key)+"' not found", Runtime.RuntimeConstant.ERROR_KEY_NOT_FOUND, context, prev);
 	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.Exceptions.KeyNotFound";}
+	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 }

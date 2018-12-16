@@ -18,17 +18,6 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.AsyncThread = class extends Runtime.CoreObject{
-	getClassName(){return "Runtime.AsyncThread";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		this.f = null;
-		this.pos = "0";
-		this.res = null;
-		this.err = null;
-		this.run_stack = null;
-		this.catch_stack = null;
-	}
 	/**
 	 * Constructor
 	 */
@@ -209,5 +198,17 @@ Runtime.AsyncThread = class extends Runtime.CoreObject{
 	end(){
 		this.pos = "-1";
 		return "end";
+	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.AsyncThread";}
+	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this.f = null;
+		this.pos = "0";
+		this.res = null;
+		this.err = null;
+		this.run_stack = null;
+		this.catch_stack = null;
 	}
 }

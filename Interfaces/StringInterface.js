@@ -24,4 +24,5 @@ Runtime.Interfaces.StringInterface = class{
 	 */
 	toString(){
 	}
+	/* ======================= Class Init Functions ======================= */
 }

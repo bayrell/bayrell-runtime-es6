@@ -18,17 +18,6 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.Context = class extends Runtime.CoreObject{
-	getClassName(){return "Runtime.Context";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		this._modules = null;
-		this._values = null;
-		this._managers = null;
-		this._providers_names = null;
-		if (this.__implements__ == undefined){this.__implements__ = [];}
-		this.__implements__.push(Runtime.Interfaces.ContextInterface);
-	}
 	/**
 	 * Constructor
 	 */
@@ -224,6 +213,18 @@ Runtime.Context = class extends Runtime.CoreObject{
 	 */
 	setValue(name, value){
 		this._values.set(name, value);
+	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.Context";}
+	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this._modules = null;
+		this._values = null;
+		this._managers = null;
+		this._providers_names = null;
+		if (this.__implements__ == undefined){this.__implements__ = [];}
+		this.__implements__.push(Runtime.Interfaces.ContextInterface);
 	}
 }
 Runtime.Context.__static_implements__ = [];

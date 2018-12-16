@@ -18,6 +18,7 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.SerializeContainer = class extends Runtime.CoreObject{
+	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.SerializeContainer";}
 	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){

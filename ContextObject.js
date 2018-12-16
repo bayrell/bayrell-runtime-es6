@@ -18,12 +18,6 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.ContextObject = class extends Runtime.CoreObject{
-	getClassName(){return "Runtime.ContextObject";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		this._context = null;
-	}
 	/**
 	 * Returns context provider
 	 *
@@ -63,5 +57,12 @@ Runtime.ContextObject = class extends Runtime.CoreObject{
 		if (!Runtime.rtl.exists(this._context)){
 			this._context = Runtime.RuntimeUtils.globalContext();
 		}
+	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.ContextObject";}
+	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this._context = null;
 	}
 }

@@ -18,13 +18,6 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.Emitter = class extends Runtime.CoreObject{
-	getClassName(){return "Runtime.Emitter";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		this.methods = null;
-		this.subscribers = null;
-	}
 	/**
 	 * Constructor
 	 */
@@ -138,14 +131,8 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 	 * Dispatch event
 	 * @param CoreEvent e
 	 */
-	emit(e){
-		this.dispatch(e);
-	}
-	/**
-	 * Dispatch event
-	 * @param CoreEvent e
-	 */
 	dispatch(e){
+		var keys = null;
 		/* Copy items */
 		var methods = this.methods.map((key, items) => {
 			return items.slice();
@@ -156,27 +143,43 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 		/* Call self handler */
 		this.handlerEvent(e);
 		/* Call methods */
-		methods.each((key, items) => {
+		keys = methods.keys();
+		for (var i = 0; i < keys.count(); i++){
+			var key = keys.item(i);
+			var items = methods.item(key);
 			if (key != "" && e.getClassName() != key){
-				return ;
+				continue;
 			}
-			items.each((f) => {
+			for (var j = 0; j < items.count(); j++){
+				var f = items.item(j);
 				Runtime.rtl.call(f, (new Runtime.Vector()).push(e));
-			});
-		});
-		/* Call subscribers */
-		subscribers.each((key, items) => {
-			if (key != "" && e.getClassName() != key){
-				return ;
 			}
-			items.each((obj) => {
+		}
+		/* Call subscribers */
+		keys = subscribers.keys();
+		for (var i = 0; i < keys.count(); i++){
+			var key = keys.item(i);
+			var items = subscribers.item(key);
+			if (key != "" && e.getClassName() != key){
+				continue;
+			}
+			for (var j = 0; j < items.count(); j++){
+				var obj = items.item(j);
 				obj.handlerEvent(e);
-			});
-		});
+			}
+		}
 	}
 	/**
 	 * Handler Event
 	 */
 	handlerEvent(e){
+	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.Emitter";}
+	static getParentClassName(){return "Runtime.CoreObject";}
+	_init(){
+		super._init();
+		this.methods = null;
+		this.subscribers = null;
 	}
 }
