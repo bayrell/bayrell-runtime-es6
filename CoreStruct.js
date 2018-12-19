@@ -25,14 +25,26 @@ Runtime.CoreStruct = class extends Runtime.CoreObject{
 		if (obj == undefined) obj=null;
 		super();
 		this.assignMap(obj);
+		this.onCreated();
 	}
 	/**
-	 * Clone this object
+	 * Struct created 
+	 */
+	onCreated(){
+	}
+	/**
+	 * Clone this object with new values
+	 * @param Map obj = null
 	 * @return CoreStruct
 	 */
-	clone(){
-		var instance = rtl.newInstance(this.getClassName());
+	clone(obj){
+		if (obj == undefined) obj=null;
+		var instance = Runtime.rtl.newInstance(this.getClassName());
 		instance.assignObject(this);
+		if (obj != null){
+			instance.setMap(obj);
+		}
+		instance.onCreated();
 		return instance;
 	}
 	/* ======================= Class Init Functions ======================= */

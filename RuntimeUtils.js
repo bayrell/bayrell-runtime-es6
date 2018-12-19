@@ -92,6 +92,111 @@ Runtime.RuntimeUtils = class{
 		return new Vector();
 	}
 	/**
+	 * Returns Introspection of the class name
+	 * @param string class_name
+	 * @return Vector<IntrospectionInfo>
+	 */
+	static getIntrospection(class_name){
+		var res = new Runtime.Vector();
+		var class_names = Runtime.RuntimeUtils.getParents(class_name);
+		class_names.prepend(class_name);
+		class_names.each((item_class_name) => {
+			var names = new Runtime.Vector();
+			/* Get fields introspection */
+			try{
+				Runtime.rtl.callStaticMethod(item_class_name, "getFieldsList", (new Runtime.Vector()).push(names));
+			}catch(_the_exception){
+				if (_the_exception instanceof Error){
+					var e = _the_exception;
+				}
+				else { throw _the_exception; }
+			}
+			names.each((field_name) => {
+				var info = null;
+				try{
+					info = Runtime.rtl.callStaticMethod(item_class_name, "getFieldInfoByName", (new Runtime.Vector()).push(field_name));
+				}catch(_the_exception){
+					if (_the_exception instanceof Error){
+						var e = _the_exception;
+						info = null;
+					}
+					else { throw _the_exception; }
+				}
+				if (info != null){
+					info.class_name = item_class_name;
+					res.push(info);
+				}
+			});
+			/* Get virtual fields introspection */
+			names.clear();
+			try{
+				Runtime.rtl.callStaticMethod(item_class_name, "getVirtualFieldsList", (new Runtime.Vector()).push(names));
+			}catch(_the_exception){
+				if (_the_exception instanceof Error){
+					var e = _the_exception;
+				}
+				else { throw _the_exception; }
+			}
+			names.each((field_name) => {
+				var info = null;
+				try{
+					info = Runtime.rtl.callStaticMethod(item_class_name, "getVirtualFieldInfo", (new Runtime.Vector()).push(field_name));
+				}catch(_the_exception){
+					if (_the_exception instanceof Error){
+						var e = _the_exception;
+						info = null;
+					}
+					else { throw _the_exception; }
+				}
+				if (info != null){
+					info.class_name = item_class_name;
+					res.push(info);
+				}
+			});
+			/* Get methods introspection */
+			names.clear();
+			try{
+				Runtime.rtl.callStaticMethod(item_class_name, "getMethodsList", (new Runtime.Vector()).push(names));
+			}catch(_the_exception){
+				if (_the_exception instanceof Error){
+					var e = _the_exception;
+				}
+				else { throw _the_exception; }
+			}
+			names.each((method_name) => {
+				var info = null;
+				try{
+					info = Runtime.rtl.callStaticMethod(item_class_name, "getMethodInfoByName", (new Runtime.Vector()).push(method_name));
+				}catch(_the_exception){
+					if (_the_exception instanceof Error){
+						var e = _the_exception;
+						info = null;
+					}
+					else { throw _the_exception; }
+				}
+				if (info != null){
+					info.class_name = item_class_name;
+					res.push(info);
+				}
+			});
+			/* Get class introspection */
+			try{
+				info = Runtime.rtl.callStaticMethod(item_class_name, "getClassInfo", (new Runtime.Vector()));
+			}catch(_the_exception){
+				if (_the_exception instanceof Error){
+					var e = _the_exception;
+					info = null;
+				}
+				else { throw _the_exception; }
+			}
+			if (info != null){
+				info.class_name = item_class_name;
+				res.push(info);
+			}
+		});
+		return res;
+	}
+	/**
 	 * Returns true if value is primitive value
 	 * @return boolean 
 	 */
