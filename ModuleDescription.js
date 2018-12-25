@@ -30,7 +30,7 @@ Runtime.ModuleDescription = class{
 	 * @return string
 	 */
 	static getModuleVersion(){
-		return "0.6.1";
+		return "0.6.2";
 	}
 	/**
 	 * Returns required modules
@@ -44,7 +44,7 @@ Runtime.ModuleDescription = class{
 	 * @param ContextInterface context
 	 */
 	static onRegister(context){
-		context.registerManager("Runtime.Config", new Runtime.Map());
+		context.registerDriver("driver.runtime.config", new Runtime.Map());
 	}
 	/**
 	 * Called then context read config

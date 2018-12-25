@@ -20,31 +20,24 @@
 var isBrowser=function(){return typeof window !== "undefined" && this === window;}
 if (typeof Runtime == 'undefined') Runtime = {};
 Runtime.RuntimeUtils = class{
+	/* ================================ Context Functions ================================ */
 	/**
 	 * Returns global context
 	 * @return ContextInterface
 	 */
-	static globalContext(){
+	static getContext(){
 		
-		if (isBrowser()) return Runtime.RuntimeUtils._global_context;
-		return RuntimeUtils._global_context;
+		return Runtime.RuntimeUtils._global_context;
 	}
 	/**
 	 * Set global context
 	 * @param ContextInterface context
 	 */
-	static setGlobalContext(context){
+	static setContext(context){
 		
 		if (isBrowser()) Runtime.RuntimeUtils._global_context = context;
 		else RuntimeUtils._global_context = context;
 		return context;
-	}
-	/**
-	 * Returns global context
-	 * @param Context context
-	 */
-	static getGlobalContext(){
-		return Runtime.RuntimeUtils.globalContext();
 	}
 	/**
 	 * Register global Context
@@ -66,9 +59,10 @@ Runtime.RuntimeUtils = class{
 		if (modules == undefined) modules=null;
 		var context = Runtime.RuntimeUtils.createContext(modules);
 		context.init();
-		Runtime.RuntimeUtils.setGlobalContext(context);
+		Runtime.RuntimeUtils.setContext(context);
 		return context;
 	}
+	/* ========================== Class Introspection Functions ========================== */
 	/**
 	 * Returns parents class names
 	 * @return Vector<string>
@@ -90,6 +84,33 @@ Runtime.RuntimeUtils = class{
 	
 	static getInterfaces(class_name){
 		return new Vector();
+	}
+	/**
+	 * Returns names of variables to serialization
+	 * @param Vector<string>
+	 */
+	static getVariablesNames(class_name, names){
+		var classes = Runtime.RuntimeUtils.getParents(class_name);
+		classes.prepend(class_name);
+		classes.each((class_name) => {
+			try{
+				Runtime.rtl.callStaticMethod(class_name, "getFieldsList", (new Runtime.Vector()).push(names));
+			}catch(_the_exception){
+				if (_the_exception instanceof Error){
+					var e = _the_exception;
+				}
+				else { throw _the_exception; }
+			}
+			try{
+				Runtime.rtl.callStaticMethod(class_name, "getVirtualFieldsList", (new Runtime.Vector()).push(names));
+			}catch(_the_exception){
+				if (_the_exception instanceof Error){
+					var e = _the_exception;
+				}
+				else { throw _the_exception; }
+			}
+		});
+		names.removeDublicates();
 	}
 	/**
 	 * Returns Introspection of the class name
@@ -196,125 +217,17 @@ Runtime.RuntimeUtils = class{
 		});
 		return res;
 	}
-	/**
-	 * Returns true if value is primitive value
-	 * @return boolean 
-	 */
-	static isPrimitiveValue(value){
-		if (Runtime.rtl.isScalarValue(value)){
-			return true;
-		}
-		if (value instanceof Runtime.Vector){
-			return true;
-		}
-		if (value instanceof Runtime.Map){
-			return true;
-		}
-		return false;
+	/* ============================= Serialization Functions ============================= */
+	static ObjectToNative(value, force_class_name){
+		if (force_class_name == undefined) force_class_name=false;
+		value = Runtime.RuntimeUtils.ObjectToPrimitive(value, force_class_name);
+		value = Runtime.RuntimeUtils.PrimitiveToNative(value);
+		return value;
 	}
-	/**
-	 * Get value from object
-	 */
-	static get(obj, key, default_value){
-		if (default_value == undefined) default_value=null;
-		if (obj instanceof Runtime.Vector){
-			return obj.get(key, default_value);
-		}
-		if (obj instanceof Runtime.Map){
-			return obj.get(key, default_value);
-		}
-		
-		if (typeof obj == 'object'){
-			if (typeof obj[key] != undefined) 
-				return obj[key];
-		}
-		return default_value;
-	}
-	/**
-	 * Set value to object
-	 */
-	static set(obj, key, value){
-		if (value == undefined) value=null;
-		if (obj instanceof Runtime.Vector){
-			obj.set(key, value);
-		}
-		if (obj instanceof Runtime.Map){
-			obj.set(key, value);
-		}
-		
-		if (typeof obj == 'object'){
-			obj[key] = value;
-		}
-	}
-	/**
-	 * Call each
-	 */
-	static each(obj, f){
-		if (obj instanceof Runtime.Vector){
-			obj.each(f);
-		}
-		if (obj instanceof Runtime.Map){
-			obj.each(f);
-		}
-	}
-	/**
-	 * Convert bytes to string
-	 * @param Vector<byte> arr - vector of the bytes
-	 * @string charset - charset of the bytes vector. Default utf8
-	 * @return string
-	 */
-	bytesToString(arr, charset){
-		if (charset == undefined) charset="utf8";
-	}
-	/**
-	 * Convert string to bytes
-	 * @param string s - incoming string
-	 * @param Vector<byte> arr - output vector
-	 * @param charset - Result bytes charset. Default utf8
-	 */
-	stringToBytes(s, arr, charset){
-		if (charset == undefined) charset="utf8";
-	}
-	/**
-	 * Translate message
-	 * @params string message - message need to be translated
-	 * @params MapInterface params - Messages params. Default null.
-	 * @params string locale - Different locale. Default "".
-	 * @return string - translated string
-	 */
-	static translate(message, params, locale, context){
-		if (params == undefined) params=null;
-		if (locale == undefined) locale="";
-		if (context == undefined) context=null;
-		if (context == null){
-			context = Runtime.RuntimeUtils.globalContext();
-		}
-		if (context != null){
-			var args = (new Runtime.Vector()).push(message).push(params).push(locale);
-			return Runtime.rtl.callMethod(context, "translate", args);
-		}
-		return message;
-	}
-	/**
-	 * Compare 2 Vectors, Returns true if arr1 and arr2 have same class names
-	 * @param Vector<string> arr1
-	 * @param Vector<string> arr2
-	 * @return bool
-	 */
-	static equalsVectors(arr1, arr2){
-		for (var i = 0; i < arr1.count(); i++){
-			var item = arr1.item(i);
-			if (arr2.indexOf(item) == -1){
-				return false;
-			}
-		}
-		for (var i = 0; i < arr2.count(); i++){
-			var item = arr2.item(i);
-			if (arr1.indexOf(item) == -1){
-				return false;
-			}
-		}
-		return true;
+	static NativeToObject(value){
+		value = Runtime.RuntimeUtils.NativeToPrimitive(value);
+		value = Runtime.RuntimeUtils.PrimitiveToObject(value);
+		return value;
 	}
 	/**
 	 * Returns object to primitive value
@@ -425,55 +338,6 @@ Runtime.RuntimeUtils = class{
 		}
 		return null;
 	}
-	/**
-	 * Json encode serializable values
-	 * @param serializable value
-	 * @param SerializeContainer container
-	 * @return string 
-	 */
-	
-	static json_encode(value, convert){
-		if (convert == undefined) convert = true;
-		var _Utils=null;if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=RuntimeUtils;
-		var _Vector=null;if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
-		var _Map=null;if (isBrowser()) _Map=Runtime.Map; else _Map=Map;
-		var _rtl=null;if (isBrowser()) _rtl=Runtime.rtl; else _rtl=rtl;
-		if (convert) value = _Utils.ObjectToPrimitive(value);
-		return JSON.stringify(value, function (key, value){
-			if (_rtl.isScalarValue(value)) return value;
-			if (value instanceof _Vector) return value;
-			if (value instanceof _Map) return value.toObject();
-			return undefined;
-		});
-	}
-	/**
-	 * Json decode to primitive values
-	 * @param string s Encoded string
-	 * @return mixed 
-	 */
-	
-	static json_decode(s, context){
-		if (context == undefined) context = null;
-		try{
-			var _Utils=null;if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=RuntimeUtils;
-			var _Vector=null;if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
-			var _Map=null;if (isBrowser()) _Map=Runtime.Map; else _Map=Map;			
-			var obj = JSON.parse(s, function (key, value){
-				if (Array.isArray(value)){
-					return new _Vector(value);
-				}
-				if (typeof value == 'object'){
-					return new _Map(value);
-				}
-				
-				return value;
-			});
-			return _Utils.PrimitiveToObject(obj,context);
-		}
-		catch(e){
-			return null;
-		}
-	}
 	
 	static NativeToPrimitive(value){
 		
@@ -529,17 +393,74 @@ Runtime.RuntimeUtils = class{
 		
 		return value;
 	}
-	static ObjectToNative(value, force_class_name){
-		if (force_class_name == undefined) force_class_name=false;
-		value = Runtime.RuntimeUtils.ObjectToPrimitive(value, force_class_name);
-		value = Runtime.RuntimeUtils.PrimitiveToNative(value);
-		return value;
+	/**
+	 * Json encode serializable values
+	 * @param serializable value
+	 * @param SerializeContainer container
+	 * @return string 
+	 */
+	
+	static json_encode(value, flags, convert){
+		if (flags == undefined) flags = 0;
+		if (convert == undefined) convert = true;
+		var _Utils=null;if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=RuntimeUtils;
+		var _Vector=null;if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
+		var _Map=null;if (isBrowser()) _Map=Runtime.Map; else _Map=Map;
+		var _rtl=null;if (isBrowser()) _rtl=Runtime.rtl; else _rtl=rtl;
+		if (convert) value = _Utils.ObjectToPrimitive(value);
+		return JSON.stringify(value, function (key, value){
+			if (_rtl.isScalarValue(value)) return value;
+			if (value instanceof _Vector) return value;
+			if (value instanceof _Map) return value.toObject();
+			return undefined;
+		});
 	}
-	static NativeToObject(value){
-		value = Runtime.RuntimeUtils.NativeToPrimitive(value);
-		value = Runtime.RuntimeUtils.PrimitiveToObject(value);
-		return value;
+	/**
+	 * Json decode to primitive values
+	 * @param string s Encoded string
+	 * @return mixed 
+	 */
+	
+	static json_decode(s, context){
+		try{
+			var _Utils=null;if (isBrowser()) _Utils=Runtime.RuntimeUtils; else _Utils=RuntimeUtils;
+			var _Vector=null;if (isBrowser()) _Vector=Runtime.Vector; else _Vector=Vector;
+			var _Map=null;if (isBrowser()) _Map=Runtime.Map; else _Map=Map;			
+			var obj = JSON.parse(s, function (key, value){
+				if (Array.isArray(value)){
+					return new _Vector(value);
+				}
+				if (typeof value == 'object'){
+					return new _Map(value);
+				}
+				
+				return value;
+			});
+			return _Utils.PrimitiveToObject(obj);
+		}
+		catch(e){
+			return null;
+		}
 	}
+	/**
+	 * Base64 encode
+	 * @param string s
+	 * @return string 
+	 */
+	
+	static base64_encode(s){
+		return window.btoa($s);
+	}
+	/**
+	 * Base64 decode
+	 * @param string s
+	 * @return string 
+	 */
+	
+	static base64_decode(s){
+		return window.atob($s);
+	}
+	/* ================================= Other Functions ================================= */
 	/*
 	 * Generate password
 	 *
@@ -579,25 +500,62 @@ Runtime.RuntimeUtils = class{
 		return res;
 	}
 	/**
-	 * Base64 encode
-	 * @param string s
-	 * @return string 
+	 * Returns true if value is primitive value
+	 * @return boolean 
 	 */
-	
-	static base64_encode(s){
-		return window.btoa($s);
+	static isPrimitiveValue(value){
+		if (Runtime.rtl.isScalarValue(value)){
+			return true;
+		}
+		if (value instanceof Runtime.Vector){
+			return true;
+		}
+		if (value instanceof Runtime.Map){
+			return true;
+		}
+		return false;
 	}
 	/**
-	 * Base64 decode
-	 * @param string s
-	 * @return string 
+	 * Convert bytes to string
+	 * @param Vector<byte> arr - vector of the bytes
+	 * @string charset - charset of the bytes vector. Default utf8
+	 * @return string
 	 */
-	
-	static base64_decode(s){
-		return window.atob($s);
+	bytesToString(arr, charset){
+		if (charset == undefined) charset="utf8";
+	}
+	/**
+	 * Convert string to bytes
+	 * @param string s - incoming string
+	 * @param Vector<byte> arr - output vector
+	 * @param charset - Result bytes charset. Default utf8
+	 */
+	stringToBytes(s, arr, charset){
+		if (charset == undefined) charset="utf8";
+	}
+	/**
+	 * Translate message
+	 * @params string message - message need to be translated
+	 * @params MapInterface params - Messages params. Default null.
+	 * @params string locale - Different locale. Default "".
+	 * @return string - translated string
+	 */
+	static translate(message, params, locale, context){
+		if (params == undefined) params=null;
+		if (locale == undefined) locale="";
+		if (context == undefined) context=null;
+		if (context == null){
+			context = Runtime.RuntimeUtils.globalContext();
+		}
+		if (context != null){
+			var args = (new Runtime.Vector()).push(message).push(params).push(locale);
+			return Runtime.rtl.callMethod(context, "translate", args);
+		}
+		return message;
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.RuntimeUtils";}
 	static getParentClassName(){return "";}
 }
 Runtime.RuntimeUtils._global_context = null;
+Runtime.RuntimeUtils.JSON_PRETTY = 1;

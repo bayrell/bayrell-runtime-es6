@@ -71,7 +71,7 @@ Runtime.IntrospectionInfo = class extends Runtime.CoreStruct{
 		if (variable_name == "class_name") this.class_name = Runtime.rtl.correct(value, "string", "", "");
 		else if (variable_name == "kind") this.kind = Runtime.rtl.correct(value, "string", "", "");
 		else if (variable_name == "name") this.name = Runtime.rtl.correct(value, "string", "", "");
-		else if (variable_name == "annotations") this.annotations = Runtime.rtl.correct(value, "Runtime.Vector", null, "Runtime.CoreObject");
+		else if (variable_name == "annotations") this.annotations = Runtime.rtl.correct(value, "Runtime.Vector", null, "Runtime.CoreStruct");
 		else super.assignValue(variable_name, value);
 	}
 	takeValue(variable_name, default_value){

@@ -31,6 +31,17 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 		}
 	}
 	/**
+	 * Assign and clone data from other object
+	 * @param CoreObject obj
+	 */
+	assignObject(obj){
+		if (obj instanceof Runtime.Emitter){
+			this.methods = obj.methods;
+			this.subscribers = obj.subscribers;
+		}
+		super.assignObject(obj);
+	}
+	/**
 	 * Add method by name
 	 * @param callback f
 	 * @param string name

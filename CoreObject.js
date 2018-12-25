@@ -100,8 +100,7 @@ Runtime.CoreObject = class{
 		var names = new Runtime.Vector();
 		this.getVariablesNames(names);
 		names.each((name) => {
-			var value = values.get(name, null);
-			this.assignValue(name, value);
+			this.assignValue(name, values.get(name, null));
 		});
 		return this;
 	}
@@ -129,8 +128,7 @@ Runtime.CoreObject = class{
 		var names = new Runtime.Vector();
 		this.getVariablesNames(names);
 		names.each((name) => {
-			var value = this.takeValue(name, null);
-			values.set(name, value);
+			values.set(name, this.takeValue(name, null));
 		});
 		return values;
 	}
@@ -142,8 +140,7 @@ Runtime.CoreObject = class{
 	 */
 	callStaticMethod(method_name, args){
 		if (args == undefined) args=null;
-		var class_name = this.getClassName();
-		return Runtime.rtl.callStaticMethod(class_name, method_name, args);
+		return Runtime.rtl.callStaticMethod(this.getClassName(), method_name, args);
 	}
 	/**
 	 * Returns field info by field_name
@@ -191,30 +188,7 @@ Runtime.CoreObject = class{
 	 * @param Vector<string>
 	 */
 	getVariablesNames(names){
-		var classes = Runtime.RuntimeUtils.getParents(this.getClassName());
-		classes.prepend(this.getClassName());
-		classes.removeDublicates();
-		for (var i = 0; i < classes.count(); i++){
-			var class_name = classes.item(i);
-			Runtime.rtl.callStaticMethod(class_name, "getFieldsList", (new Runtime.Vector()).push(names));
-			/*try{ rtl::callStaticMethod(class_name, "getFieldsList", [names]); } catch (var e) {}*/
-			try{
-				Runtime.rtl.callStaticMethod(class_name, "getVirtualFieldsList", (new Runtime.Vector()).push(names));
-			}catch(_the_exception){
-				if (_the_exception instanceof Error){
-					var e = _the_exception;
-				}
-				else { throw _the_exception; }
-			}
-		}
-		names.removeDublicates();
-	}
-	/**
-	 * Returns names of variables to serialization
-	 * @param Vector<string>
-	 */
-	getFieldsNames(names){
-		this.getVariablesNames(names);
+		Runtime.RuntimeUtils.getVariablesNames(this.getClassName(), names);
 	}
 	/**
 	 * Returns info of the public variable by name
