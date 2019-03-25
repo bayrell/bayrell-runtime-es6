@@ -25,7 +25,7 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 		if (val == undefined) val=null;
 		super();
 		this.methods = new Runtime.Map();
-		this.subscribers = new Runtime.Map();
+		this.emitters = new Runtime.Vector();
 		if (val != null){
 			this.addMethod(val);
 		}
@@ -37,7 +37,7 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 	assignObject(obj){
 		if (obj instanceof Runtime.Emitter){
 			this.methods = obj.methods;
-			this.subscribers = obj.subscribers;
+			this.emitters = obj.emitters;
 		}
 		super.assignObject(obj);
 	}
@@ -91,52 +91,19 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 		});
 	}
 	/**
-	 * Add object by name
-	 * @param callback f
-	 * @param string name
-	 */
-	addObjectByName(f, name){
-		if (!this.subscribers.has(name)){
-			this.subscribers.set(name, new Runtime.Vector());
-		}
-		var v = this.subscribers.item(name);
-		if (v.indexOf(f) == -1){
-			v.push(f);
-		}
-	}
-	/**
 	 * Add object
-	 * @param SubscribeInterface f
-	 * @param Vector<string> events
+	 * @param Emitter emitter
 	 */
-	addObject(f, events){
-		if (events == undefined) events=null;
-		if (events == null){
-			this.addObjectByName(f, "");
-		}
-		else {
-			events.each((item) => {
-				this.addObjectByName(f, item);
-			});
-		}
-		return f;
+	addEmitter(emitter){
+		this.emitters.push(emitter);
+		return emitter;
 	}
 	/**
 	 * Remove object
-	 * @param SubscribeInterface f
+	 * @param Emitter emitter
 	 */
-	removeObject(f, events){
-		if (events == undefined) events=null;
-		if (events == null){
-			events = this.subscribers.keys();
-		}
-		events.each((name) => {
-			var v = this.subscribers.get(name, null);
-			if (v == null){
-				return ;
-			}
-			v.removeItem(f);
-		});
+	removeEmitter(emitter){
+		this.emitters.removeItem(emitter);
 	}
 	/**
 	 * Dispatch event
@@ -148,9 +115,6 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 		var methods = this.methods.map((key, items) => {
 			return items.slice();
 		});
-		var subscribers = this.subscribers.map((key, items) => {
-			return items.slice();
-		});
 		/* Call self handler */
 		this.handlerEvent(e);
 		/* Call methods */
@@ -158,7 +122,7 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 		for (var i = 0; i < keys.count(); i++){
 			var key = keys.item(i);
 			var items = methods.item(key);
-			if (key != "" && e.getClassName() != key){
+			if (key != "" && e.getClassName() != key && !Runtime.rtl.is_instanceof(e, key)){
 				continue;
 			}
 			for (var j = 0; j < items.count(); j++){
@@ -166,18 +130,11 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 				Runtime.rtl.call(f, (new Runtime.Vector()).push(e));
 			}
 		}
-		/* Call subscribers */
-		keys = subscribers.keys();
-		for (var i = 0; i < keys.count(); i++){
-			var key = keys.item(i);
-			var items = subscribers.item(key);
-			if (key != "" && e.getClassName() != key){
-				continue;
-			}
-			for (var j = 0; j < items.count(); j++){
-				var obj = items.item(j);
-				obj.handlerEvent(e);
-			}
+		/* Call emitters */
+		var emitters = this.emitters.copy();
+		for (var i = 0; i < emitters.count(); i++){
+			var emitter = this.emitters.item(i);
+			emitter.dispatch(e);
 		}
 	}
 	/**
@@ -187,10 +144,11 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Emitter";}
+	static getCurrentClassName(){return "Runtime.Emitter";}
 	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){
 		super._init();
 		this.methods = null;
-		this.subscribers = null;
+		this.emitters = null;
 	}
 }

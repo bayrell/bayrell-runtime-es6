@@ -1,6 +1,6 @@
 "use strict;"
 /*!
- *  Bayrell Runtime Library
+ *  Bayrell Runtime Library 
  *
  *  (c) Copyright 2016-2018 "Ildar Bikmamatov" <support@bayrell.org>
  *
@@ -17,23 +17,15 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.AssetsInterface = class{
-	/**
-	 * Returns required assets
-	 * @return Vector<string>
-	 */
-	static getRequiredAssets(context){
-	}
-	/**
-	 * Returns sync loaded files
-	 */
-	static assetsSyncLoad(context){
-	}
-	/**
-	 * Returns async loaded files
-	 */
-	static assetsAsyncLoad(context){
+if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
+Runtime.Exceptions.AssignStructValueError = class extends Runtime.Exceptions.RuntimeException{
+	constructor(name, context, prev){
+		if (context == undefined) context=null;
+		if (prev == undefined) prev=null;
+		super(Runtime.rtl.translate("Can not set key '"+Runtime.rtl.toString(name)+"' in immutable struct", null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
 	}
 	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.Exceptions.AssignStructValueError";}
+	static getCurrentClassName(){return "Runtime.Exceptions.AssignStructValueError";}
+	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 }

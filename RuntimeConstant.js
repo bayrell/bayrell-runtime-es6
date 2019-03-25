@@ -44,6 +44,7 @@ Runtime.RuntimeConstant = class{
 	/* Errors */
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.RuntimeConstant";}
+	static getCurrentClassName(){return "Runtime.RuntimeConstant";}
 	static getParentClassName(){return "";}
 }
 Runtime.RuntimeConstant.LOG_FATAL = 0;
@@ -74,4 +75,5 @@ Runtime.RuntimeConstant.ERROR_CSRF_TOKEN = -10;
 Runtime.RuntimeConstant.ERROR_RUNTIME = -11;
 Runtime.RuntimeConstant.ERROR_VALIDATION = -12;
 Runtime.RuntimeConstant.ERROR_PARSE_SERIALIZATION_ERROR = -14;
-Runtime.RuntimeConstant.ERROR_FATAL = -15;
+Runtime.RuntimeConstant.ERROR_ASSIGN_DATA_STRUCT_VALUE = -15;
+Runtime.RuntimeConstant.ERROR_FATAL = -99;

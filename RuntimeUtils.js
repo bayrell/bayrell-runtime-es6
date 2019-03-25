@@ -89,12 +89,25 @@ Runtime.RuntimeUtils = class{
 	 * Returns names of variables to serialization
 	 * @param Vector<string>
 	 */
-	static getVariablesNames(class_name, names){
+	static getVariablesNames(class_name, names, flag){
+		if (flag == undefined) flag=0;
+		var variables_names = Runtime.RuntimeUtils._variables_names;
+		if (variables_names == null){
+			Runtime.RuntimeUtils._variables_names = new Runtime.Map();
+		}
+		if (Runtime.RuntimeUtils._variables_names.has(class_name)){
+			var m = Runtime.RuntimeUtils._variables_names;
+			var v = m.item(class_name);
+			if (v.has(flag)){
+				names.appendVector(v.item(flag));
+				return ;
+			}
+		}
 		var classes = Runtime.RuntimeUtils.getParents(class_name);
 		classes.prepend(class_name);
 		classes.each((class_name) => {
 			try{
-				Runtime.rtl.callStaticMethod(class_name, "getFieldsList", (new Runtime.Vector()).push(names));
+				Runtime.rtl.callStaticMethod(class_name, "getFieldsList", (new Runtime.Vector()).push(names).push(flag));
 			}catch(_the_exception){
 				if (_the_exception instanceof Error){
 					var e = _the_exception;
@@ -102,7 +115,7 @@ Runtime.RuntimeUtils = class{
 				else { throw _the_exception; }
 			}
 			try{
-				Runtime.rtl.callStaticMethod(class_name, "getVirtualFieldsList", (new Runtime.Vector()).push(names));
+				Runtime.rtl.callStaticMethod(class_name, "getVirtualFieldsList", (new Runtime.Vector()).push(names).push(flag));
 			}catch(_the_exception){
 				if (_the_exception instanceof Error){
 					var e = _the_exception;
@@ -110,7 +123,15 @@ Runtime.RuntimeUtils = class{
 				else { throw _the_exception; }
 			}
 		});
-		names.removeDublicates();
+		names = names.removeDublicatesIm();
+		var variables_names = Runtime.RuntimeUtils._variables_names;
+		if (!Runtime.RuntimeUtils._variables_names.has(class_name)){
+			Runtime.RuntimeUtils._variables_names.set(class_name, (new Runtime.Map()));
+		}
+		var v = Runtime.RuntimeUtils._variables_names.item(class_name);
+		v.set(flag, names.copy());
+		Runtime.RuntimeUtils._variables_names.set(class_name, v);
+		/*RuntimeUtils::_variables_names.set(class_name, names.copy());*/
 	}
 	/**
 	 * Returns Introspection of the class name
@@ -144,7 +165,7 @@ Runtime.RuntimeUtils = class{
 					else { throw _the_exception; }
 				}
 				if (info != null){
-					info.class_name = item_class_name;
+					info = info.copy( new Runtime.Map({ "class_name": item_class_name })  );
 					res.push(info);
 				}
 			});
@@ -170,7 +191,7 @@ Runtime.RuntimeUtils = class{
 					else { throw _the_exception; }
 				}
 				if (info != null){
-					info.class_name = item_class_name;
+					info = info.copy( new Runtime.Map({ "class_name": item_class_name })  );
 					res.push(info);
 				}
 			});
@@ -196,11 +217,12 @@ Runtime.RuntimeUtils = class{
 					else { throw _the_exception; }
 				}
 				if (info != null){
-					info.class_name = item_class_name;
+					info = info.copy( new Runtime.Map({ "class_name": item_class_name })  );
 					res.push(info);
 				}
 			});
 			/* Get class introspection */
+			var info = null;
 			try{
 				info = Runtime.rtl.callStaticMethod(item_class_name, "getClassInfo", (new Runtime.Vector()));
 			}catch(_the_exception){
@@ -211,11 +233,11 @@ Runtime.RuntimeUtils = class{
 				else { throw _the_exception; }
 			}
 			if (info != null){
-				info.class_name = item_class_name;
+				info = info.copy( new Runtime.Map({ "class_name": item_class_name })  );
 				res.push(info);
 			}
 		});
-		return res;
+		return res.toCollection();
 	}
 	/* ============================= Serialization Functions ============================= */
 	static ObjectToNative(value, force_class_name){
@@ -242,16 +264,16 @@ Runtime.RuntimeUtils = class{
 		if (Runtime.rtl.isScalarValue(obj)){
 			return obj;
 		}
-		if (obj instanceof Runtime.Vector){
+		if (obj instanceof Runtime.Collection){
 			var res = new Runtime.Vector();
 			for (var i = 0; i < obj.count(); i++){
 				var value = obj.item(i);
 				value = Runtime.RuntimeUtils.ObjectToPrimitive(value, force_class_name);
 				res.push(value);
 			}
-			return res;
+			return res.toCollection();
 		}
-		if (obj instanceof Runtime.Map){
+		if (obj instanceof Runtime.Dict){
 			var res = new Runtime.Map();
 			var keys = obj.keys();
 			for (var i = 0; i < keys.count(); i++){
@@ -261,14 +283,14 @@ Runtime.RuntimeUtils = class{
 				res.set(key, value);
 			}
 			if (force_class_name){
-				res.set("__class_name__", "Runtime.Map");
+				res.set("__class_name__", "Runtime.Dict");
 			}
-			return res;
+			return res.toDict();
 		}
 		if (Runtime.rtl.implements(obj, Runtime.Interfaces.SerializeInterface)){
 			var names = new Runtime.Vector();
 			var values = new Runtime.Map();
-			obj.getVariablesNames(names);
+			obj.getVariablesNames(names, 1);
 			for (var i = 0; i < names.count(); i++){
 				var variable_name = names.item(i);
 				var value = obj.takeValue(variable_name, null);
@@ -292,16 +314,16 @@ Runtime.RuntimeUtils = class{
 		if (Runtime.rtl.isScalarValue(obj)){
 			return obj;
 		}
-		if (obj instanceof Runtime.Vector){
+		if (obj instanceof Runtime.Collection){
 			var res = new Runtime.Vector();
 			for (var i = 0; i < obj.count(); i++){
 				var value = obj.item(i);
 				value = Runtime.RuntimeUtils.PrimitiveToObject(value);
 				res.push(value);
 			}
-			return res;
+			return res.toCollection();
 		}
-		if (obj instanceof Runtime.Map){
+		if (obj instanceof Runtime.Dict){
 			var res = new Runtime.Map();
 			var keys = obj.keys();
 			for (var i = 0; i < keys.count(); i++){
@@ -313,9 +335,9 @@ Runtime.RuntimeUtils = class{
 			if (!res.has("__class_name__")){
 				return res;
 			}
-			if (res.item("__class_name__") == "Runtime.Map"){
+			if (res.item("__class_name__") == "Runtime.Map" || res.item("__class_name__") == "Runtime.Dict"){
 				res.remove("__class_name__");
-				return res;
+				return res.toDict();
 			}
 			var class_name = res.item("__class_name__");
 			if (!Runtime.rtl.class_exists(class_name)){
@@ -326,13 +348,16 @@ Runtime.RuntimeUtils = class{
 			}
 			var instance = Runtime.rtl.newInstance(class_name, null);
 			var names = new Runtime.Vector();
-			instance.getVariablesNames(names);
+			instance.getVariablesNames(names, 1);
 			for (var i = 0; i < names.count(); i++){
 				var variable_name = names.item(i);
 				if (variable_name != "__class_name__"){
 					var value = res.get(variable_name, null);
 					instance.assignValue(variable_name, value);
 				}
+			}
+			if (instance instanceof Runtime.CoreStruct){
+				instance.initData();
 			}
 			return instance;
 		}
@@ -428,7 +453,7 @@ Runtime.RuntimeUtils = class{
 			var _Map=null;if (isBrowser()) _Map=Runtime.Map; else _Map=Map;			
 			var obj = JSON.parse(s, function (key, value){
 				if (Array.isArray(value)){
-					return new _Vector(value);
+					return _Vector.createNewInstance(value);
 				}
 				if (typeof value == 'object'){
 					return new _Map(value);
@@ -545,7 +570,7 @@ Runtime.RuntimeUtils = class{
 		if (locale == undefined) locale="";
 		if (context == undefined) context=null;
 		if (context == null){
-			context = Runtime.RuntimeUtils.globalContext();
+			context = Runtime.RuntimeUtils.getContext();
 		}
 		if (context != null){
 			var args = (new Runtime.Vector()).push(message).push(params).push(locale);
@@ -553,9 +578,82 @@ Runtime.RuntimeUtils = class{
 		}
 		return message;
 	}
+	/**
+	 * Retuns css hash 
+	 * @param string component class name
+	 * @return string hash
+	 */
+	static getCssHash(s){
+		var arr = "1234567890abcdef";
+		var arr_sz = 16;
+		var arr_mod = 65536;
+		var sz = Runtime.rs.strlen(s);
+		var hash = 0;
+		for (var i = 0; i < sz; i++){
+			var ch = Runtime.rs.ord(s[i]);
+			hash = (hash << 2) + (hash >> 14) + ch & 65535;
+		}
+		var res = "";
+		var pos = 0;
+		var c = 0;
+		while (hash != 0 || pos < 4){
+			c = hash & 15;
+			hash = hash >> 4;
+			res += arr[c];
+			pos++;
+		}
+		return res;
+	}
+	/**
+	 * Normalize UIStruct
+	 */
+	static normalizeUIVector(data){
+		if (data instanceof Runtime.Collection){
+			var res = new Runtime.Vector();
+			for (var i = 0; i < data.count(); i++){
+				var item = data.item(i);
+				if (item instanceof Runtime.Collection){
+					var new_item = this.normalizeUIVector(item);
+					res.appendVector(new_item);
+				}
+				else if (item instanceof Runtime.UIStruct){
+					res.push(item);
+				}
+				else if (Runtime.rtl.isString(item)){
+					res.push(new Runtime.UIStruct((new Runtime.Map()).set("kind", Runtime.UIStruct.TYPE_RAW).set("content", Runtime.rtl.toString(item))));
+				}
+			}
+			return res.toCollection();
+		}
+		else if (data instanceof Runtime.UIStruct){
+			return new Runtime.Collection(this.normalizeUI(data));
+		}
+		else if (Runtime.rtl.isString(data)){
+			return new Runtime.Collection(this.normalizeUI(data));
+		}
+		return null;
+	}
+	/**
+	 * Normalize UIStruct
+	 */
+	static normalizeUI(data){
+		if (data instanceof Runtime.UIStruct){
+			var obj = (new Runtime.Map()).set("children", this.normalizeUIVector(data.children));
+			if (data.props != null && data.props instanceof Runtime.Map){
+				obj.set("props", data.props.toDict());
+			}
+			return data.copy(obj);
+		}
+		else if (Runtime.rtl.isString(data)){
+			return new Runtime.UIStruct((new Runtime.Map()).set("kind", Runtime.UIStruct.TYPE_RAW).set("content", Runtime.rtl.toString(data)));
+		}
+		return null;
+	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.RuntimeUtils";}
+	static getCurrentClassName(){return "Runtime.RuntimeUtils";}
 	static getParentClassName(){return "";}
 }
 Runtime.RuntimeUtils._global_context = null;
+Runtime.RuntimeUtils._variables_names = null;
 Runtime.RuntimeUtils.JSON_PRETTY = 1;

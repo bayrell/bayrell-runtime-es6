@@ -17,15 +17,23 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.AsyncTask = class extends Runtime.CoreObject{
-	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.AsyncTask";}
-	static getCurrentClassName(){return "Runtime.AsyncTask";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		this.pos = null;
-		this.f = null;
-		this.catch_stack = null;
+Runtime.Maybe = class extends Runtime.Container{
+	/** 
+	 * Returns new instance of this
+	 */
+	static of(x){
+		return new Runtime.Maybe(x);
 	}
+	/**
+	 * Apply function and return new container
+	 * @param fun f
+	 * @return Container
+	 */
+	map(f){
+		return (this._value == null) ? (this) : (this.of(f(this._value)));
+	}
+	/* ======================= Class Init Functions ======================= */
+	getClassName(){return "Runtime.Maybe";}
+	static getCurrentClassName(){return "Runtime.Maybe";}
+	static getParentClassName(){return "Runtime.Container";}
 }

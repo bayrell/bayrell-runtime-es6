@@ -22,9 +22,10 @@ Runtime.Exceptions.UnknownError = class extends Runtime.Exceptions.RuntimeExcept
 	constructor(context, prev){
 		if (context == undefined) context=null;
 		if (prev == undefined) prev=null;
-		super(Runtime.RuntimeUtils.translate("ERROR_UNKNOWN", null, "", context), Runtime.RuntimeConstant.ERROR_UNKNOWN, context, prev);
+		super(Runtime.rtl.translate("Unknown error", null, "", context), Runtime.RuntimeConstant.ERROR_UNKNOWN, context, prev);
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Exceptions.UnknownError";}
+	static getCurrentClassName(){return "Runtime.Exceptions.UnknownError";}
 	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 }

@@ -22,9 +22,10 @@ Runtime.Exceptions.IndexOutOfRange = class extends Runtime.Exceptions.RuntimeExc
 	constructor(context, prev){
 		if (context == undefined) context=null;
 		if (prev == undefined) prev=null;
-		super(Runtime.RuntimeUtils.translate("ERROR_INDEX_OUT_OF_RANGE", null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
+		super(Runtime.rtl.translate("Index out of range", null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Exceptions.IndexOutOfRange";}
+	static getCurrentClassName(){return "Runtime.Exceptions.IndexOutOfRange";}
 	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 }

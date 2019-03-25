@@ -17,23 +17,38 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreEvent = class extends Runtime.CoreObject{
-	constructor(sender){
-		if (sender == undefined) sender=null;
-		super();
-		this.sender = sender;
-	}
+Runtime.CoreEvent = class extends Runtime.CoreStruct{
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.CoreEvent";}
-	static getParentClassName(){return "Runtime.CoreObject";}
+	static getCurrentClassName(){return "Runtime.CoreEvent";}
+	static getParentClassName(){return "Runtime.CoreStruct";}
 	_init(){
 		super._init();
-		this.sender = null;
-		if (this.__implements__ == undefined){this.__implements__ = [];}
-		this.__implements__.push(Runtime.Interfaces.CloneableInterface);
-		this.__implements__.push(Runtime.Interfaces.SerializeInterface);
+		this.__sender = null;
+		Object.defineProperty(this, "sender", { get: function() { return this.__sender; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("sender") }});
+	}
+	assignObject(obj){
+		if (obj instanceof Runtime.CoreEvent){
+			this.__sender = obj.__sender;
+		}
+		super.assignObject(obj);
+	}
+	assignValue(variable_name, value, sender){if(sender==undefined)sender=null;
+		if (variable_name == "sender")this.__sender = Runtime.rtl.convert(value,"Runtime.CoreObject",null,"");
+		else super.assignValue(variable_name, value, sender);
+	}
+	takeValue(variable_name, default_value){
+		if (default_value == undefined) default_value = null;
+		if (variable_name == "sender") return this.__sender;
+		return super.takeValue(variable_name, default_value);
+	}
+	static getFieldsList(names, flag){
+		if (flag==undefined)flag=0;
+		if ((flag | 3)==3){
+			names.push("sender");
+		}
+	}
+	static getFieldInfoByName(field_name){
+		return null;
 	}
 }
-Runtime.CoreEvent.__static_implements__ = [];
-Runtime.CoreEvent.__static_implements__.push(Runtime.Interfaces.CloneableInterface)
-Runtime.CoreEvent.__static_implements__.push(Runtime.Interfaces.SerializeInterface)

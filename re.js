@@ -50,5 +50,6 @@ Runtime.re = class{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.re";}
+	static getCurrentClassName(){return "Runtime.re";}
 	static getParentClassName(){return "";}
 }

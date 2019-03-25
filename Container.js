@@ -17,15 +17,51 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.AsyncTask = class extends Runtime.CoreObject{
+Runtime.Container = class{
+	/** 
+	 * Constructor
+	 */
+	constructor(x){
+		this._value = x;
+	}
+	/** 
+	 * Returns new instance of this
+	 */
+	static of(x){
+		return new Runtime.Container(x);
+	}
+	/**
+	 * Apply function and return new container
+	 * @param fun f
+	 * @return Container
+	 */
+	map(f){
+		return this.of(f(this._value));
+	}
+	/**
+	 * Return values of the container
+	 * @return mixed
+	 */
+	value(){
+		return this._value;
+	}
+	/**
+	 * Returns true if value is empty
+	 */
+	isEmpty(){
+		return this._value == null;
+	}
+	/**
+	 * Returns true if is error
+	 */
+	isError(){
+		return false;
+	}
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.AsyncTask";}
-	static getCurrentClassName(){return "Runtime.AsyncTask";}
-	static getParentClassName(){return "Runtime.CoreObject";}
+	getClassName(){return "Runtime.Container";}
+	static getCurrentClassName(){return "Runtime.Container";}
+	static getParentClassName(){return "";}
 	_init(){
-		super._init();
-		this.pos = null;
-		this.f = null;
-		this.catch_stack = null;
+		this._value = null;
 	}
 }

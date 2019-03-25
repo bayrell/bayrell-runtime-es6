@@ -30,7 +30,7 @@ Runtime.ModuleDescription = class{
 	 * @return string
 	 */
 	static getModuleVersion(){
-		return "0.6.2";
+		return "0.7.1";
 	}
 	/**
 	 * Returns required modules
@@ -61,6 +61,7 @@ Runtime.ModuleDescription = class{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.ModuleDescription";}
+	static getCurrentClassName(){return "Runtime.ModuleDescription";}
 	static getParentClassName(){return "";}
 	_init(){
 		if (this.__implements__ == undefined){this.__implements__ = [];}

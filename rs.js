@@ -190,6 +190,8 @@ Runtime.rs = class{
 	 */
 	
 	static htmlEscape(s){
+		if (s instanceof Runtime.Collection) return s;
+		if (s instanceof Runtime.UIStruct) return s;
 		var obj = {
 			"<":"&lt;",
 			">": "&gt;", 
@@ -203,5 +205,6 @@ Runtime.rs = class{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.rs";}
+	static getCurrentClassName(){return "Runtime.rs";}
 	static getParentClassName(){return "";}
 }

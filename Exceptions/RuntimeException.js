@@ -29,9 +29,6 @@ Runtime.Exceptions.RuntimeException = class extends Runtime.Exceptions.ClassExce
 		if (context == undefined) context=null;
 		if (prev == undefined) prev=null;
 		super(message, code, prev);
-		if (context == null){
-			context = Runtime.RuntimeUtils.globalContext();
-		}
 		this.error_str = message;
 		this.context = context;
 		this.message = message;
@@ -77,8 +74,36 @@ Runtime.Exceptions.RuntimeException = class extends Runtime.Exceptions.ClassExce
 			this.message += " in file:'"+Runtime.rtl.toString(this.file)+"'";
 		}
 	}
+	/**
+	 * Apply function and return new container
+	 * @param fun f
+	 * @return RuntimeException
+	 */
+	map(f){
+		return this;
+	}
+	/**
+	 * Return values of the container
+	 * @return mixed
+	 */
+	value(){
+		return null;
+	}
+	/**
+	 * Returns true if value is empty
+	 */
+	isEmpty(){
+		return true;
+	}
+	/**
+	 * Returns true if is error
+	 */
+	isError(){
+		return true;
+	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Exceptions.RuntimeException";}
+	static getCurrentClassName(){return "Runtime.Exceptions.RuntimeException";}
 	static getParentClassName(){return "Runtime.Exceptions.ClassException";}
 	_init(){
 		super._init();

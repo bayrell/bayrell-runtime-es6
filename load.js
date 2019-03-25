@@ -21,13 +21,12 @@ $load([
 	"/assets/Runtime/rs.js",
 	"/assets/Runtime/re.js",
 	"/assets/Runtime/rtl.js",
-	"/assets/Runtime/Map.js",
-	"/assets/Runtime/Vector.js",
+	"/assets/Runtime/Dict.js",
+	"/assets/Runtime/Collection.js",
 	"/assets/Runtime/CoreObject.js",
 	"/assets/Runtime/RuntimeConstant.js",
 	"/assets/Runtime/RuntimeUtils.js",
 	"/assets/Runtime/Exceptions/RuntimeException.js",
-	"/assets/Runtime/Interfaces/AssetsInterface.js",
 	"/assets/Runtime/Interfaces/CloneableInterface.js",
 	"/assets/Runtime/Interfaces/ContextInterface.js",
 	"/assets/Runtime/Interfaces/FactoryInterface.js",
@@ -38,19 +37,22 @@ $load([
 ])
 
 .load([
+	"/assets/Runtime/Map.js",
+	"/assets/Runtime/Vector.js",
+])
+
+.load([
 	"/assets/Runtime/CoreStruct.js",
-	"/assets/Runtime/DateTime.js",
 	"/assets/Runtime/Context.js",
 	"/assets/Runtime/ContextObject.js",
 	"/assets/Runtime/Emitter.js",
-	"/assets/Runtime/SerializeContainer.js",
-	"/assets/Runtime/VectorString.js",
 	"/assets/Runtime/Exceptions/IndexOutOfRange.js",
 	"/assets/Runtime/Exceptions/KeyNotFound.js",
 	"/assets/Runtime/Exceptions/UnknownError.js",
 ])
 
 .load([
+	"/assets/Runtime/DateTime.js",
 	"/assets/Runtime/ModuleDescription.js",
 	"/assets/Runtime/IntrospectionInfo.js",
 ])

@@ -57,13 +57,6 @@ Runtime.CoreObject = class{
 	 * @param CoreObject obj
 	 */
 	assignObject(obj){
-		this.assignObjectAfter(obj);
-	}
-	/**
-	 * Assign and clone data from other object
-	 * @param CoreObject obj
-	 */
-	assignObjectAfter(obj){
 	}
 	/**
 	 * Set new value instance by variable name
@@ -71,21 +64,6 @@ Runtime.CoreObject = class{
 	 * @param var value
 	 */
 	assignValue(variable_name, value){
-		this.assignValueAfter(variable_name, value);
-	}
-	/**
-	 * Calls after assign new value
-	 * @param string variable_name
-	 * @param var value
-	 */
-	assignValueAfter(variable_name, value){
-	}
-	/**
-	 * Calls after assign new value
-	 * @param string variable_name
-	 */
-	callAssignAfter(variable_name){
-		this.assignValueAfter(variable_name, this.takeValue(variable_name));
 	}
 	/**
 	 * Set new values instance by Map
@@ -98,7 +76,7 @@ Runtime.CoreObject = class{
 			return ;
 		}
 		var names = new Runtime.Vector();
-		this.getVariablesNames(names);
+		this.getVariablesNames(names, 2);
 		names.each((name) => {
 			this.assignValue(name, values.get(name, null));
 		});
@@ -123,10 +101,11 @@ Runtime.CoreObject = class{
 	 * Dump serializable object to Map
 	 * @return Map<mixed>
 	 */
-	takeMap(){
+	takeMap(flag){
+		if (flag == undefined) flag=2;
 		var values = new Runtime.Map();
 		var names = new Runtime.Vector();
-		this.getVariablesNames(names);
+		this.getVariablesNames(names, flag);
 		names.each((name) => {
 			values.set(name, this.takeValue(name, null));
 		});
@@ -161,13 +140,15 @@ Runtime.CoreObject = class{
 	 * Returns public fields list
 	 * @param Vector<string> names
 	 */
-	static getFieldsList(names){
+	static getFieldsList(names, flag){
+		if (flag == undefined) flag=0;
 	}
 	/**
 	 * Returns public virtual fields names
 	 * @param Vector<string> names
 	 */
-	static getVirtualFieldsList(names){
+	static getVirtualFieldsList(names, flag){
+		if (flag == undefined) flag=0;
 	}
 	/**
 	 * Returns info of the public method by name
@@ -187,8 +168,9 @@ Runtime.CoreObject = class{
 	 * Returns names of variables to serialization
 	 * @param Vector<string>
 	 */
-	getVariablesNames(names){
-		Runtime.RuntimeUtils.getVariablesNames(this.getClassName(), names);
+	getVariablesNames(names, flag){
+		if (flag == undefined) flag=0;
+		Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getVariablesNames", (new Runtime.Vector()).push(this.getClassName()).push(names).push(flag));
 	}
 	/**
 	 * Returns info of the public variable by name
@@ -196,7 +178,7 @@ Runtime.CoreObject = class{
 	 * @return IntrospectionInfo
 	 */
 	getFieldInfo(variable_name){
-		var classes = Runtime.RuntimeUtils.getParents(this.getClassName());
+		var classes = Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getParents", (new Runtime.Vector()).push(this.getClassName()));
 		for (var i = 0; i < classes.count(); i++){
 			var class_name = classes.item(i);
 			var info = Runtime.rtl.callStaticMethod(class_name, "getFieldInfoByName", (new Runtime.Vector()).push(variable_name));
@@ -222,7 +204,7 @@ Runtime.CoreObject = class{
 	 * @param Vector<string>
 	 */
 	getMethodsNames(names){
-		var classes = Runtime.RuntimeUtils.getParents(this.getClassName());
+		var classes = Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getParents", (new Runtime.Vector()).push(this.getClassName()));
 		for (var i = 0; i < classes.count(); i++){
 			var class_name = classes.item(i);
 			Runtime.rtl.callStaticMethod(class_name, "getMethodsList", (new Runtime.Vector()).push(names));
@@ -234,7 +216,7 @@ Runtime.CoreObject = class{
 	 * @return IntrospectionInfo
 	 */
 	getMethodInfo(method_name){
-		var classes = Runtime.RuntimeUtils.getParents(this.getClassName());
+		var classes = Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getParents", (new Runtime.Vector()).push(this.getClassName()));
 		for (var i = 0; i < classes.count(); i++){
 			var class_name = classes.item(i);
 			var info = Runtime.rtl.callStaticMethod(class_name, "getMethodInfoByName", (new Runtime.Vector()).push(method_name));
@@ -246,5 +228,6 @@ Runtime.CoreObject = class{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.CoreObject";}
+	static getCurrentClassName(){return "Runtime.CoreObject";}
 	static getParentClassName(){return "";}
 }
