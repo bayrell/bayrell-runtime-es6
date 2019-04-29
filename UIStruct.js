@@ -2,13 +2,13 @@
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2018 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
  *
- *      https://www.bayrell.org/licenses/APACHE-LICENSE-2.0.html
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
@@ -49,6 +49,9 @@ Runtime.UIStruct = class extends Runtime.CoreStruct{
 		}
 		if (ui.kind == Runtime.UIStruct.TYPE_COMPONENT){
 			var model_name = Runtime.rtl.method(ui.name, "modelName")();
+			if (model_name == ""){
+				return null;
+			}
 			var model = Runtime.rtl.newInstance(model_name, (new Runtime.Vector()).push(ui.props));
 			return model;
 		}
@@ -74,7 +77,7 @@ Runtime.UIStruct = class extends Runtime.CoreStruct{
 	static getAttrs(ui){
 		if (ui.props != null){
 			return ui.props.filter((key, value) => {
-				return Runtime.rs.strpos(key, "@") != 0 || key == "@class";
+				return Runtime.rs.strpos(key, "@") != 0 || key == "@class" || key == "@style";
 			});
 		}
 		return new Runtime.Dict();
@@ -107,30 +110,31 @@ Runtime.UIStruct = class extends Runtime.CoreStruct{
 	static getParentClassName(){return "Runtime.CoreStruct";}
 	_init(){
 		super._init();
+		var names = Object.getOwnPropertyNames(this);
 		this.TYPE_ELEMENT = "element";
 		this.TYPE_COMPONENT = "component";
 		this.TYPE_STRING = "string";
 		this.TYPE_RAW = "raw";
 		this.__class_name = "";
-		Object.defineProperty(this, "class_name", { get: function() { return this.__class_name; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("class_name") }});
+		if (names.indexOf("class_name") == -1)Object.defineProperty(this, "class_name", { get: function() { return this.__class_name; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("class_name") }});
 		this.__key = "";
-		Object.defineProperty(this, "key", { get: function() { return this.__key; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("key") }});
+		if (names.indexOf("key") == -1)Object.defineProperty(this, "key", { get: function() { return this.__key; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("key") }});
 		this.__name = "";
-		Object.defineProperty(this, "name", { get: function() { return this.__name; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("name") }});
+		if (names.indexOf("name") == -1)Object.defineProperty(this, "name", { get: function() { return this.__name; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("name") }});
 		this.__space = "";
-		Object.defineProperty(this, "space", { get: function() { return this.__space; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("space") }});
+		if (names.indexOf("space") == -1)Object.defineProperty(this, "space", { get: function() { return this.__space; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("space") }});
 		this.__kind = "element";
-		Object.defineProperty(this, "kind", { get: function() { return this.__kind; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("kind") }});
+		if (names.indexOf("kind") == -1)Object.defineProperty(this, "kind", { get: function() { return this.__kind; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("kind") }});
 		this.__content = "";
-		Object.defineProperty(this, "content", { get: function() { return this.__content; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("content") }});
+		if (names.indexOf("content") == -1)Object.defineProperty(this, "content", { get: function() { return this.__content; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("content") }});
 		this.__controller = "";
-		Object.defineProperty(this, "controller", { get: function() { return this.__controller; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("controller") }});
+		if (names.indexOf("controller") == -1)Object.defineProperty(this, "controller", { get: function() { return this.__controller; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("controller") }});
 		this.__model = null;
-		Object.defineProperty(this, "model", { get: function() { return this.__model; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("model") }});
+		if (names.indexOf("model") == -1)Object.defineProperty(this, "model", { get: function() { return this.__model; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("model") }});
 		this.__props = null;
-		Object.defineProperty(this, "props", { get: function() { return this.__props; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("props") }});
+		if (names.indexOf("props") == -1)Object.defineProperty(this, "props", { get: function() { return this.__props; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("props") }});
 		this.__children = null;
-		Object.defineProperty(this, "children", { get: function() { return this.__children; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("children") }});
+		if (names.indexOf("children") == -1)Object.defineProperty(this, "children", { get: function() { return this.__children; }, set: function(value) { throw new Runtime.Exceptions.AssignStructValueError("children") }});
 	}
 	assignObject(obj){
 		if (obj instanceof Runtime.UIStruct){
@@ -190,6 +194,11 @@ Runtime.UIStruct = class extends Runtime.CoreStruct{
 		}
 	}
 	static getFieldInfoByName(field_name){
+		return null;
+	}
+	static getMethodsList(names){
+	}
+	static getMethodInfoByName(method_name){
 		return null;
 	}
 }
