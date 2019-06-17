@@ -60,6 +60,7 @@ Runtime.ContextObject = class extends Runtime.CoreObject{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.ContextObject";}
+	static getCurrentNamespace(){return "Runtime";}
 	static getCurrentClassName(){return "Runtime.ContextObject";}
 	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){

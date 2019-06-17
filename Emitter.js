@@ -145,6 +145,7 @@ Runtime.Emitter = class extends Runtime.CoreObject{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Emitter";}
+	static getCurrentNamespace(){return "Runtime";}
 	static getCurrentClassName(){return "Runtime.Emitter";}
 	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){

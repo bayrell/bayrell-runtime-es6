@@ -17,18 +17,26 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.AsyncTask = class extends Runtime.CoreObject{
+Runtime.PathInfo = class{
+	/**
+	 * Returns string
+	 */
+	toString(){
+		return this.filepath;
+	}
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.AsyncTask";}
+	getClassName(){return "Runtime.PathInfo";}
 	static getCurrentNamespace(){return "Runtime";}
-	static getCurrentClassName(){return "Runtime.AsyncTask";}
-	static getParentClassName(){return "Runtime.CoreObject";}
+	static getCurrentClassName(){return "Runtime.PathInfo";}
+	static getParentClassName(){return "";}
 	_init(){
-		super._init();
-		var names = Object.getOwnPropertyNames(this);
-		this.pos = null;
-		this.f = null;
-		this.catch_stack = null;
+		this.filepath = "";
+		this.dirname = "";
+		this.basename = "";
+		this.extension = "";
+		this.filename = "";
+		if (this.__implements__ == undefined){this.__implements__ = [];}
+		this.__implements__.push(Runtime.Interfaces.StringInterface);
 	}
 	static getFieldsList(names, flag){
 		if (flag==undefined)flag=0;
@@ -42,3 +50,5 @@ Runtime.AsyncTask = class extends Runtime.CoreObject{
 		return null;
 	}
 }
+Runtime.PathInfo.__static_implements__ = [];
+Runtime.PathInfo.__static_implements__.push(Runtime.Interfaces.StringInterface)

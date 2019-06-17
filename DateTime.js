@@ -250,6 +250,7 @@ Runtime.DateTime = class extends Runtime.CoreStruct{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.DateTime";}
+	static getCurrentNamespace(){return "Runtime";}
 	static getCurrentClassName(){return "Runtime.DateTime";}
 	static getParentClassName(){return "Runtime.CoreStruct";}
 	_init(){

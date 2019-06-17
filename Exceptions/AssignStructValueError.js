@@ -26,6 +26,7 @@ Runtime.Exceptions.AssignStructValueError = class extends Runtime.Exceptions.Run
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Exceptions.AssignStructValueError";}
+	static getCurrentNamespace(){return "Runtime.Exceptions";}
 	static getCurrentClassName(){return "Runtime.Exceptions.AssignStructValueError";}
 	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 	static getFieldsList(names, flag){

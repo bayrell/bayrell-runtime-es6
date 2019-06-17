@@ -44,6 +44,7 @@ Runtime.RuntimeConstant = class{
 	/* Errors */
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.RuntimeConstant";}
+	static getCurrentNamespace(){return "Runtime";}
 	static getCurrentClassName(){return "Runtime.RuntimeConstant";}
 	static getParentClassName(){return "";}
 	static getFieldsList(names, flag){
@@ -87,4 +88,5 @@ Runtime.RuntimeConstant.ERROR_RUNTIME = -11;
 Runtime.RuntimeConstant.ERROR_VALIDATION = -12;
 Runtime.RuntimeConstant.ERROR_PARSE_SERIALIZATION_ERROR = -14;
 Runtime.RuntimeConstant.ERROR_ASSIGN_DATA_STRUCT_VALUE = -15;
+Runtime.RuntimeConstant.ERROR_FILE_NOT_FOUND = -16;
 Runtime.RuntimeConstant.ERROR_FATAL = -99;

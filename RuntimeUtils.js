@@ -58,7 +58,6 @@ Runtime.RuntimeUtils = class{
 	static registerGlobalContext(modules){
 		if (modules == undefined) modules=null;
 		var context = Runtime.RuntimeUtils.createContext(modules);
-		context.init();
 		Runtime.RuntimeUtils.setContext(context);
 		return context;
 	}
@@ -239,6 +238,26 @@ Runtime.RuntimeUtils = class{
 			}
 		});
 		return res.toCollection();
+	}
+	/**
+	 * Returns item
+	 */
+	static getItem(obj, path, default_value, type_value, type_template){
+		if (type_value == undefined) type_value="mixed";
+		if (type_template == undefined) type_template="";
+		if (path.count() == 0){
+			return Runtime.rtl.convert(obj, type_value, default_value, type_template);
+		}
+		if (obj == null){
+			return default_value;
+		}
+		if (obj instanceof Runtime.Dict || obj instanceof Runtime.Collection){
+			var item = path.first();
+			path = path.removeFirstIm();
+			obj = obj.get(item, default_value);
+			return this.getItem(obj, path, default_value, type_value, type_template);
+		}
+		return default_value;
 	}
 	/* ============================= Serialization Functions ============================= */
 	static ObjectToNative(value, force_class_name){
@@ -466,7 +485,7 @@ Runtime.RuntimeUtils = class{
 	 */
 	
 	static base64_encode(s){
-		return window.btoa($s);
+		return window.btoa(s);
 	}
 	/**
 	 * Base64 decode
@@ -475,7 +494,7 @@ Runtime.RuntimeUtils = class{
 	 */
 	
 	static base64_decode(s){
-		return window.atob($s);
+		return window.atob(s);
 	}
 	/* ================================= Other Functions ================================= */
 	/*
@@ -651,6 +670,7 @@ Runtime.RuntimeUtils = class{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.RuntimeUtils";}
+	static getCurrentNamespace(){return "Runtime";}
 	static getCurrentClassName(){return "Runtime.RuntimeUtils";}
 	static getParentClassName(){return "";}
 	static getFieldsList(names, flag){

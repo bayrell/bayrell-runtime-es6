@@ -26,6 +26,7 @@ Runtime.Exceptions.UnknownError = class extends Runtime.Exceptions.RuntimeExcept
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Exceptions.UnknownError";}
+	static getCurrentNamespace(){return "Runtime.Exceptions";}
 	static getCurrentClassName(){return "Runtime.Exceptions.UnknownError";}
 	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
 	static getFieldsList(names, flag){

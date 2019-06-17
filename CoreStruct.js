@@ -64,6 +64,7 @@ Runtime.CoreStruct = class extends Runtime.CoreObject{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.CoreStruct";}
+	static getCurrentNamespace(){return "Runtime";}
 	static getCurrentClassName(){return "Runtime.CoreStruct";}
 	static getParentClassName(){return "Runtime.CoreObject";}
 	_init(){

@@ -59,6 +59,7 @@ Runtime.Container = class{
 	}
 	/* ======================= Class Init Functions ======================= */
 	getClassName(){return "Runtime.Container";}
+	static getCurrentNamespace(){return "Runtime";}
 	static getCurrentClassName(){return "Runtime.Container";}
 	static getParentClassName(){return "";}
 	_init(){
