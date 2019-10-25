@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,65 +19,25 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.ModuleDescriptionInterface = class{
-	/**
-	 * Returns module name
-	 * @return string
-	 */
-	static getModuleName(){
-	}
-	/**
-	 * Returns module name
-	 * @return string
-	 */
-	static getModuleVersion(){
-	}
-	/**
-	 * Returns required modules
-	 * @return Map<string>
-	 */
-	static requiredModules(){
-	}
-	/**
-	 * Returns module files load order
-	 * @return Collection<string>
-	 */
-	static getModuleFiles(){
-	}
-	/**
-	 * Returns enities
-	 */
-	static entities(){
-	}
-	/**
-	 * Called then module registed in context
-	 * @param ContextInterface context
-	 */
-	static onRegister(context){
-	}
-	/**
-	 * Called then context read config
-	 * @param ContextInterface context
-	 * @param Map<mixed> config
-	 */
-	static onReadConfig(context, config){
-	}
-	/**
-	 * Init context
-	 * @param ContextInterface context
-	 */
-	static onInitContext(context){
-		return (async_ctx_0) => {
-			var async_jump_0 = async_ctx_0.current();
-			if (async_jump_0 == "0"){
-			}
-			else if (async_jump_0 == "-1"){
-				return async_ctx_0.error( async_ctx_0.getError() )
-			}
-			else{
-				return async_ctx_0.next();
-			}
-			return async_ctx_0.end();
-		}
-	}
-}
+Runtime.Interfaces.ModuleDescriptionInterface = function(__ctx)
+{
+};
+Object.assign(Runtime.Interfaces.ModuleDescriptionInterface.prototype,
+{
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Interfaces.ModuleDescriptionInterface";
+	},
+});
+Object.assign(Runtime.Interfaces.ModuleDescriptionInterface,
+{
+	getCurrentNamespace: function()
+	{
+		return "Runtime.Interfaces";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Interfaces.ModuleDescriptionInterface";
+	},
+});
+Runtime.rtl.defClass(Runtime.Interfaces.ModuleDescriptionInterface);

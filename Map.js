@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -16,84 +17,127 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-
-var isBrowser=function(){return typeof window !== "undefined" && this === window;}
-
-if (typeof Runtime == "undefined") Runtime = {};
-Runtime.Map = class extends Runtime.Dict
+if (typeof Runtime == 'undefined') Runtime = {};
+Runtime.Map = function(__ctx)
 {
-
+	Runtime.Dict.apply(this, arguments);
+};
+Runtime.Map.prototype = Object.create(Runtime.Dict.prototype);
+Runtime.Map.prototype.constructor = Runtime.Map;
+Object.assign(Runtime.Map.prototype,
+{
+	/**
+	 * Set value size_to position
+	 * @param string key - position
+	 * @param T value 
+	 * @return self
+	 */
+	set: function(__ctx, key, value)
+	{
+		key = this.toStr(key);
+		this._map["|" + key] = value;
+		return this;
+	},
+	/**
+	 * Remove value from position
+	 * @param string key
+	 * @return self
+	 */
+	remove: function(__ctx, key)
+	{
+		key = this.toStr(key);
+		if (this.has("|" + key))
+		{
+			delete this._map["|" + key];
+		}
+		return this;
+	},
+	/**
+	 * Clear all values from vector
+	 * @return self
+	 */
+	clear: function(__ctx)
+	{
+		this._map = {};
+		return this;
+	},
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.Map)
+		{
+		}
+		Runtime.Dict.prototype.assignObject.call(this,__ctx,o);
+	},
+	assignValue: function(__ctx,k,v)
+	{
+		Runtime.Dict.prototype.assignValue.call(this,__ctx,k,v);
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+		return Runtime.Dict.prototype.takeValue.call(this,__ctx,k,d);
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Map";
+	},
+});
+Object.assign(Runtime.Map, Runtime.Dict);
+Object.assign(Runtime.Map,
+{
 	/**
 	 * Returns new Instance
 	 * @return Object
 	 */
-	static createNewInstance(obj)
+	Instance: function(__ctx)
 	{
-		if (obj == undefined) obj = null;
-		return new Runtime.Map(obj);
-	}
-	
-	
-	
-	/**
-	 * Assign objects
-	 */
-	assignObject(obj)
+		return new Runtime.Map(__ctx);
+	},
+	/* ======================= Class Init Functions ======================= */
+	getCurrentNamespace: function()
 	{
-		if (obj instanceof Runtime.Map)
-		{
-			obj.each(
-				(key, value) => {
-					if (isBrowser()) this.set(key, Runtime.rtl._clone(value));
-					else this.set(key, rtl._clone(value));
-				}
-			);
-		}
-	}
-	
-	
-	
-	/**
-	 * Set value size_to position
-	 * @param T pos - position
-	 * @param T value 
-	 */
-	set(key, value)
+		return "Runtime";
+	},
+	getCurrentClassName: function()
 	{
-		key = this.toString(key);
-		super.set(key, value);
-		return this;
-	}
-	
-	
-	
-	/**
-	 * Remove value from position
-	 * @param T key
-	 */
-	remove(key)
+		return "Runtime.Map";
+	},
+	getParentClassName: function()
 	{
-		key = this.toString(key);
-		if (super.has(key)){
-			super.delete(key);
-		}
-		return this;
-	}
-	
-	
-	
-	/**
-	 * Clear all values from vector
-	 */
-	clear()
+		return "Runtime.Dict";
+	},
+	getClassInfo: function(__ctx)
 	{
-		super.clear();
-		return this;
-	}
-	
-	
-	getClassName(){return "Runtime.Map";}
-	static getCurrentClassName(){return "Runtime.Map";}
-	static getParentClassName(){return "Runtime.Dict";}
-	
-}
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.Map",
+			"name": "Runtime.Map",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
+		return null;
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
+		return null;
+	},
+});
+Runtime.rtl.defClass(Runtime.Map);

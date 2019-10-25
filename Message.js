@@ -18,61 +18,61 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.re = function(__ctx)
+Runtime.Message = function(__ctx)
 {
+	Runtime.CoreStruct.apply(this, arguments);
 };
-Object.assign(Runtime.re.prototype,
+Runtime.Message.prototype = Object.create(Runtime.CoreStruct.prototype);
+Runtime.Message.prototype.constructor = Runtime.Message;
+Object.assign(Runtime.Message.prototype,
 {
+	_init: function(__ctx)
+	{
+		var defProp = use('Runtime.rtl').defProp;
+		var a = Object.getOwnPropertyNames(this);
+		this.__is_external = false;
+		if (a.indexOf("is_external") == -1) defProp(this, "is_external");
+		this.__session = null;
+		if (a.indexOf("session") == -1) defProp(this, "session");
+		Runtime.CoreStruct.prototype._init.call(this,__ctx);
+	},
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.re)
+		if (o instanceof Runtime.Message)
 		{
+			this.__is_external = o.__is_external;
+			this.__session = o.__session;
 		}
+		Runtime.CoreStruct.prototype.assignObject.call(this,__ctx,o);
 	},
 	assignValue: function(__ctx,k,v)
 	{
+		if (k == "is_external")this.__is_external = v;
+		else if (k == "session")this.__session = v;
+		else Runtime.CoreStruct.prototype.assignValue.call(this,__ctx,k,v);
 	},
 	takeValue: function(__ctx,k,d)
 	{
 		if (d == undefined) d = null;
+		if (k == "is_external")return this.__is_external;
+		else if (k == "session")return this.__session;
+		return Runtime.CoreStruct.prototype.takeValue.call(this,__ctx,k,d);
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.re";
+		return "Runtime.Message";
 	},
 });
-Object.assign(Runtime.re,
+Object.assign(Runtime.Message, Runtime.CoreStruct);
+Object.assign(Runtime.Message,
 {
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return bool
-	 */
-	match: function(__ctx, r, s)
+	isExternal: function(__ctx, s)
 	{
-		return s.match( new RegExp(r, "g") ) != null;
+		return s.is_external == true;
 	},
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return Vector result
-	 */
-	matchAll: function(__ctx, r, s)
+	isInternal: function(__ctx, s)
 	{
-		return null;
-	},
-	/**
-	 * Replace with regular expression
-	 * @param string r - regular expression
-	 * @param string replace - new value
-	 * @param string s - replaceable string
-	 * @return string
-	 */
-	replace: function(__ctx, r, replace, s)
-	{
-		return s.replace(new RegExp(r, "g"), replace);
+		return s.is_external == false;
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -81,11 +81,11 @@ Object.assign(Runtime.re,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.re";
+		return "Runtime.Message";
 	},
 	getParentClassName: function()
 	{
-		return "";
+		return "Runtime.CoreStruct";
 	},
 	getClassInfo: function(__ctx)
 	{
@@ -94,8 +94,8 @@ Object.assign(Runtime.re,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.re",
-			"name": "Runtime.re",
+			"class_name": "Runtime.Message",
+			"name": "Runtime.Message",
 			"annotations": Collection.from([
 			]),
 		});
@@ -104,6 +104,11 @@ Object.assign(Runtime.re,
 	{
 		var a = [];
 		if (f==undefined) f=0;
+		if ((f|3)==3)
+		{
+			a.push("is_external");
+			a.push("session");
+		}
 		return Runtime.Collection.from(a);
 	},
 	getFieldInfoByName: function(__ctx,field_name)
@@ -121,4 +126,4 @@ Object.assign(Runtime.re,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.re);
+Runtime.rtl.defClass(Runtime.Message);

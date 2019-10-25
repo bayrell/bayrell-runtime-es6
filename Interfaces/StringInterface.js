@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,10 +19,31 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.StringInterface = class{
+Runtime.Interfaces.StringInterface = function(__ctx)
+{
+};
+Object.assign(Runtime.Interfaces.StringInterface.prototype,
+{
 	/**
 	 * Returns string
 	 */
-	toString(){
-	}
-}
+	toString: function(__ctx)
+	{
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Interfaces.StringInterface";
+	},
+});
+Object.assign(Runtime.Interfaces.StringInterface,
+{
+	getCurrentNamespace: function()
+	{
+		return "Runtime.Interfaces";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Interfaces.StringInterface";
+	},
+});
+Runtime.rtl.defClass(Runtime.Interfaces.StringInterface);

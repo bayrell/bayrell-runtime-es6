@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -17,218 +18,206 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreObject = class{
-	/** 
-	 * Constructor
+Runtime.CoreObject = function(__ctx)
+{
+	this._init(__ctx);
+};
+Object.assign(Runtime.CoreObject.prototype,
+{
+	/**
+	 * Init function
 	 */
-	constructor(){
-		
-		this._init();
-	}
-	
-	_init(){
-		this.__implements__ = new Array();
-	}
-	
-	_del(){
-	}
+	_init: function(__ctx)
+	{
+	},
 	/**
 	 * Returns instance of the value by variable name
 	 * @param string variable_name
 	 * @param string default_value
 	 * @return var
 	 */
-	takeValue(variable_name, default_value){
-		if (default_value == undefined) default_value=null;
-		return this.takeVirtualValue(variable_name, default_value);
-	}
+	takeValue: function(__ctx, variable_name, default_value)
+	{
+		if (default_value == undefined) default_value = null;
+		return this.takeVirtualValue(__ctx, variable_name, default_value);
+	},
 	/**
 	 * Returns virtual values
 	 * @param string variable_name
 	 * @param string default_value
 	 * @return var
 	 */
-	takeVirtualValue(variable_name, default_value){
-		if (default_value == undefined) default_value=null;
+	takeVirtualValue: function(__ctx, variable_name, default_value)
+	{
+		if (default_value == undefined) default_value = null;
 		return default_value;
-	}
+	},
+	/**
+	 * Set new value
+	 * @param string variable_name
+	 * @param var value
+	 */
+	assignValue: function(__ctx, variable_name, value)
+	{
+		this.assignVirtualValue(__ctx, variable_name, value);
+	},
+	/**
+	 * Assign virtual value
+	 * @param string variable_name
+	 * @param var value
+	 */
+	assignVirtualValue: function(__ctx, variable_name, value)
+	{
+	},
 	/**
 	 * Assign and clone data from other object
 	 * @param CoreObject obj
 	 */
-	assignObject(obj){
-	}
-	/**
-	 * Set new value instance by variable name
-	 * @param string variable_name
-	 * @param var value
-	 */
-	assignValue(variable_name, value){
-	}
+	assignObject: function(__ctx, obj)
+	{
+	},
 	/**
 	 * Set new values instance by Map
-	 * @param Map<mixed> map
+	 * @param Map<var> map
 	 * @return CoreObject
 	 */
-	assignMap(values){
-		if (values == undefined) values=null;
-		if (values == null){
-			return ;
+	assignDict: function(__ctx, values)
+	{
+		if (values == undefined) values = null;
+		if (values == null)
+		{
+			return null;
 		}
-		var names = new Runtime.Vector();
-		this.getVariablesNames(names, 2);
-		names.each((name) => {
-			this.assignValue(name, values.get(name, null));
-		});
+		var f = Runtime.rtl.method("Runtime.RuntimeUtils", "getVariablesNames");
+		var names = f(__ctx, this.getClassName(__ctx), 2);
+		for (var i = 0;i < names.count(__ctx);i++)
+		{
+			var name = names.item(__ctx, i);
+			this.assignValue(__ctx, name, values.get(__ctx, name, null));
+		}
 		return this;
-	}
+	},
 	/**
 	 * Set new values instance by Map
-	 * @param Map<mixed> map
+	 * @param Dict<var> map
 	 * @return CoreObject
 	 */
-	setMap(values){
-		if (values == undefined) values=null;
-		if (values == null){
-			return ;
+	setDict: function(__ctx, values)
+	{
+		if (values == undefined) values = null;
+		if (values == null)
+		{
+			return null;
 		}
-		values.each((key, value) => {
-			this.assignValue(key, value);
-		});
+		values.each(__ctx, Runtime.rtl.method(this, "assignValue"));
 		return this;
-	}
+	},
 	/**
 	 * Dump serializable object to Map
-	 * @return Map<mixed>
+	 * @return Map<var>
 	 */
-	takeMap(flag){
-		if (flag == undefined) flag=2;
-		var values = new Runtime.Map();
-		var names = new Runtime.Vector();
-		this.getVariablesNames(names, flag);
-		names.each((name) => {
-			values.set(name, this.takeValue(name, null));
-		});
-		return values;
-	}
-	/**
-	 * Call static method of the current class
-	 * @param string method_name
-	 * @param Vector args
-	 * @return mixed
-	 */
-	callStaticMethod(method_name, args){
-		if (args == undefined) args=null;
-		return Runtime.rtl.callStaticMethod(this.getClassName(), method_name, args);
-	}
-	/**
-	 * Returns field info by field_name
-	 * @param string field_name
-	 * @return IntrospectionInfo
-	 */
-	static getFieldInfoByName(field_name){
-	}
-	/**
-	 * Returns virtual field info by field_name
-	 * @param string field_name
-	 * @return IntrospectionInfo
-	 */
-	static getVirtualFieldInfo(field_name){
-		return null;
-	}
-	/**
-	 * Returns public fields list
-	 * @param Vector<string> names
-	 */
-	static getFieldsList(names, flag){
-		if (flag == undefined) flag=0;
-	}
-	/**
-	 * Returns public virtual fields names
-	 * @param Vector<string> names
-	 */
-	static getVirtualFieldsList(names, flag){
-		if (flag == undefined) flag=0;
-	}
-	/**
-	 * Returns info of the public method by name
-	 * @param string method_name
-	 * @return IntrospectionInfo
-	 */
-	static getMethodInfoByName(method_name){
-		return null;
-	}
-	/**
-	 * Returns list of the public methods
-	 * @param Vector<string> methods
-	 */
-	static getMethodsList(methods){
-	}
-	/**
-	 * Returns names of variables to serialization
-	 * @param Vector<string>
-	 */
-	getVariablesNames(names, flag){
-		if (flag == undefined) flag=0;
-		Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getVariablesNames", (new Runtime.Vector()).push(this.getClassName()).push(names).push(flag));
-	}
-	/**
-	 * Returns info of the public variable by name
-	 * @param string variable_name
-	 * @return IntrospectionInfo
-	 */
-	getFieldInfo(variable_name){
-		var classes = Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getParents", (new Runtime.Vector()).push(this.getClassName()));
-		for (var i = 0; i < classes.count(); i++){
-			var class_name = classes.item(i);
-			var info = Runtime.rtl.callStaticMethod(class_name, "getFieldInfoByName", (new Runtime.Vector()).push(variable_name));
-			if (info != null && item.kind == IntrospectionInfo.ITEM_FIELD){
-				return info;
-			}
-			try{
-				var info = Runtime.rtl.callStaticMethod(class_name, "getVirtualFieldInfo", (new Runtime.Vector()).push(variable_name));
-				if (info != null && item.kind == IntrospectionInfo.ITEM_FIELD){
-					return info;
-				}
-			}catch(_the_exception){
-				if (_the_exception instanceof Error){
-					var e = _the_exception;
-				}
-				else { throw _the_exception; }
+	takeDict: function(__ctx, fields, flag)
+	{
+		if (fields == undefined) fields = null;
+		if (flag == undefined) flag = 2;
+		var values = new Runtime.Map(__ctx);
+		if (fields == null)
+		{
+			var f = Runtime.rtl.method("Runtime.RuntimeUtils", "getVariablesNames");
+			var names = f(__ctx, this.getClassName(__ctx), flag);
+			for (var i = 0;i < names.count(__ctx);i++)
+			{
+				var name = names.item(__ctx, i);
+				values.set(__ctx, name, this.takeValue(__ctx, name, null));
 			}
 		}
-		return null;
-	}
-	/**
-	 * Returns names of methods
-	 * @param Vector<string>
-	 */
-	getMethodsNames(names){
-		var classes = Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getParents", (new Runtime.Vector()).push(this.getClassName()));
-		for (var i = 0; i < classes.count(); i++){
-			var class_name = classes.item(i);
-			Runtime.rtl.callStaticMethod(class_name, "getMethodsList", (new Runtime.Vector()).push(names));
-		}
-	}
-	/**
-	 * Returns info of the public method by name
-	 * @param string method_name
-	 * @return IntrospectionInfo
-	 */
-	getMethodInfo(method_name){
-		var classes = Runtime.rtl.callStaticMethod("Runtime.RuntimeUtils", "getParents", (new Runtime.Vector()).push(this.getClassName()));
-		for (var i = 0; i < classes.count(); i++){
-			var class_name = classes.item(i);
-			var info = Runtime.rtl.callStaticMethod(class_name, "getMethodInfoByName", (new Runtime.Vector()).push(method_name));
-			if (info != null && item.kind == IntrospectionInfo.ITEM_METHOD){
-				return info;
+		else
+		{
+			for (var i = 0;i < fields.count(__ctx);i++)
+			{
+				var name = fields.item(__ctx, i);
+				values.set(__ctx, name, this.takeValue(__ctx, name, null));
 			}
 		}
+		return values.toDict(__ctx);
+	},
+	staticMethod: function(method_name)
+	{
+		return Runtime.rtl.method(null, this.getClassName(), method_name);
+	},
+	callStatic: function(__ctx, method_name)
+	{
 		return null;
-	}
+	},
+	callStaticParent: function(__ctx, method_name)
+	{
+		return null;
+	},
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.CoreObject)
+		{
+		}
+	},
+	assignValue: function(__ctx,k,v)
+	{
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.CoreObject";
+	},
+});
+Object.assign(Runtime.CoreObject,
+{
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.CoreObject";}
-	static getCurrentNamespace(){return "Runtime";}
-	static getCurrentClassName(){return "Runtime.CoreObject";}
-	static getParentClassName(){return "";}
-}
+	getCurrentNamespace: function()
+	{
+		return "Runtime";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.CoreObject";
+	},
+	getParentClassName: function()
+	{
+		return "";
+	},
+	getClassInfo: function(__ctx)
+	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.CoreObject",
+			"name": "Runtime.CoreObject",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
+		return null;
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
+		return null;
+	},
+});
+Runtime.rtl.defClass(Runtime.CoreObject);

@@ -18,74 +18,67 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.re = function(__ctx)
+if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
+Runtime.Annotations.LambdaChainDeclare = function(__ctx)
 {
+	Runtime.CoreStruct.apply(this, arguments);
 };
-Object.assign(Runtime.re.prototype,
+Runtime.Annotations.LambdaChainDeclare.prototype = Object.create(Runtime.CoreStruct.prototype);
+Runtime.Annotations.LambdaChainDeclare.prototype.constructor = Runtime.Annotations.LambdaChainDeclare;
+Object.assign(Runtime.Annotations.LambdaChainDeclare.prototype,
 {
+	_init: function(__ctx)
+	{
+		var defProp = use('Runtime.rtl').defProp;
+		var a = Object.getOwnPropertyNames(this);
+		this.__name = "";
+		if (a.indexOf("name") == -1) defProp(this, "name");
+		this.__is_await = false;
+		if (a.indexOf("is_await") == -1) defProp(this, "is_await");
+		Runtime.CoreStruct.prototype._init.call(this,__ctx);
+	},
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.re)
+		if (o instanceof Runtime.Annotations.LambdaChainDeclare)
 		{
+			this.__name = o.__name;
+			this.__is_await = o.__is_await;
 		}
+		Runtime.CoreStruct.prototype.assignObject.call(this,__ctx,o);
 	},
 	assignValue: function(__ctx,k,v)
 	{
+		if (k == "name")this.__name = v;
+		else if (k == "is_await")this.__is_await = v;
+		else Runtime.CoreStruct.prototype.assignValue.call(this,__ctx,k,v);
 	},
 	takeValue: function(__ctx,k,d)
 	{
 		if (d == undefined) d = null;
+		if (k == "name")return this.__name;
+		else if (k == "is_await")return this.__is_await;
+		return Runtime.CoreStruct.prototype.takeValue.call(this,__ctx,k,d);
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.re";
+		return "Runtime.Annotations.LambdaChainDeclare";
 	},
 });
-Object.assign(Runtime.re,
+Object.assign(Runtime.Annotations.LambdaChainDeclare, Runtime.CoreStruct);
+Object.assign(Runtime.Annotations.LambdaChainDeclare,
 {
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return bool
-	 */
-	match: function(__ctx, r, s)
-	{
-		return s.match( new RegExp(r, "g") ) != null;
-	},
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return Vector result
-	 */
-	matchAll: function(__ctx, r, s)
-	{
-		return null;
-	},
-	/**
-	 * Replace with regular expression
-	 * @param string r - regular expression
-	 * @param string replace - new value
-	 * @param string s - replaceable string
-	 * @return string
-	 */
-	replace: function(__ctx, r, replace, s)
-	{
-		return s.replace(new RegExp(r, "g"), replace);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Annotations";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.re";
+		return "Runtime.Annotations.LambdaChainDeclare";
 	},
 	getParentClassName: function()
 	{
-		return "";
+		return "Runtime.CoreStruct";
 	},
 	getClassInfo: function(__ctx)
 	{
@@ -94,8 +87,8 @@ Object.assign(Runtime.re,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.re",
-			"name": "Runtime.re",
+			"class_name": "Runtime.Annotations.LambdaChainDeclare",
+			"name": "Runtime.Annotations.LambdaChainDeclare",
 			"annotations": Collection.from([
 			]),
 		});
@@ -104,6 +97,11 @@ Object.assign(Runtime.re,
 	{
 		var a = [];
 		if (f==undefined) f=0;
+		if ((f|3)==3)
+		{
+			a.push("name");
+			a.push("is_await");
+		}
 		return Runtime.Collection.from(a);
 	},
 	getFieldInfoByName: function(__ctx,field_name)
@@ -121,4 +119,4 @@ Object.assign(Runtime.re,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.re);
+Runtime.rtl.defClass(Runtime.Annotations.LambdaChainDeclare);

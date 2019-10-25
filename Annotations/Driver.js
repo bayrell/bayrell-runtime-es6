@@ -18,74 +18,51 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.re = function(__ctx)
+if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
+Runtime.Annotations.Driver = function(__ctx)
 {
+	Runtime.Annotations.Entity.apply(this, arguments);
 };
-Object.assign(Runtime.re.prototype,
+Runtime.Annotations.Driver.prototype = Object.create(Runtime.Annotations.Entity.prototype);
+Runtime.Annotations.Driver.prototype.constructor = Runtime.Annotations.Driver;
+Object.assign(Runtime.Annotations.Driver.prototype,
 {
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.re)
+		if (o instanceof Runtime.Annotations.Driver)
 		{
 		}
+		Runtime.Annotations.Entity.prototype.assignObject.call(this,__ctx,o);
 	},
 	assignValue: function(__ctx,k,v)
 	{
+		Runtime.Annotations.Entity.prototype.assignValue.call(this,__ctx,k,v);
 	},
 	takeValue: function(__ctx,k,d)
 	{
 		if (d == undefined) d = null;
+		return Runtime.Annotations.Entity.prototype.takeValue.call(this,__ctx,k,d);
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.re";
+		return "Runtime.Annotations.Driver";
 	},
 });
-Object.assign(Runtime.re,
+Object.assign(Runtime.Annotations.Driver, Runtime.Annotations.Entity);
+Object.assign(Runtime.Annotations.Driver,
 {
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return bool
-	 */
-	match: function(__ctx, r, s)
-	{
-		return s.match( new RegExp(r, "g") ) != null;
-	},
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return Vector result
-	 */
-	matchAll: function(__ctx, r, s)
-	{
-		return null;
-	},
-	/**
-	 * Replace with regular expression
-	 * @param string r - regular expression
-	 * @param string replace - new value
-	 * @param string s - replaceable string
-	 * @return string
-	 */
-	replace: function(__ctx, r, replace, s)
-	{
-		return s.replace(new RegExp(r, "g"), replace);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Annotations";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.re";
+		return "Runtime.Annotations.Driver";
 	},
 	getParentClassName: function()
 	{
-		return "";
+		return "Runtime.Annotations.Entity";
 	},
 	getClassInfo: function(__ctx)
 	{
@@ -94,8 +71,8 @@ Object.assign(Runtime.re,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.re",
-			"name": "Runtime.re",
+			"class_name": "Runtime.Annotations.Driver",
+			"name": "Runtime.Annotations.Driver",
 			"annotations": Collection.from([
 			]),
 		});
@@ -121,4 +98,4 @@ Object.assign(Runtime.re,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.re);
+Runtime.rtl.defClass(Runtime.Annotations.Driver);

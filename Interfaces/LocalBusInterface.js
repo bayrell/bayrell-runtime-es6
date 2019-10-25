@@ -1,8 +1,9 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2018 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,15 +19,25 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.CloneableInterface = class{
-	/**
-	 * Returns new Instance
-	 */
-	/* public CoreObject createNewInstance(); */
-	/**
-	 * Assign and clone data from other object
-	 * @param CoreObject obj
-	 */
-	assignObject(obj){
-	}
-}
+Runtime.Interfaces.LocalBusInterface = function(__ctx)
+{
+};
+Object.assign(Runtime.Interfaces.LocalBusInterface.prototype,
+{
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Interfaces.LocalBusInterface";
+	},
+});
+Object.assign(Runtime.Interfaces.LocalBusInterface,
+{
+	getCurrentNamespace: function()
+	{
+		return "Runtime.Interfaces";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Interfaces.LocalBusInterface";
+	},
+});
+Runtime.rtl.defClass(Runtime.Interfaces.LocalBusInterface);

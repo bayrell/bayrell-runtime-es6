@@ -18,61 +18,44 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.re = function(__ctx)
+Runtime.CoreProvider = function(__ctx)
 {
+	Runtime.CoreStruct.apply(this, arguments);
 };
-Object.assign(Runtime.re.prototype,
+Runtime.CoreProvider.prototype = Object.create(Runtime.CoreStruct.prototype);
+Runtime.CoreProvider.prototype.constructor = Runtime.CoreProvider;
+Object.assign(Runtime.CoreProvider.prototype,
 {
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.re)
+		if (o instanceof Runtime.CoreProvider)
 		{
 		}
+		Runtime.CoreStruct.prototype.assignObject.call(this,__ctx,o);
 	},
 	assignValue: function(__ctx,k,v)
 	{
+		Runtime.CoreStruct.prototype.assignValue.call(this,__ctx,k,v);
 	},
 	takeValue: function(__ctx,k,d)
 	{
 		if (d == undefined) d = null;
+		return Runtime.CoreStruct.prototype.takeValue.call(this,__ctx,k,d);
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.re";
+		return "Runtime.CoreProvider";
 	},
 });
-Object.assign(Runtime.re,
+Object.assign(Runtime.CoreProvider, Runtime.CoreStruct);
+Object.assign(Runtime.CoreProvider,
 {
 	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return bool
+	 * Init data
 	 */
-	match: function(__ctx, r, s)
-	{
-		return s.match( new RegExp(r, "g") ) != null;
-	},
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return Vector result
-	 */
-	matchAll: function(__ctx, r, s)
+	initProviderData: function(__ctx, context)
 	{
 		return null;
-	},
-	/**
-	 * Replace with regular expression
-	 * @param string r - regular expression
-	 * @param string replace - new value
-	 * @param string s - replaceable string
-	 * @return string
-	 */
-	replace: function(__ctx, r, replace, s)
-	{
-		return s.replace(new RegExp(r, "g"), replace);
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -81,11 +64,11 @@ Object.assign(Runtime.re,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.re";
+		return "Runtime.CoreProvider";
 	},
 	getParentClassName: function()
 	{
-		return "";
+		return "Runtime.CoreStruct";
 	},
 	getClassInfo: function(__ctx)
 	{
@@ -94,8 +77,8 @@ Object.assign(Runtime.re,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.re",
-			"name": "Runtime.re",
+			"class_name": "Runtime.CoreProvider",
+			"name": "Runtime.CoreProvider",
 			"annotations": Collection.from([
 			]),
 		});
@@ -121,4 +104,4 @@ Object.assign(Runtime.re,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.re);
+Runtime.rtl.defClass(Runtime.CoreProvider);

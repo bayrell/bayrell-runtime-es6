@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2018-2019 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,61 +18,65 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.re = function(__ctx)
+Runtime.Session = function(__ctx)
 {
+	Runtime.CoreProvider.apply(this, arguments);
 };
-Object.assign(Runtime.re.prototype,
+Runtime.Session.prototype = Object.create(Runtime.CoreProvider.prototype);
+Runtime.Session.prototype.constructor = Runtime.Session;
+Object.assign(Runtime.Session.prototype,
 {
+	_init: function(__ctx)
+	{
+		var defProp = use('Runtime.rtl').defProp;
+		var a = Object.getOwnPropertyNames(this);
+		this.__user_id = 0;
+		if (a.indexOf("user_id") == -1) defProp(this, "user_id");
+		this.__session_key = "";
+		if (a.indexOf("session_key") == -1) defProp(this, "session_key");
+		Runtime.CoreProvider.prototype._init.call(this,__ctx);
+	},
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.re)
+		if (o instanceof Runtime.Session)
 		{
+			this.__user_id = o.__user_id;
+			this.__session_key = o.__session_key;
 		}
+		Runtime.CoreProvider.prototype.assignObject.call(this,__ctx,o);
 	},
 	assignValue: function(__ctx,k,v)
 	{
+		if (k == "user_id")this.__user_id = v;
+		else if (k == "session_key")this.__session_key = v;
+		else Runtime.CoreProvider.prototype.assignValue.call(this,__ctx,k,v);
 	},
 	takeValue: function(__ctx,k,d)
 	{
 		if (d == undefined) d = null;
+		if (k == "user_id")return this.__user_id;
+		else if (k == "session_key")return this.__session_key;
+		return Runtime.CoreProvider.prototype.takeValue.call(this,__ctx,k,d);
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.re";
+		return "Runtime.Session";
 	},
 });
-Object.assign(Runtime.re,
+Object.assign(Runtime.Session, Runtime.CoreProvider);
+Object.assign(Runtime.Session,
 {
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return bool
-	 */
-	match: function(__ctx, r, s)
+	isApp: function(__ctx, s)
 	{
-		return s.match( new RegExp(r, "g") ) != null;
+		return s.user_id < 0;
 	},
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return Vector result
-	 */
-	matchAll: function(__ctx, r, s)
+	isUser: function(__ctx, s)
 	{
-		return null;
+		return s.user_id > 0;
 	},
-	/**
-	 * Replace with regular expression
-	 * @param string r - regular expression
-	 * @param string replace - new value
-	 * @param string s - replaceable string
-	 * @return string
-	 */
-	replace: function(__ctx, r, replace, s)
+	isValid: function(__ctx, s)
 	{
-		return s.replace(new RegExp(r, "g"), replace);
+		return s.user_id != 0 && s.session_key != 0;
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -81,11 +85,11 @@ Object.assign(Runtime.re,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.re";
+		return "Runtime.Session";
 	},
 	getParentClassName: function()
 	{
-		return "";
+		return "Runtime.CoreProvider";
 	},
 	getClassInfo: function(__ctx)
 	{
@@ -94,8 +98,8 @@ Object.assign(Runtime.re,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.re",
-			"name": "Runtime.re",
+			"class_name": "Runtime.Session",
+			"name": "Runtime.Session",
 			"annotations": Collection.from([
 			]),
 		});
@@ -104,6 +108,11 @@ Object.assign(Runtime.re,
 	{
 		var a = [];
 		if (f==undefined) f=0;
+		if ((f|3)==3)
+		{
+			a.push("user_id");
+			a.push("session_key");
+		}
 		return Runtime.Collection.from(a);
 	},
 	getFieldInfoByName: function(__ctx,field_name)
@@ -121,4 +130,4 @@ Object.assign(Runtime.re,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.re);
+Runtime.rtl.defClass(Runtime.Session);

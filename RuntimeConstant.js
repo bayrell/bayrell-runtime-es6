@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -17,76 +18,117 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.RuntimeConstant = class{
-	/* Log level */
-	/**
-	 * Fatal error. Application stoped
-	 */
-	/**
-	 * Critical error. Application damaged, but works
-	 */
-	/**
-	 * Any Application error or exception
-	 */
-	/**
-	 * Log warning. Developer should attention to this
-	 */
-	/**
-	 * Information about any event
-	 */
-	/**
-	 * Debug level 1
-	 */
-	/**
-	 * Debug level 2
-	 */
-	/* Status codes */
-	/* Errors */
+Runtime.RuntimeConstant = function(__ctx)
+{
+};
+Object.assign(Runtime.RuntimeConstant.prototype,
+{
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.RuntimeConstant)
+		{
+		}
+	},
+	assignValue: function(__ctx,k,v)
+	{
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.RuntimeConstant";
+	},
+});
+Object.assign(Runtime.RuntimeConstant,
+{
+	CHAIN_ENTITIES: "Runtime.Entities",
+	LOCAL_BUS: "Runtime.Interfaces.LocalBusInterface",
+	REMOTE_BUS: "Runtime.Interfaces.RemoteBusInterface",
+	LOG_FATAL: 0,
+	LOG_CRITICAL: 2,
+	LOG_ERROR: 4,
+	LOG_WARNING: 6,
+	LOG_INFO: 8,
+	LOG_DEBUG: 10,
+	LOG_DEBUG2: 12,
+	STATUS_PLAN: 0,
+	STATUS_DONE: 1,
+	STATUS_PROCESS: 100,
+	STATUS_FAIL: -1,
+	ERROR_NULL: 0,
+	ERROR_OK: 1,
+	ERROR_PROCCESS: 100,
+	ERROR_FALSE: -100,
+	ERROR_UNKNOWN: -1,
+	ERROR_INDEX_OUT_OF_RANGE: -2,
+	ERROR_KEY_NOT_FOUND: -3,
+	ERROR_STOP_ITERATION: -4,
+	ERROR_FILE_NOT_FOUND: -5,
+	ERROR_OBJECT_DOES_NOT_EXISTS: -5,
+	ERROR_OBJECT_ALLREADY_EXISTS: -6,
+	ERROR_ASSERT: -7,
+	ERROR_REQUEST: -8,
+	ERROR_RESPONSE: -9,
+	ERROR_CSRF_TOKEN: -10,
+	ERROR_RUNTIME: -11,
+	ERROR_VALIDATION: -12,
+	ERROR_PARSE_SERIALIZATION_ERROR: -14,
+	ERROR_ASSIGN_DATA_STRUCT_VALUE: -15,
+	ERROR_AUTH: -16,
+	ERROR_DUPLICATE: -17,
+	ERROR_FATAL: -99,
+	ERROR_HTTP_CONTINUE: -100,
+	ERROR_HTTP_SWITCH: -101,
+	ERROR_HTTP_PROCESSING: -102,
+	ERROR_HTTP_OK: -200,
+	ERROR_HTTP_BAD_GATEWAY: -502,
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.RuntimeConstant";}
-	static getCurrentNamespace(){return "Runtime";}
-	static getCurrentClassName(){return "Runtime.RuntimeConstant";}
-	static getParentClassName(){return "";}
-	static getFieldsList(names, flag){
-		if (flag==undefined)flag=0;
-	}
-	static getFieldInfoByName(field_name){
+	getCurrentNamespace: function()
+	{
+		return "Runtime";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.RuntimeConstant";
+	},
+	getParentClassName: function()
+	{
+		return "";
+	},
+	getClassInfo: function(__ctx)
+	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.RuntimeConstant",
+			"name": "Runtime.RuntimeConstant",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-	static getMethodsList(names){
-	}
-	static getMethodInfoByName(method_name){
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-}
-Runtime.RuntimeConstant.LOG_FATAL = 0;
-Runtime.RuntimeConstant.LOG_CRITICAL = 2;
-Runtime.RuntimeConstant.LOG_ERROR = 4;
-Runtime.RuntimeConstant.LOG_WARNING = 6;
-Runtime.RuntimeConstant.LOG_INFO = 8;
-Runtime.RuntimeConstant.LOG_DEBUG = 10;
-Runtime.RuntimeConstant.LOG_DEBUG2 = 12;
-Runtime.RuntimeConstant.STATUS_PLAN = 0;
-Runtime.RuntimeConstant.STATUS_DONE = 1;
-Runtime.RuntimeConstant.STATUS_PROCESS = 100;
-Runtime.RuntimeConstant.STATUS_FAIL = -1;
-Runtime.RuntimeConstant.ERROR_NULL = 0;
-Runtime.RuntimeConstant.ERROR_OK = 1;
-Runtime.RuntimeConstant.ERROR_PROCCESS = 100;
-Runtime.RuntimeConstant.ERROR_FALSE = -100;
-Runtime.RuntimeConstant.ERROR_UNKNOWN = -1;
-Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE = -2;
-Runtime.RuntimeConstant.ERROR_KEY_NOT_FOUND = -3;
-Runtime.RuntimeConstant.ERROR_STOP_ITERATION = -4;
-Runtime.RuntimeConstant.ERROR_OBJECT_DOES_NOT_EXISTS = -5;
-Runtime.RuntimeConstant.ERROR_OBJECT_ALLREADY_EXISTS = -6;
-Runtime.RuntimeConstant.ERROR_ASSERT = -7;
-Runtime.RuntimeConstant.ERROR_REQUEST = -8;
-Runtime.RuntimeConstant.ERROR_RESPONSE = -9;
-Runtime.RuntimeConstant.ERROR_CSRF_TOKEN = -10;
-Runtime.RuntimeConstant.ERROR_RUNTIME = -11;
-Runtime.RuntimeConstant.ERROR_VALIDATION = -12;
-Runtime.RuntimeConstant.ERROR_PARSE_SERIALIZATION_ERROR = -14;
-Runtime.RuntimeConstant.ERROR_ASSIGN_DATA_STRUCT_VALUE = -15;
-Runtime.RuntimeConstant.ERROR_FILE_NOT_FOUND = -16;
-Runtime.RuntimeConstant.ERROR_FATAL = -99;
+	},
+});
+Runtime.rtl.defClass(Runtime.RuntimeConstant);

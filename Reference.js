@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -17,46 +18,114 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Reference = class extends Runtime.CoreObject{
-	/**
-	 * Constructor
-	 */
-	constructor(ref){
-		if (ref == undefined) ref=null;
-		super();
-		this.ref = ref;
-	}
+Runtime.Reference = function(__ctx, ref)
+{
+	Runtime.CoreObject.call(this, __ctx);
+	this.ref = ref;
+};
+Runtime.Reference.prototype = Object.create(Runtime.CoreObject.prototype);
+Runtime.Reference.prototype.constructor = Runtime.Reference;
+Object.assign(Runtime.Reference.prototype,
+{
 	/**
 	 * Assign and clone data from other object
 	 * @param CoreObject obj
 	 */
-	assignObject(obj){
-		if (obj instanceof Runtime.Reference){
+	assignObject: function(__ctx, obj)
+	{
+		if (obj instanceof Runtime.Reference)
+		{
 			this.uq = obj.uq;
 			this.ref = this.ref;
 		}
-		super.assignObject(obj);
-	}
-	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.Reference";}
-	static getCurrentNamespace(){return "Runtime";}
-	static getCurrentClassName(){return "Runtime.Reference";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		var names = Object.getOwnPropertyNames(this);
-		this.uq = Runtime.rtl.unique();
+		Runtime.CoreObject.prototype.assignObject.call(this, __ctx, obj);
+	},
+	_init: function(__ctx)
+	{
+		this.uq = Runtime.rtl.unique(__ctx);
 		this.ref = null;
-	}
-	static getFieldsList(names, flag){
-		if (flag==undefined)flag=0;
-	}
-	static getFieldInfoByName(field_name){
+		Runtime.CoreObject.prototype._init.call(this,__ctx);
+	},
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.Reference)
+		{
+			this.uq = o.uq;
+			this.ref = o.ref;
+		}
+		Runtime.CoreObject.prototype.assignObject.call(this,__ctx,o);
+	},
+	assignValue: function(__ctx,k,v)
+	{
+		if (k == "uq")this.uq = v;
+		else if (k == "ref")this.ref = v;
+		else Runtime.CoreObject.prototype.assignValue.call(this,__ctx,k,v);
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+		if (k == "uq")return this.uq;
+		else if (k == "ref")return this.ref;
+		return Runtime.CoreObject.prototype.takeValue.call(this,__ctx,k,d);
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Reference";
+	},
+});
+Object.assign(Runtime.Reference, Runtime.CoreObject);
+Object.assign(Runtime.Reference,
+{
+	/* ======================= Class Init Functions ======================= */
+	getCurrentNamespace: function()
+	{
+		return "Runtime";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Reference";
+	},
+	getParentClassName: function()
+	{
+		return "Runtime.CoreObject";
+	},
+	getClassInfo: function(__ctx)
+	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.Reference",
+			"name": "Runtime.Reference",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		if ((f|2)==2)
+		{
+			a.push("uq");
+			a.push("ref");
+		}
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-	static getMethodsList(names){
-	}
-	static getMethodInfoByName(method_name){
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-}
+	},
+});
+Runtime.rtl.defClass(Runtime.Reference);

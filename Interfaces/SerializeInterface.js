@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,38 +19,49 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.SerializeInterface = class{
-	/**
-	 * Returns classname of the object
-	 * @return string
-	 */
-	getClassName(){
-	}
-	/**
-	 * Returns name of variables to serialization
-	 * @return Vector<string>
-	 */
-	getVariablesNames(names){
-	}
+Runtime.Interfaces.SerializeInterface = function(__ctx)
+{
+};
+Object.assign(Runtime.Interfaces.SerializeInterface.prototype,
+{
 	/**
 	 * Assign and clone data from other object
 	 * @param CoreObject obj
 	 */
-	assignObject(obj){
-	}
+	assignObject: function(__ctx, obj)
+	{
+	},
 	/**
 	 * Set new value instance by variable name
 	 * @param string variable_name
 	 * @param var value
 	 */
-	assignValue(variable_name, value){
-	}
+	assignValue: function(__ctx, variable_name, value)
+	{
+	},
 	/**
 	 * Returns instance of the value by variable name
 	 * @param string variable_name
 	 * @return var
 	 */
-	takeValue(variable_name, default_value){
-		if (default_value == undefined) default_value=null;
-	}
-}
+	takeValue: function(__ctx, variable_name, default_value)
+	{
+		if (default_value == undefined) default_value = null;
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Interfaces.SerializeInterface";
+	},
+});
+Object.assign(Runtime.Interfaces.SerializeInterface,
+{
+	getCurrentNamespace: function()
+	{
+		return "Runtime.Interfaces";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Interfaces.SerializeInterface";
+	},
+});
+Runtime.rtl.defClass(Runtime.Interfaces.SerializeInterface);

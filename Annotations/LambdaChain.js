@@ -18,57 +18,78 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreEvent = function(__ctx)
+if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
+Runtime.Annotations.LambdaChain = function(__ctx)
 {
 	Runtime.CoreStruct.apply(this, arguments);
 };
-Runtime.CoreEvent.prototype = Object.create(Runtime.CoreStruct.prototype);
-Runtime.CoreEvent.prototype.constructor = Runtime.CoreEvent;
-Object.assign(Runtime.CoreEvent.prototype,
+Runtime.Annotations.LambdaChain.prototype = Object.create(Runtime.CoreStruct.prototype);
+Runtime.Annotations.LambdaChain.prototype.constructor = Runtime.Annotations.LambdaChain;
+Object.assign(Runtime.Annotations.LambdaChain.prototype,
 {
 	_init: function(__ctx)
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
-		this.__sender = null;
-		if (a.indexOf("sender") == -1) defProp(this, "sender");
+		this.__name = "";
+		if (a.indexOf("name") == -1) defProp(this, "name");
+		this.__value = "";
+		if (a.indexOf("value") == -1) defProp(this, "value");
+		this.__chain = "";
+		if (a.indexOf("chain") == -1) defProp(this, "chain");
+		this.__pos = 0;
+		if (a.indexOf("pos") == -1) defProp(this, "pos");
+		this.__is_await = false;
+		if (a.indexOf("is_await") == -1) defProp(this, "is_await");
 		Runtime.CoreStruct.prototype._init.call(this,__ctx);
 	},
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.CoreEvent)
+		if (o instanceof Runtime.Annotations.LambdaChain)
 		{
-			this.__sender = o.__sender;
+			this.__name = o.__name;
+			this.__value = o.__value;
+			this.__chain = o.__chain;
+			this.__pos = o.__pos;
+			this.__is_await = o.__is_await;
 		}
 		Runtime.CoreStruct.prototype.assignObject.call(this,__ctx,o);
 	},
 	assignValue: function(__ctx,k,v)
 	{
-		if (k == "sender")this.__sender = v;
+		if (k == "name")this.__name = v;
+		else if (k == "value")this.__value = v;
+		else if (k == "chain")this.__chain = v;
+		else if (k == "pos")this.__pos = v;
+		else if (k == "is_await")this.__is_await = v;
 		else Runtime.CoreStruct.prototype.assignValue.call(this,__ctx,k,v);
 	},
 	takeValue: function(__ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "sender")return this.__sender;
+		if (k == "name")return this.__name;
+		else if (k == "value")return this.__value;
+		else if (k == "chain")return this.__chain;
+		else if (k == "pos")return this.__pos;
+		else if (k == "is_await")return this.__is_await;
 		return Runtime.CoreStruct.prototype.takeValue.call(this,__ctx,k,d);
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.CoreEvent";
+		return "Runtime.Annotations.LambdaChain";
 	},
 });
-Object.assign(Runtime.CoreEvent, Runtime.CoreStruct);
-Object.assign(Runtime.CoreEvent,
+Object.assign(Runtime.Annotations.LambdaChain, Runtime.CoreStruct);
+Object.assign(Runtime.Annotations.LambdaChain,
 {
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Annotations";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.CoreEvent";
+		return "Runtime.Annotations.LambdaChain";
 	},
 	getParentClassName: function()
 	{
@@ -81,8 +102,8 @@ Object.assign(Runtime.CoreEvent,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.CoreEvent",
-			"name": "Runtime.CoreEvent",
+			"class_name": "Runtime.Annotations.LambdaChain",
+			"name": "Runtime.Annotations.LambdaChain",
 			"annotations": Collection.from([
 			]),
 		});
@@ -93,7 +114,11 @@ Object.assign(Runtime.CoreEvent,
 		if (f==undefined) f=0;
 		if ((f|3)==3)
 		{
-			a.push("sender");
+			a.push("name");
+			a.push("value");
+			a.push("chain");
+			a.push("pos");
+			a.push("is_await");
 		}
 		return Runtime.Collection.from(a);
 	},
@@ -112,4 +137,4 @@ Object.assign(Runtime.CoreEvent,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.CoreEvent);
+Runtime.rtl.defClass(Runtime.Annotations.LambdaChain);

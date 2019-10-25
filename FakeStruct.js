@@ -18,7 +18,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.CoreStruct = function(__ctx, obj)
+Runtime.FakeStruct = function(__ctx, obj)
 {
 	Runtime.CoreObject.call(this, __ctx);
 	if (obj != null)
@@ -26,7 +26,7 @@ Runtime.CoreStruct = function(__ctx, obj)
 		if (!(obj instanceof Runtime.Dict))
 		{
 			var _Dict = use("Runtime.Dict");
-				if (typeof obj == "object") obj = _Dict.from(obj);
+				if (typeof obj == "object") obj = _Dict.create(obj);
 		}
 		var rtl = use("Runtime.rtl");
 			for (var key in obj._map)
@@ -37,9 +37,9 @@ Runtime.CoreStruct = function(__ctx, obj)
 	}
 	if (this.__uq__ == undefined || this.__uq__ == null) this.__uq__ = Symbol();
 };
-Runtime.CoreStruct.prototype = Object.create(Runtime.CoreObject.prototype);
-Runtime.CoreStruct.prototype.constructor = Runtime.CoreStruct;
-Object.assign(Runtime.CoreStruct.prototype,
+Runtime.FakeStruct.prototype = Object.create(Runtime.CoreObject.prototype);
+Runtime.FakeStruct.prototype.constructor = Runtime.FakeStruct;
+Object.assign(Runtime.FakeStruct.prototype,
 {
 	/**
 	 * Init struct data
@@ -51,62 +51,68 @@ Object.assign(Runtime.CoreStruct.prototype,
 	/**
 	 * Copy this struct with new values
 	 * @param Map obj = null
-	 * @return CoreStruct
+	 * @return FakeStruct
 	 */
 	copy: function(__ctx, obj)
 	{
 		if (obj == undefined) obj = null;
-		if (obj == null)
-		{
-			return this;
-		}
-		var proto = Object.getPrototypeOf(this);
-		var item = Object.create(proto); item._init();
-		item = Object.assign(item, this);
-		
+		var _rtl = use("Runtime.rtl");
 		var _Dict = use("Runtime.Dict");
-		if (obj instanceof _Dict)
+		if (obj == null){}
+		else if (obj instanceof _Dict)
 		{
-			for (var key in obj._map) item["__" + key.substring(1)] = obj._map[key];
+			for (var key in obj._map)
+			{
+				this[key.substring(1)] = _rtl.clone(__ctx, obj._map[key]);
+			}
 		}
 		else
 		{
-			for (var key in obj) item["__" + key] = obj[key];
+			for (var key in obj)
+			{
+				this[key] = _rtl.clone(__ctx, obj[key]);
+			}
 		}
 		
-		item.initData(this, obj);
+		this.initData(this, obj);
 		
-		return item;
+		return this;
 		return this;
 	},
 	/**
-	 * Copy this struct with new values
+	 * Clone this struct with same values
 	 * @param Map obj = null
-	 * @return CoreStruct
+	 * @return FakeStruct
 	 */
 	clone: function(__ctx, fields)
 	{
+		if (fields == undefined) fields = null;
 		var obj = new Runtime.Map(__ctx);
 		if (fields != null)
 		{
 			fields.each(__ctx, (__ctx, field_name) => 
 			{
-				obj.set(__ctx, field_name, this.takeValue(__ctx, field_name));
+				obj.set(__ctx, field_name, Runtime.rtl.clone(__ctx, this.takeValue(__ctx, field_name)));
 			});
 		}
 		else
 		{
-			return this;
+			var names = Runtime.RuntimeUtils.getVariablesNames(__ctx, this.getClassName(__ctx));
+			for (var i = 0;i < names.count(__ctx);i++)
+			{
+				var field_name = names.item(__ctx, i);
+				obj.set(__ctx, field_name, Runtime.rtl.clone(__ctx, this.takeValue(__ctx, field_name)));
+			}
 		}
 		/* Return object */
-		var res = Runtime.rtl.newInstance(__ctx, this.getClassName(__ctx), Runtime.Collection.from([obj.toDict(__ctx)]));
+		var res = this.constructor.newInstance(__ctx, obj.toDict(__ctx));
 		return res;
 	},
 	/**
 	 * Create new struct with new value
 	 * @param string field_name
 	 * @param fn f
-	 * @return CoreStruct
+	 * @return FakeStruct
 	 */
 	map: function(__ctx, field_name, f)
 	{
@@ -114,7 +120,7 @@ Object.assign(Runtime.CoreStruct.prototype,
 	},
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.CoreStruct)
+		if (o instanceof Runtime.FakeStruct)
 		{
 		}
 		Runtime.CoreObject.prototype.assignObject.call(this,__ctx,o);
@@ -130,11 +136,11 @@ Object.assign(Runtime.CoreStruct.prototype,
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.CoreStruct";
+		return "Runtime.FakeStruct";
 	},
 });
-Object.assign(Runtime.CoreStruct, Runtime.CoreObject);
-Object.assign(Runtime.CoreStruct,
+Object.assign(Runtime.FakeStruct, Runtime.CoreObject);
+Object.assign(Runtime.FakeStruct,
 {
 	/**
 	 * Returns new instance
@@ -150,7 +156,7 @@ Object.assign(Runtime.CoreStruct,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.CoreStruct";
+		return "Runtime.FakeStruct";
 	},
 	getParentClassName: function()
 	{
@@ -163,8 +169,8 @@ Object.assign(Runtime.CoreStruct,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.CoreStruct",
-			"name": "Runtime.CoreStruct",
+			"class_name": "Runtime.FakeStruct",
+			"name": "Runtime.FakeStruct",
 			"annotations": Collection.from([
 			]),
 		});
@@ -194,4 +200,4 @@ Object.assign(Runtime.CoreStruct,
 		Runtime.Interfaces.SerializeInterface,
 	],
 });
-Runtime.rtl.defClass(Runtime.CoreStruct);
+Runtime.rtl.defClass(Runtime.FakeStruct);

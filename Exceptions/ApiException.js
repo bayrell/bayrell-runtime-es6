@@ -1,7 +1,7 @@
 "use strict;"
 var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
- *  Bayrell Runtime Library
+ *  Bayrell Runtime Library 
  *
  *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
  *
@@ -18,74 +18,51 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.re = function(__ctx)
+if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
+Runtime.Exceptions.ApiException = function(__ctx, message, code, context, prev)
 {
+	Runtime.Exceptions.RuntimeException.call(this, __ctx, message, code, context, prev);
 };
-Object.assign(Runtime.re.prototype,
+Runtime.Exceptions.ApiException.prototype = Object.create(Runtime.Exceptions.RuntimeException.prototype);
+Runtime.Exceptions.ApiException.prototype.constructor = Runtime.Exceptions.ApiException;
+Object.assign(Runtime.Exceptions.ApiException.prototype,
 {
 	assignObject: function(__ctx,o)
 	{
-		if (o instanceof Runtime.re)
+		if (o instanceof Runtime.Exceptions.ApiException)
 		{
 		}
+		Runtime.Exceptions.RuntimeException.prototype.assignObject.call(this,__ctx,o);
 	},
 	assignValue: function(__ctx,k,v)
 	{
+		Runtime.Exceptions.RuntimeException.prototype.assignValue.call(this,__ctx,k,v);
 	},
 	takeValue: function(__ctx,k,d)
 	{
 		if (d == undefined) d = null;
+		return Runtime.Exceptions.RuntimeException.prototype.takeValue.call(this,__ctx,k,d);
 	},
 	getClassName: function(__ctx)
 	{
-		return "Runtime.re";
+		return "Runtime.Exceptions.ApiException";
 	},
 });
-Object.assign(Runtime.re,
+Object.assign(Runtime.Exceptions.ApiException, Runtime.Exceptions.RuntimeException);
+Object.assign(Runtime.Exceptions.ApiException,
 {
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return bool
-	 */
-	match: function(__ctx, r, s)
-	{
-		return s.match( new RegExp(r, "g") ) != null;
-	},
-	/**
-	 * Search regular expression
-	 * @param string r regular expression
-	 * @param string s string
-	 * @return Vector result
-	 */
-	matchAll: function(__ctx, r, s)
-	{
-		return null;
-	},
-	/**
-	 * Replace with regular expression
-	 * @param string r - regular expression
-	 * @param string replace - new value
-	 * @param string s - replaceable string
-	 * @return string
-	 */
-	replace: function(__ctx, r, replace, s)
-	{
-		return s.replace(new RegExp(r, "g"), replace);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Exceptions";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.re";
+		return "Runtime.Exceptions.ApiException";
 	},
 	getParentClassName: function()
 	{
-		return "";
+		return "Runtime.Exceptions.RuntimeException";
 	},
 	getClassInfo: function(__ctx)
 	{
@@ -94,8 +71,8 @@ Object.assign(Runtime.re,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(__ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.re",
-			"name": "Runtime.re",
+			"class_name": "Runtime.Exceptions.ApiException",
+			"name": "Runtime.Exceptions.ApiException",
 			"annotations": Collection.from([
 			]),
 		});
@@ -121,4 +98,4 @@ Object.assign(Runtime.re,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.re);
+Runtime.rtl.defClass(Runtime.Exceptions.ApiException);

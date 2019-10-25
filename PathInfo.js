@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -17,38 +18,118 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.PathInfo = class{
+Runtime.PathInfo = function(__ctx)
+{
+};
+Object.assign(Runtime.PathInfo.prototype,
+{
 	/**
 	 * Returns string
 	 */
-	toString(){
+	toString: function(__ctx)
+	{
 		return this.filepath;
-	}
-	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.PathInfo";}
-	static getCurrentNamespace(){return "Runtime";}
-	static getCurrentClassName(){return "Runtime.PathInfo";}
-	static getParentClassName(){return "";}
-	_init(){
+	},
+	_init: function(__ctx)
+	{
 		this.filepath = "";
 		this.dirname = "";
 		this.basename = "";
 		this.extension = "";
 		this.filename = "";
-		if (this.__implements__ == undefined){this.__implements__ = [];}
-		this.__implements__.push(Runtime.Interfaces.StringInterface);
-	}
-	static getFieldsList(names, flag){
-		if (flag==undefined)flag=0;
-	}
-	static getFieldInfoByName(field_name){
+	},
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.PathInfo)
+		{
+			this.filepath = o.filepath;
+			this.dirname = o.dirname;
+			this.basename = o.basename;
+			this.extension = o.extension;
+			this.filename = o.filename;
+		}
+	},
+	assignValue: function(__ctx,k,v)
+	{
+		if (k == "filepath")this.filepath = v;
+		else if (k == "dirname")this.dirname = v;
+		else if (k == "basename")this.basename = v;
+		else if (k == "extension")this.extension = v;
+		else if (k == "filename")this.filename = v;
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+		if (k == "filepath")return this.filepath;
+		else if (k == "dirname")return this.dirname;
+		else if (k == "basename")return this.basename;
+		else if (k == "extension")return this.extension;
+		else if (k == "filename")return this.filename;
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.PathInfo";
+	},
+});
+Object.assign(Runtime.PathInfo,
+{
+	/* ======================= Class Init Functions ======================= */
+	getCurrentNamespace: function()
+	{
+		return "Runtime";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.PathInfo";
+	},
+	getParentClassName: function()
+	{
+		return "";
+	},
+	getClassInfo: function(__ctx)
+	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.PathInfo",
+			"name": "Runtime.PathInfo",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		if ((f|2)==2)
+		{
+			a.push("filepath");
+			a.push("dirname");
+			a.push("basename");
+			a.push("extension");
+			a.push("filename");
+		}
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-	static getMethodsList(names){
-	}
-	static getMethodInfoByName(method_name){
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-}
-Runtime.PathInfo.__static_implements__ = [];
-Runtime.PathInfo.__static_implements__.push(Runtime.Interfaces.StringInterface)
+	},
+	__implements__:
+	[
+		Runtime.Interfaces.StringInterface,
+	],
+});
+Runtime.rtl.defClass(Runtime.PathInfo);

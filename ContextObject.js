@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -17,16 +18,27 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.ContextObject = class extends Runtime.CoreObject{
+/**
+ * Deprecated
+ */
+Runtime.ContextObject = function(__ctx, context)
+{
+	Runtime.CoreObject.call(this, __ctx);
+	this._context = context;
+};
+Runtime.ContextObject.prototype = Object.create(Runtime.CoreObject.prototype);
+Runtime.ContextObject.prototype.constructor = Runtime.ContextObject;
+Object.assign(Runtime.ContextObject.prototype,
+{
 	/**
-	 * Returns context provider
+	 * Returns context
 	 *
-	 * @params string provider_name
-	 * @return ContextObject
+	 * @return ContextInterface 
 	 */
-	createProvider(provider_name){
-		return this._context.createProvider(provider_name);
-	}
+	context: function(__ctx)
+	{
+		return this._context;
+	},
 	/**
 	 * Translate message
 	 * @params string message - message need to be translated
@@ -34,49 +46,93 @@ Runtime.ContextObject = class extends Runtime.CoreObject{
 	 * @params string locale - Different locale. Default "".
 	 * @return string - translated string
 	 */
-	translate(message, params, locale){
-		if (params == undefined) params=null;
-		if (locale == undefined) locale="";
-		return this._context.translate(message, params, locale);
-	}
-	/**
-	 * Get context
-	 *
-	 * @return ContextInterface 
-	 */
-	context(){
-		return this._context;
-	}
-	/** 
-	 * Constructor
-	 */
-	constructor(context){
-		if (context == undefined) context=null;
-		super();
-		this._context = context;
-		if (!Runtime.rtl.exists(this._context)){
-			this._context = Runtime.RuntimeUtils.getContext();
-		}
-	}
-	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.ContextObject";}
-	static getCurrentNamespace(){return "Runtime";}
-	static getCurrentClassName(){return "Runtime.ContextObject";}
-	static getParentClassName(){return "Runtime.CoreObject";}
-	_init(){
-		super._init();
-		var names = Object.getOwnPropertyNames(this);
+	translate: function(__ctx, message, params, locale)
+	{
+		if (params == undefined) params = null;
+		if (locale == undefined) locale = "";
+		return this._context.translate(__ctx, message, params, locale);
+	},
+	_init: function(__ctx)
+	{
 		this._context = null;
-	}
-	static getFieldsList(names, flag){
-		if (flag==undefined)flag=0;
-	}
-	static getFieldInfoByName(field_name){
+		Runtime.CoreObject.prototype._init.call(this,__ctx);
+	},
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.ContextObject)
+		{
+			this._context = o._context;
+		}
+		Runtime.CoreObject.prototype.assignObject.call(this,__ctx,o);
+	},
+	assignValue: function(__ctx,k,v)
+	{
+		if (k == "_context")this._context = v;
+		else Runtime.CoreObject.prototype.assignValue.call(this,__ctx,k,v);
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+		if (k == "_context")return this._context;
+		return Runtime.CoreObject.prototype.takeValue.call(this,__ctx,k,d);
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.ContextObject";
+	},
+});
+Object.assign(Runtime.ContextObject, Runtime.CoreObject);
+Object.assign(Runtime.ContextObject,
+{
+	/* ======================= Class Init Functions ======================= */
+	getCurrentNamespace: function()
+	{
+		return "Runtime";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.ContextObject";
+	},
+	getParentClassName: function()
+	{
+		return "Runtime.CoreObject";
+	},
+	getClassInfo: function(__ctx)
+	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.ContextObject",
+			"name": "Runtime.ContextObject",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		if ((f|2)==2)
+		{
+			a.push("_context");
+		}
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-	static getMethodsList(names){
-	}
-	static getMethodInfoByName(method_name){
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-}
+	},
+});
+Runtime.rtl.defClass(Runtime.ContextObject);

@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library 
  *
@@ -18,26 +19,83 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
-Runtime.Exceptions.AssignStructValueError = class extends Runtime.Exceptions.RuntimeException{
-	constructor(name, context, prev){
-		if (context == undefined) context=null;
-		if (prev == undefined) prev=null;
-		super(Runtime.rtl.translate("Can not set key '"+Runtime.rtl.toString(name)+"' in immutable struct", null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
-	}
+Runtime.Exceptions.AssignStructValueError = function(__ctx, name, context, prev)
+{
+	Runtime.Exceptions.RuntimeException.call(this, __ctx, Runtime.rtl.translate(__ctx, "Can not set key '" + Runtime.rtl.toStr(name) + Runtime.rtl.toStr("' in immutable struct"), null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
+};
+Runtime.Exceptions.AssignStructValueError.prototype = Object.create(Runtime.Exceptions.RuntimeException.prototype);
+Runtime.Exceptions.AssignStructValueError.prototype.constructor = Runtime.Exceptions.AssignStructValueError;
+Object.assign(Runtime.Exceptions.AssignStructValueError.prototype,
+{
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.Exceptions.AssignStructValueError)
+		{
+		}
+		Runtime.Exceptions.RuntimeException.prototype.assignObject.call(this,__ctx,o);
+	},
+	assignValue: function(__ctx,k,v)
+	{
+		Runtime.Exceptions.RuntimeException.prototype.assignValue.call(this,__ctx,k,v);
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+		return Runtime.Exceptions.RuntimeException.prototype.takeValue.call(this,__ctx,k,d);
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Exceptions.AssignStructValueError";
+	},
+});
+Object.assign(Runtime.Exceptions.AssignStructValueError, Runtime.Exceptions.RuntimeException);
+Object.assign(Runtime.Exceptions.AssignStructValueError,
+{
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.Exceptions.AssignStructValueError";}
-	static getCurrentNamespace(){return "Runtime.Exceptions";}
-	static getCurrentClassName(){return "Runtime.Exceptions.AssignStructValueError";}
-	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
-	static getFieldsList(names, flag){
-		if (flag==undefined)flag=0;
-	}
-	static getFieldInfoByName(field_name){
+	getCurrentNamespace: function()
+	{
+		return "Runtime.Exceptions";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Exceptions.AssignStructValueError";
+	},
+	getParentClassName: function()
+	{
+		return "Runtime.Exceptions.RuntimeException";
+	},
+	getClassInfo: function(__ctx)
+	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.Exceptions.AssignStructValueError",
+			"name": "Runtime.Exceptions.AssignStructValueError",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-	static getMethodsList(names){
-	}
-	static getMethodInfoByName(method_name){
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-}
+	},
+});
+Runtime.rtl.defClass(Runtime.Exceptions.AssignStructValueError);

@@ -1,4 +1,5 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,26 +19,83 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
-Runtime.Exceptions.UnknownError = class extends Runtime.Exceptions.RuntimeException{
-	constructor(context, prev){
-		if (context == undefined) context=null;
-		if (prev == undefined) prev=null;
-		super(Runtime.rtl.translate("Unknown error", null, "", context), Runtime.RuntimeConstant.ERROR_UNKNOWN, context, prev);
-	}
+Runtime.Exceptions.UnknownError = function(__ctx, context, prev)
+{
+	Runtime.Exceptions.RuntimeException.call(this, __ctx, Runtime.rtl.translate(__ctx, "Unknown error", null, "", context), Runtime.RuntimeConstant.ERROR_UNKNOWN, context, prev);
+};
+Runtime.Exceptions.UnknownError.prototype = Object.create(Runtime.Exceptions.RuntimeException.prototype);
+Runtime.Exceptions.UnknownError.prototype.constructor = Runtime.Exceptions.UnknownError;
+Object.assign(Runtime.Exceptions.UnknownError.prototype,
+{
+	assignObject: function(__ctx,o)
+	{
+		if (o instanceof Runtime.Exceptions.UnknownError)
+		{
+		}
+		Runtime.Exceptions.RuntimeException.prototype.assignObject.call(this,__ctx,o);
+	},
+	assignValue: function(__ctx,k,v)
+	{
+		Runtime.Exceptions.RuntimeException.prototype.assignValue.call(this,__ctx,k,v);
+	},
+	takeValue: function(__ctx,k,d)
+	{
+		if (d == undefined) d = null;
+		return Runtime.Exceptions.RuntimeException.prototype.takeValue.call(this,__ctx,k,d);
+	},
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Exceptions.UnknownError";
+	},
+});
+Object.assign(Runtime.Exceptions.UnknownError, Runtime.Exceptions.RuntimeException);
+Object.assign(Runtime.Exceptions.UnknownError,
+{
 	/* ======================= Class Init Functions ======================= */
-	getClassName(){return "Runtime.Exceptions.UnknownError";}
-	static getCurrentNamespace(){return "Runtime.Exceptions";}
-	static getCurrentClassName(){return "Runtime.Exceptions.UnknownError";}
-	static getParentClassName(){return "Runtime.Exceptions.RuntimeException";}
-	static getFieldsList(names, flag){
-		if (flag==undefined)flag=0;
-	}
-	static getFieldInfoByName(field_name){
+	getCurrentNamespace: function()
+	{
+		return "Runtime.Exceptions";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Exceptions.UnknownError";
+	},
+	getParentClassName: function()
+	{
+		return "Runtime.Exceptions.RuntimeException";
+	},
+	getClassInfo: function(__ctx)
+	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		return new IntrospectionInfo(__ctx, {
+			"kind": IntrospectionInfo.ITEM_CLASS,
+			"class_name": "Runtime.Exceptions.UnknownError",
+			"name": "Runtime.Exceptions.UnknownError",
+			"annotations": Collection.from([
+			]),
+		});
+	},
+	getFieldsList: function(__ctx, f)
+	{
+		var a = [];
+		if (f==undefined) f=0;
+		return Runtime.Collection.from(a);
+	},
+	getFieldInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-	static getMethodsList(names){
-	}
-	static getMethodInfoByName(method_name){
+	},
+	getMethodsList: function(__ctx)
+	{
+		var a = [
+		];
+		return Runtime.Collection.from(a);
+	},
+	getMethodInfoByName: function(__ctx,field_name)
+	{
 		return null;
-	}
-}
+	},
+});
+Runtime.rtl.defClass(Runtime.Exceptions.UnknownError);

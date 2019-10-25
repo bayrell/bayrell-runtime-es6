@@ -1,8 +1,9 @@
 "use strict;"
+var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2018 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,12 +19,25 @@
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.FactoryInterface = class{
-	/**
-	 * Returns new Instance
-	 */
-	newInstance(context, params){
-		if (context == undefined) context=null;
-		if (params == undefined) params=null;
-	}
-}
+Runtime.Interfaces.AssetsInterface = function(__ctx)
+{
+};
+Object.assign(Runtime.Interfaces.AssetsInterface.prototype,
+{
+	getClassName: function(__ctx)
+	{
+		return "Runtime.Interfaces.AssetsInterface";
+	},
+});
+Object.assign(Runtime.Interfaces.AssetsInterface,
+{
+	getCurrentNamespace: function()
+	{
+		return "Runtime.Interfaces";
+	},
+	getCurrentClassName: function()
+	{
+		return "Runtime.Interfaces.AssetsInterface";
+	},
+});
+Runtime.rtl.defClass(Runtime.Interfaces.AssetsInterface);
