@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
-Runtime.Annotations.IntrospectionClass = function(__ctx)
+Runtime.Annotations.IntrospectionClass = function(ctx)
 {
 	Runtime.CoreStruct.apply(this, arguments);
 };
@@ -27,54 +27,49 @@ Runtime.Annotations.IntrospectionClass.prototype = Object.create(Runtime.CoreStr
 Runtime.Annotations.IntrospectionClass.prototype.constructor = Runtime.Annotations.IntrospectionClass;
 Object.assign(Runtime.Annotations.IntrospectionClass.prototype,
 {
-	_init: function(__ctx)
+	_init: function(ctx)
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
-		this.__class_name = "";
-		if (a.indexOf("class_name") == -1) defProp(this, "class_name");
-		this.__class_info = null;
-		if (a.indexOf("class_info") == -1) defProp(this, "class_info");
-		this.__fields = null;
-		if (a.indexOf("fields") == -1) defProp(this, "fields");
-		this.__methods = null;
-		if (a.indexOf("methods") == -1) defProp(this, "methods");
-		this.__interfaces = null;
-		if (a.indexOf("interfaces") == -1) defProp(this, "interfaces");
-		Runtime.CoreStruct.prototype._init.call(this,__ctx);
+		this.class_name = "";
+		this.class_info = null;
+		this.fields = null;
+		this.methods = null;
+		this.interfaces = null;
+		Runtime.CoreStruct.prototype._init.call(this,ctx);
 	},
-	assignObject: function(__ctx,o)
+	assignObject: function(ctx,o)
 	{
 		if (o instanceof Runtime.Annotations.IntrospectionClass)
 		{
-			this.__class_name = o.__class_name;
-			this.__class_info = o.__class_info;
-			this.__fields = o.__fields;
-			this.__methods = o.__methods;
-			this.__interfaces = o.__interfaces;
+			this.class_name = o.class_name;
+			this.class_info = o.class_info;
+			this.fields = o.fields;
+			this.methods = o.methods;
+			this.interfaces = o.interfaces;
 		}
-		Runtime.CoreStruct.prototype.assignObject.call(this,__ctx,o);
+		Runtime.CoreStruct.prototype.assignObject.call(this,ctx,o);
 	},
-	assignValue: function(__ctx,k,v)
+	assignValue: function(ctx,k,v)
 	{
-		if (k == "class_name")this.__class_name = v;
-		else if (k == "class_info")this.__class_info = v;
-		else if (k == "fields")this.__fields = v;
-		else if (k == "methods")this.__methods = v;
-		else if (k == "interfaces")this.__interfaces = v;
-		else Runtime.CoreStruct.prototype.assignValue.call(this,__ctx,k,v);
+		if (k == "class_name")this.class_name = v;
+		else if (k == "class_info")this.class_info = v;
+		else if (k == "fields")this.fields = v;
+		else if (k == "methods")this.methods = v;
+		else if (k == "interfaces")this.interfaces = v;
+		else Runtime.CoreStruct.prototype.assignValue.call(this,ctx,k,v);
 	},
-	takeValue: function(__ctx,k,d)
+	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "class_name")return this.__class_name;
-		else if (k == "class_info")return this.__class_info;
-		else if (k == "fields")return this.__fields;
-		else if (k == "methods")return this.__methods;
-		else if (k == "interfaces")return this.__interfaces;
-		return Runtime.CoreStruct.prototype.takeValue.call(this,__ctx,k,d);
+		if (k == "class_name")return this.class_name;
+		else if (k == "class_info")return this.class_info;
+		else if (k == "fields")return this.fields;
+		else if (k == "methods")return this.methods;
+		else if (k == "interfaces")return this.interfaces;
+		return Runtime.CoreStruct.prototype.takeValue.call(this,ctx,k,d);
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.Annotations.IntrospectionClass";
 	},
@@ -95,12 +90,12 @@ Object.assign(Runtime.Annotations.IntrospectionClass,
 	{
 		return "Runtime.CoreStruct";
 	},
-	getClassInfo: function(__ctx)
+	getClassInfo: function(ctx)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(__ctx, {
+		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Annotations.IntrospectionClass",
 			"name": "Runtime.Annotations.IntrospectionClass",
@@ -108,7 +103,7 @@ Object.assign(Runtime.Annotations.IntrospectionClass,
 			]),
 		});
 	},
-	getFieldsList: function(__ctx, f)
+	getFieldsList: function(ctx, f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
@@ -122,17 +117,55 @@ Object.assign(Runtime.Annotations.IntrospectionClass,
 		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(__ctx,field_name)
+	getFieldInfoByName: function(ctx,field_name)
 	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		if (field_name == "class_name") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Annotations.IntrospectionClass",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "class_info") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Annotations.IntrospectionClass",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "fields") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Annotations.IntrospectionClass",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "methods") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Annotations.IntrospectionClass",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "interfaces") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Annotations.IntrospectionClass",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
-	getMethodsList: function(__ctx)
+	getMethodsList: function(ctx)
 	{
 		var a = [
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(__ctx,field_name)
+	getMethodInfoByName: function(ctx,field_name)
 	{
 		return null;
 	},

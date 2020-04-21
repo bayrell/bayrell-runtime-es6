@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Annotations == 'undefined') Runtime.Annotations = {};
-Runtime.Annotations.Driver = function(__ctx)
+Runtime.Annotations.Driver = function(ctx)
 {
 	Runtime.Annotations.Entity.apply(this, arguments);
 };
@@ -27,23 +27,23 @@ Runtime.Annotations.Driver.prototype = Object.create(Runtime.Annotations.Entity.
 Runtime.Annotations.Driver.prototype.constructor = Runtime.Annotations.Driver;
 Object.assign(Runtime.Annotations.Driver.prototype,
 {
-	assignObject: function(__ctx,o)
+	assignObject: function(ctx,o)
 	{
 		if (o instanceof Runtime.Annotations.Driver)
 		{
 		}
-		Runtime.Annotations.Entity.prototype.assignObject.call(this,__ctx,o);
+		Runtime.Annotations.Entity.prototype.assignObject.call(this,ctx,o);
 	},
-	assignValue: function(__ctx,k,v)
+	assignValue: function(ctx,k,v)
 	{
-		Runtime.Annotations.Entity.prototype.assignValue.call(this,__ctx,k,v);
+		Runtime.Annotations.Entity.prototype.assignValue.call(this,ctx,k,v);
 	},
-	takeValue: function(__ctx,k,d)
+	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		return Runtime.Annotations.Entity.prototype.takeValue.call(this,__ctx,k,d);
+		return Runtime.Annotations.Entity.prototype.takeValue.call(this,ctx,k,d);
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.Annotations.Driver";
 	},
@@ -64,12 +64,12 @@ Object.assign(Runtime.Annotations.Driver,
 	{
 		return "Runtime.Annotations.Entity";
 	},
-	getClassInfo: function(__ctx)
+	getClassInfo: function(ctx)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(__ctx, {
+		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Annotations.Driver",
 			"name": "Runtime.Annotations.Driver",
@@ -77,23 +77,26 @@ Object.assign(Runtime.Annotations.Driver,
 			]),
 		});
 	},
-	getFieldsList: function(__ctx, f)
+	getFieldsList: function(ctx, f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(__ctx,field_name)
+	getFieldInfoByName: function(ctx,field_name)
 	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return null;
 	},
-	getMethodsList: function(__ctx)
+	getMethodsList: function(ctx)
 	{
 		var a = [
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(__ctx,field_name)
+	getMethodInfoByName: function(ctx,field_name)
 	{
 		return null;
 	},

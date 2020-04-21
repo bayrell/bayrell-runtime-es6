@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,80 +39,67 @@ Object.assign(Runtime.Exceptions.ClassException,
 	getCurrentClassName: function(){ return "Runtime.Exceptions.ClassException"; },
 	getParentClassName: function(){ return ""; },
 });
-Runtime.Exceptions.RuntimeException = function(__ctx, message, code, context, prev)
+Runtime.Exceptions.RuntimeException = function(ctx, message, code, prev)
 {
-	Runtime.Exceptions.ClassException.call(this, __ctx, message, code, prev);
-	this._init(__ctx);
+	Runtime.Exceptions.ClassException.call(this, ctx, message, code, prev);
+	this._init(ctx);
 	this.error_str = message;
 	this.error_code = code;
-	this.context = context;
 	this.prev = prev;
-	this.updateError(__ctx);
+	this.updateError(ctx);
 };
 Runtime.Exceptions.RuntimeException.prototype = Object.create(Runtime.Exceptions.ClassException.prototype);
 Runtime.Exceptions.RuntimeException.prototype.constructor = Runtime.Exceptions.RuntimeException;
 Object.assign(Runtime.Exceptions.RuntimeException.prototype,
 {
-	getPreviousException: function(__ctx)
+	getPreviousException: function(ctx)
 	{
 		return this.prev;
 	},
-	getErrorMessage: function(__ctx)
+	getErrorMessage: function(ctx)
 	{
 		return this.error_message;
 	},
-	getErrorString: function(__ctx)
+	getErrorString: function(ctx)
 	{
 		return this.error_str;
 	},
-	getErrorCode: function(__ctx)
+	getErrorCode: function(ctx)
 	{
 		return this.error_code;
 	},
-	getFileName: function(__ctx)
+	getFileName: function(ctx)
 	{
 		return this.error_file;
 	},
-	getErrorLine: function(__ctx)
+	getErrorLine: function(ctx)
 	{
 		return this.error_line;
 	},
-	getErrorPos: function(__ctx)
+	getErrorPos: function(ctx)
 	{
 		return this.error_pos;
 	},
-	toString: function(__ctx)
+	toString: function(ctx)
 	{
-		return this.buildMessage(__ctx);
+		return this.buildMessage(ctx);
 	},
-	buildMessage: function(__ctx)
+	buildMessage: function(ctx)
 	{
-		var error_str = this.error_str;
-		var file = this.getFileName(__ctx);
-		var line = this.getErrorLine(__ctx);
-		var pos = this.getErrorPos(__ctx);
-		if (line != -1)
-		{
-			error_str += Runtime.rtl.toStr(" at Ln:" + Runtime.rtl.toStr(line) + Runtime.rtl.toStr(((pos != "") ? ", Pos:" + Runtime.rtl.toStr(pos) : "")));
-		}
-		if (file != "")
-		{
-			error_str += Runtime.rtl.toStr(" in file:'" + Runtime.rtl.toStr(file) + Runtime.rtl.toStr("'"));
-		}
-		return error_str;
+		return this.error_str;
 	},
-	updateError: function(__ctx)
+	updateError: function(ctx)
 	{
-		this.error_message = this.buildMessage(__ctx);
+		this.error_message = this.buildMessage(ctx);
 		this.message = this.error_message;
 	},
 	/**
 	 * Returns trace
 	 */
-	getTraceStr: function(__ctx)
+	getTraceStr: function(ctx)
 	{
 	},
-	_init: function(__ctx)
+	_init: function(ctx)
 	{
 		this.context = null;
 		this.prev = null;
@@ -122,9 +109,9 @@ Object.assign(Runtime.Exceptions.RuntimeException.prototype,
 		this.error_file = "";
 		this.error_line = -1;
 		this.error_pos = -1;
-		Runtime.Exceptions.ClassException.prototype._init.call(this,__ctx);
+		Runtime.Exceptions.ClassException.prototype._init.call(this,ctx);
 	},
-	assignObject: function(__ctx,o)
+	assignObject: function(ctx,o)
 	{
 		if (o instanceof Runtime.Exceptions.RuntimeException)
 		{
@@ -137,9 +124,9 @@ Object.assign(Runtime.Exceptions.RuntimeException.prototype,
 			this.error_line = o.error_line;
 			this.error_pos = o.error_pos;
 		}
-		Runtime.Exceptions.ClassException.prototype.assignObject.call(this,__ctx,o);
+		Runtime.Exceptions.ClassException.prototype.assignObject.call(this,ctx,o);
 	},
-	assignValue: function(__ctx,k,v)
+	assignValue: function(ctx,k,v)
 	{
 		if (k == "context")this.context = v;
 		else if (k == "prev")this.prev = v;
@@ -149,9 +136,9 @@ Object.assign(Runtime.Exceptions.RuntimeException.prototype,
 		else if (k == "error_file")this.error_file = v;
 		else if (k == "error_line")this.error_line = v;
 		else if (k == "error_pos")this.error_pos = v;
-		else Runtime.Exceptions.ClassException.prototype.assignValue.call(this,__ctx,k,v);
+		else Runtime.Exceptions.ClassException.prototype.assignValue.call(this,ctx,k,v);
 	},
-	takeValue: function(__ctx,k,d)
+	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
 		if (k == "context")return this.context;
@@ -162,9 +149,9 @@ Object.assign(Runtime.Exceptions.RuntimeException.prototype,
 		else if (k == "error_file")return this.error_file;
 		else if (k == "error_line")return this.error_line;
 		else if (k == "error_pos")return this.error_pos;
-		return Runtime.Exceptions.ClassException.prototype.takeValue.call(this,__ctx,k,d);
+		return Runtime.Exceptions.ClassException.prototype.takeValue.call(this,ctx,k,d);
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.Exceptions.RuntimeException";
 	},
@@ -185,12 +172,12 @@ Object.assign(Runtime.Exceptions.RuntimeException,
 	{
 		return "Runtime.Exceptions.ClassException";
 	},
-	getClassInfo: function(__ctx)
+	getClassInfo: function(ctx)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(__ctx, {
+		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Exceptions.RuntimeException",
 			"name": "Runtime.Exceptions.RuntimeException",
@@ -198,7 +185,7 @@ Object.assign(Runtime.Exceptions.RuntimeException,
 			]),
 		});
 	},
-	getFieldsList: function(__ctx, f)
+	getFieldsList: function(ctx, f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
@@ -215,17 +202,76 @@ Object.assign(Runtime.Exceptions.RuntimeException,
 		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(__ctx,field_name)
+	getFieldInfoByName: function(ctx,field_name)
 	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		if (field_name == "context") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "prev") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "error_message") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "error_str") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "error_code") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "error_file") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "error_line") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "error_pos") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Exceptions.RuntimeException",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
-	getMethodsList: function(__ctx)
+	getMethodsList: function(ctx)
 	{
 		var a = [
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(__ctx,field_name)
+	getMethodInfoByName: function(ctx,field_name)
 	{
 		return null;
 	},

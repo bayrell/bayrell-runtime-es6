@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.MessageRPC = function(__ctx)
+Runtime.MessageRPC = function(ctx)
 {
 	Runtime.Message.apply(this, arguments);
 };
@@ -26,49 +26,69 @@ Runtime.MessageRPC.prototype = Object.create(Runtime.Message.prototype);
 Runtime.MessageRPC.prototype.constructor = Runtime.MessageRPC;
 Object.assign(Runtime.MessageRPC.prototype,
 {
-	_init: function(__ctx)
+	_init: function(ctx)
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
-		this.__code = 0;
-		if (a.indexOf("code") == -1) defProp(this, "code");
-		this.__error = "";
-		if (a.indexOf("error") == -1) defProp(this, "error");
-		this.__response = null;
-		if (a.indexOf("response") == -1) defProp(this, "response");
-		this.__logs = null;
-		if (a.indexOf("logs") == -1) defProp(this, "logs");
-		Runtime.Message.prototype._init.call(this,__ctx);
+		this.uri = "";
+		this.api_name = "";
+		this.space_name = "";
+		this.method_name = "";
+		this.data = null;
+		this.code = 0;
+		this.error = "";
+		this.response = null;
+		this.logs = null;
+		this.have_result = false;
+		Runtime.Message.prototype._init.call(this,ctx);
 	},
-	assignObject: function(__ctx,o)
+	assignObject: function(ctx,o)
 	{
 		if (o instanceof Runtime.MessageRPC)
 		{
-			this.__code = o.__code;
-			this.__error = o.__error;
-			this.__response = o.__response;
-			this.__logs = o.__logs;
+			this.uri = o.uri;
+			this.api_name = o.api_name;
+			this.space_name = o.space_name;
+			this.method_name = o.method_name;
+			this.data = o.data;
+			this.code = o.code;
+			this.error = o.error;
+			this.response = o.response;
+			this.logs = o.logs;
+			this.have_result = o.have_result;
 		}
-		Runtime.Message.prototype.assignObject.call(this,__ctx,o);
+		Runtime.Message.prototype.assignObject.call(this,ctx,o);
 	},
-	assignValue: function(__ctx,k,v)
+	assignValue: function(ctx,k,v)
 	{
-		if (k == "code")this.__code = v;
-		else if (k == "error")this.__error = v;
-		else if (k == "response")this.__response = v;
-		else if (k == "logs")this.__logs = v;
-		else Runtime.Message.prototype.assignValue.call(this,__ctx,k,v);
+		if (k == "uri")this.uri = v;
+		else if (k == "api_name")this.api_name = v;
+		else if (k == "space_name")this.space_name = v;
+		else if (k == "method_name")this.method_name = v;
+		else if (k == "data")this.data = v;
+		else if (k == "code")this.code = v;
+		else if (k == "error")this.error = v;
+		else if (k == "response")this.response = v;
+		else if (k == "logs")this.logs = v;
+		else if (k == "have_result")this.have_result = v;
+		else Runtime.Message.prototype.assignValue.call(this,ctx,k,v);
 	},
-	takeValue: function(__ctx,k,d)
+	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "code")return this.__code;
-		else if (k == "error")return this.__error;
-		else if (k == "response")return this.__response;
-		else if (k == "logs")return this.__logs;
-		return Runtime.Message.prototype.takeValue.call(this,__ctx,k,d);
+		if (k == "uri")return this.uri;
+		else if (k == "api_name")return this.api_name;
+		else if (k == "space_name")return this.space_name;
+		else if (k == "method_name")return this.method_name;
+		else if (k == "data")return this.data;
+		else if (k == "code")return this.code;
+		else if (k == "error")return this.error;
+		else if (k == "response")return this.response;
+		else if (k == "logs")return this.logs;
+		else if (k == "have_result")return this.have_result;
+		return Runtime.Message.prototype.takeValue.call(this,ctx,k,d);
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.MessageRPC";
 	},
@@ -80,30 +100,29 @@ Object.assign(Runtime.MessageRPC,
 	 * Returns true if success
 	 * @return bool
 	 */
-	isSuccess: function(__ctx, msg)
+	isSuccess: function(ctx, msg)
 	{
-		return msg.code >= Runtime.RuntimeConstant.ERROR_OK;
+		return msg.have_result && msg.code >= Runtime.RuntimeConstant.ERROR_OK;
 	},
 	/**
 	 * Set success result
 	 * @param primitive res
 	 * @return Message
 	 */
-	success: function(__ctx, response)
+	success: function(ctx, msg, response)
 	{
-		return new Runtime.Message(__ctx, Runtime.Dict.from({"code":Runtime.RuntimeConstant.ERROR_OK,"error":"","response":response}));
+		return msg.copy(ctx, Runtime.Dict.from({"code":Runtime.RuntimeConstant.ERROR_OK,"error":"","response":response,"have_result":true}));
 	},
 	/**
 	 * Set fail result
 	 * @param primitive res
 	 * @return Message
 	 */
-	fail: function(__ctx, error, code, response)
+	fail: function(ctx, msg, response, error, code)
 	{
 		if (error == undefined) error = "";
 		if (code == undefined) code = -1;
-		if (response == undefined) response = null;
-		return new Runtime.Message(__ctx, Runtime.Dict.from({"code":code,"error":error,"response":response}));
+		return msg.copy(ctx, Runtime.Dict.from({"code":code,"error":error,"response":response,"have_result":true}));
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -118,12 +137,12 @@ Object.assign(Runtime.MessageRPC,
 	{
 		return "Runtime.Message";
 	},
-	getClassInfo: function(__ctx)
+	getClassInfo: function(ctx)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(__ctx, {
+		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.MessageRPC",
 			"name": "Runtime.MessageRPC",
@@ -131,30 +150,109 @@ Object.assign(Runtime.MessageRPC,
 			]),
 		});
 	},
-	getFieldsList: function(__ctx, f)
+	getFieldsList: function(ctx, f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
 		if ((f|3)==3)
 		{
+			a.push("uri");
+			a.push("api_name");
+			a.push("space_name");
+			a.push("method_name");
+			a.push("data");
 			a.push("code");
 			a.push("error");
 			a.push("response");
 			a.push("logs");
+			a.push("have_result");
 		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(__ctx,field_name)
+	getFieldInfoByName: function(ctx,field_name)
 	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		if (field_name == "uri") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "api_name") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "space_name") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "method_name") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "data") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "code") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "error") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "response") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "logs") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "have_result") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.MessageRPC",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
-	getMethodsList: function(__ctx)
+	getMethodsList: function(ctx)
 	{
 		var a = [
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(__ctx,field_name)
+	getMethodInfoByName: function(ctx,field_name)
 	{
 		return null;
 	},

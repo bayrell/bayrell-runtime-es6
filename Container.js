@@ -18,60 +18,43 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Message = function(ctx)
+Runtime.Container = function(ctx, value)
 {
-	Runtime.CoreStruct.apply(this, arguments);
+	this.val = value;
 };
-Runtime.Message.prototype = Object.create(Runtime.CoreStruct.prototype);
-Runtime.Message.prototype.constructor = Runtime.Message;
-Object.assign(Runtime.Message.prototype,
+Object.assign(Runtime.Container.prototype,
 {
 	_init: function(ctx)
 	{
-		var defProp = use('Runtime.rtl').defProp;
-		var a = Object.getOwnPropertyNames(this);
-		this.is_external = false;
-		this.session = null;
-		Runtime.CoreStruct.prototype._init.call(this,ctx);
+		this.val = null;
+		this.err = null;
 	},
 	assignObject: function(ctx,o)
 	{
-		if (o instanceof Runtime.Message)
+		if (o instanceof Runtime.Container)
 		{
-			this.is_external = o.is_external;
-			this.session = o.session;
+			this.val = o.val;
+			this.err = o.err;
 		}
-		Runtime.CoreStruct.prototype.assignObject.call(this,ctx,o);
 	},
 	assignValue: function(ctx,k,v)
 	{
-		if (k == "is_external")this.is_external = v;
-		else if (k == "session")this.session = v;
-		else Runtime.CoreStruct.prototype.assignValue.call(this,ctx,k,v);
+		if (k == "val")this.val = v;
+		else if (k == "err")this.err = v;
 	},
 	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "is_external")return this.is_external;
-		else if (k == "session")return this.session;
-		return Runtime.CoreStruct.prototype.takeValue.call(this,ctx,k,d);
+		if (k == "val")return this.val;
+		else if (k == "err")return this.err;
 	},
 	getClassName: function(ctx)
 	{
-		return "Runtime.Message";
+		return "Runtime.Container";
 	},
 });
-Object.assign(Runtime.Message, Runtime.CoreStruct);
-Object.assign(Runtime.Message,
+Object.assign(Runtime.Container,
 {
-	isExternal: function(ctx, s)
-	{
-		return s.is_external == true;
-	},
-	isInternal: function(ctx, s)
-	{
-		return s.is_external == false;
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
@@ -79,11 +62,11 @@ Object.assign(Runtime.Message,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Message";
+		return "Runtime.Container";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.CoreStruct";
+		return "";
 	},
 	getClassInfo: function(ctx)
 	{
@@ -92,8 +75,8 @@ Object.assign(Runtime.Message,
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Message",
-			"name": "Runtime.Message",
+			"class_name": "Runtime.Container",
+			"name": "Runtime.Container",
 			"annotations": Collection.from([
 			]),
 		});
@@ -102,10 +85,10 @@ Object.assign(Runtime.Message,
 	{
 		var a = [];
 		if (f==undefined) f=0;
-		if ((f|3)==3)
+		if ((f|2)==2)
 		{
-			a.push("is_external");
-			a.push("session");
+			a.push("val");
+			a.push("err");
 		}
 		return Runtime.Collection.from(a);
 	},
@@ -114,16 +97,16 @@ Object.assign(Runtime.Message,
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		if (field_name == "is_external") return new IntrospectionInfo(ctx, {
+		if (field_name == "val") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Message",
+			"class_name": "Runtime.Container",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "session") return new IntrospectionInfo(ctx, {
+		if (field_name == "err") return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Message",
+			"class_name": "Runtime.Container",
 			"name": field_name,
 			"annotations": Collection.from([
 			]),
@@ -141,4 +124,4 @@ Object.assign(Runtime.Message,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.Message);
+Runtime.rtl.defClass(Runtime.Container);

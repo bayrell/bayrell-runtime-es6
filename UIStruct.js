@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.UIStruct = function(__ctx)
+Runtime.UIStruct = function(ctx)
 {
 	Runtime.CoreStruct.apply(this, arguments);
 };
@@ -30,19 +30,19 @@ Object.assign(Runtime.UIStruct.prototype,
 	 * Returns true if component
 	 * @return bool
 	 */
-	getTag: function(__ctx)
+	getTag: function(ctx)
 	{
 		if (this.props == null)
 		{
 			return null;
 		}
-		return this.props.get(__ctx, "@tag", null);
+		return this.props.get(ctx, "@tag", null);
 	},
 	/**
 	 * Returns true if component
 	 * @return bool
 	 */
-	isComponent: function(__ctx)
+	isComponent: function(ctx)
 	{
 		return this.kind == Runtime.UIStruct.TYPE_COMPONENT;
 	},
@@ -50,7 +50,7 @@ Object.assign(Runtime.UIStruct.prototype,
 	 * Returns true if element
 	 * @return bool
 	 */
-	isElement: function(__ctx)
+	isElement: function(ctx)
 	{
 		return this.kind == Runtime.UIStruct.TYPE_ELEMENT;
 	},
@@ -58,7 +58,7 @@ Object.assign(Runtime.UIStruct.prototype,
 	 * Returns true if string
 	 * @return bool
 	 */
-	isString: function(__ctx)
+	isString: function(ctx)
 	{
 		return this.kind == Runtime.UIStruct.TYPE_STRING || this.kind == Runtime.UIStruct.TYPE_RAW;
 	},
@@ -66,7 +66,7 @@ Object.assign(Runtime.UIStruct.prototype,
 	 * Returns model
 	 * @return CoreStruct
 	 */
-	getModel: function(__ctx)
+	getModel: function(ctx)
 	{
 		return this.model;
 		if (this.model != null)
@@ -76,12 +76,12 @@ Object.assign(Runtime.UIStruct.prototype,
 		if (this.kind == Runtime.UIStruct.TYPE_COMPONENT)
 		{
 			var modelName = Runtime.rtl.method(this.name, "modelName");
-			var model_name = modelName(__ctx);
+			var model_name = modelName(ctx);
 			if (model_name == "")
 			{
 				return null;
 			}
-			var model = Runtime.rtl.newInstance(__ctx, model_name, Runtime.Collection.from([this.props]));
+			var model = Runtime.rtl.newInstance(ctx, model_name, Runtime.Collection.from([this.props]));
 			return model;
 		}
 		return null;
@@ -90,7 +90,7 @@ Object.assign(Runtime.UIStruct.prototype,
 	 * Returns key path
 	 * @return string
 	 */
-	getKey: function(__ctx, index)
+	getKey: function(ctx, index)
 	{
 		return (this.key !== "") ? this.key : index;
 	},
@@ -98,140 +98,127 @@ Object.assign(Runtime.UIStruct.prototype,
 	 * Returns key path
 	 * @return string
 	 */
-	getKeyPath: function(__ctx, key_path, index)
+	getKeyPath: function(ctx, key_path, index)
 	{
-		return (key_path !== "") ? key_path + Runtime.rtl.toStr(".") + Runtime.rtl.toStr(this.getKey(__ctx, index)) : this.getKey(__ctx, index);
+		return (key_path !== "") ? key_path + Runtime.rtl.toStr(".") + Runtime.rtl.toStr(this.getKey(ctx, index)) : this.getKey(ctx, index);
 	},
 	/**
 	 * Returns attrs
 	 */
-	getAttrs: function(__ctx)
+	getAttrs: function(ctx)
 	{
 		if (this.props != null)
 		{
-			return this.props.filter(__ctx, (__ctx, key, value) => 
+			return this.props.filter(ctx, (ctx, key, value) => 
 			{
-				return Runtime.rs.strpos(__ctx, key, "@") != 0 || key == "@class" || key == "@style";
+				return Runtime.rs.strpos(ctx, key, "@") != 0 || key == "@class" || key == "@style";
 			});
 		}
-		return new Runtime.Dict(__ctx);
+		return new Runtime.Dict(ctx);
 	},
 	/**
 	 * Returns props
 	 */
-	getProps: function(__ctx)
+	getProps: function(ctx)
 	{
 		if (this.props != null)
 		{
-			return this.props.filter(__ctx, (__ctx, key, value) => 
+			return this.props.filter(ctx, (ctx, key, value) => 
 			{
-				return Runtime.rs.strpos(__ctx, key, "@") == 0 && Runtime.rs.strpos(__ctx, key, "@on") != 0 && key != "@class";
+				return Runtime.rs.strpos(ctx, key, "@") == 0 && Runtime.rs.strpos(ctx, key, "@on") != 0 && key != "@class";
 			});
 		}
-		return new Runtime.Dict(__ctx);
+		return new Runtime.Dict(ctx);
 	},
 	/**
 	 * Returns events
 	 */
-	getEvents: function(__ctx)
+	getEvents: function(ctx)
 	{
 		if (this.props != null)
 		{
-			return this.props.filter(__ctx, (__ctx, key, value) => 
+			return this.props.filter(ctx, (ctx, key, value) => 
 			{
-				return Runtime.rs.strpos(__ctx, key, "@on") == 0;
+				return Runtime.rs.strpos(ctx, key, "@on") == 0;
 			});
 		}
-		return new Runtime.Dict(__ctx);
+		return new Runtime.Dict(ctx);
 	},
-	_init: function(__ctx)
+	_init: function(ctx)
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
-		this.__class_name = "";
-		if (a.indexOf("class_name") == -1) defProp(this, "class_name");
-		this.__key = "";
-		if (a.indexOf("key") == -1) defProp(this, "key");
-		this.__name = "";
-		if (a.indexOf("name") == -1) defProp(this, "name");
-		this.__bind = "";
-		if (a.indexOf("bind") == -1) defProp(this, "bind");
-		this.__kind = "element";
-		if (a.indexOf("kind") == -1) defProp(this, "kind");
-		this.__content = "";
-		if (a.indexOf("content") == -1) defProp(this, "content");
-		this.__reference = "";
-		if (a.indexOf("reference") == -1) defProp(this, "reference");
-		this.__value = null;
-		if (a.indexOf("value") == -1) defProp(this, "value");
-		this.__layout = null;
-		if (a.indexOf("layout") == -1) defProp(this, "layout");
-		this.__model = null;
-		if (a.indexOf("model") == -1) defProp(this, "model");
-		this.__props = null;
-		if (a.indexOf("props") == -1) defProp(this, "props");
-		this.__annotations = null;
-		if (a.indexOf("annotations") == -1) defProp(this, "annotations");
-		this.__children = null;
-		if (a.indexOf("children") == -1) defProp(this, "children");
-		Runtime.CoreStruct.prototype._init.call(this,__ctx);
+		this.class_name = "";
+		this.key = "";
+		this.name = "";
+		this.bind = "";
+		this.kind = "element";
+		this.content = "";
+		this.reference = "";
+		this.value = null;
+		this.layout = null;
+		this.model = null;
+		this.props = null;
+		this.annotations = null;
+		this.children = null;
+		Runtime.CoreStruct.prototype._init.call(this,ctx);
 	},
-	assignObject: function(__ctx,o)
+	assignObject: function(ctx,o)
 	{
 		if (o instanceof Runtime.UIStruct)
 		{
-			this.__class_name = o.__class_name;
-			this.__key = o.__key;
-			this.__name = o.__name;
-			this.__bind = o.__bind;
-			this.__kind = o.__kind;
-			this.__content = o.__content;
-			this.__reference = o.__reference;
-			this.__value = o.__value;
-			this.__layout = o.__layout;
-			this.__model = o.__model;
-			this.__props = o.__props;
-			this.__annotations = o.__annotations;
-			this.__children = o.__children;
+			this.class_name = o.class_name;
+			this.key = o.key;
+			this.name = o.name;
+			this.bind = o.bind;
+			this.kind = o.kind;
+			this.content = o.content;
+			this.reference = o.reference;
+			this.value = o.value;
+			this.layout = o.layout;
+			this.model = o.model;
+			this.props = o.props;
+			this.annotations = o.annotations;
+			this.children = o.children;
 		}
-		Runtime.CoreStruct.prototype.assignObject.call(this,__ctx,o);
+		Runtime.CoreStruct.prototype.assignObject.call(this,ctx,o);
 	},
-	assignValue: function(__ctx,k,v)
+	assignValue: function(ctx,k,v)
 	{
-		if (k == "class_name")this.__class_name = v;
-		else if (k == "key")this.__key = v;
-		else if (k == "name")this.__name = v;
-		else if (k == "bind")this.__bind = v;
-		else if (k == "kind")this.__kind = v;
-		else if (k == "content")this.__content = v;
-		else if (k == "reference")this.__reference = v;
-		else if (k == "value")this.__value = v;
-		else if (k == "layout")this.__layout = v;
-		else if (k == "model")this.__model = v;
-		else if (k == "props")this.__props = v;
-		else if (k == "annotations")this.__annotations = v;
-		else if (k == "children")this.__children = v;
-		else Runtime.CoreStruct.prototype.assignValue.call(this,__ctx,k,v);
+		if (k == "class_name")this.class_name = v;
+		else if (k == "key")this.key = v;
+		else if (k == "name")this.name = v;
+		else if (k == "bind")this.bind = v;
+		else if (k == "kind")this.kind = v;
+		else if (k == "content")this.content = v;
+		else if (k == "reference")this.reference = v;
+		else if (k == "value")this.value = v;
+		else if (k == "layout")this.layout = v;
+		else if (k == "model")this.model = v;
+		else if (k == "props")this.props = v;
+		else if (k == "annotations")this.annotations = v;
+		else if (k == "children")this.children = v;
+		else Runtime.CoreStruct.prototype.assignValue.call(this,ctx,k,v);
 	},
-	takeValue: function(__ctx,k,d)
+	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "class_name")return this.__class_name;
-		else if (k == "key")return this.__key;
-		else if (k == "name")return this.__name;
-		else if (k == "bind")return this.__bind;
-		else if (k == "kind")return this.__kind;
-		else if (k == "content")return this.__content;
-		else if (k == "reference")return this.__reference;
-		else if (k == "value")return this.__value;
-		else if (k == "layout")return this.__layout;
-		else if (k == "model")return this.__model;
-		else if (k == "props")return this.__props;
-		else if (k == "annotations")return this.__annotations;
-		else if (k == "children")return this.__children;
-		return Runtime.CoreStruct.prototype.takeValue.call(this,__ctx,k,d);
+		if (k == "class_name")return this.class_name;
+		else if (k == "key")return this.key;
+		else if (k == "name")return this.name;
+		else if (k == "bind")return this.bind;
+		else if (k == "kind")return this.kind;
+		else if (k == "content")return this.content;
+		else if (k == "reference")return this.reference;
+		else if (k == "value")return this.value;
+		else if (k == "layout")return this.layout;
+		else if (k == "model")return this.model;
+		else if (k == "props")return this.props;
+		else if (k == "annotations")return this.annotations;
+		else if (k == "children")return this.children;
+		return Runtime.CoreStruct.prototype.takeValue.call(this,ctx,k,d);
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.UIStruct";
 	},
@@ -256,12 +243,12 @@ Object.assign(Runtime.UIStruct,
 	{
 		return "Runtime.CoreStruct";
 	},
-	getClassInfo: function(__ctx)
+	getClassInfo: function(ctx)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(__ctx, {
+		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.UIStruct",
 			"name": "Runtime.UIStruct",
@@ -269,7 +256,7 @@ Object.assign(Runtime.UIStruct,
 			]),
 		});
 	},
-	getFieldsList: function(__ctx, f)
+	getFieldsList: function(ctx, f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
@@ -291,17 +278,139 @@ Object.assign(Runtime.UIStruct,
 		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(__ctx,field_name)
+	getFieldInfoByName: function(ctx,field_name)
 	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		if (field_name == "TYPE_ELEMENT") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "TYPE_COMPONENT") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "TYPE_STRING") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "TYPE_RAW") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "class_name") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "key") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "name") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "bind") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "kind") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "content") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "reference") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "value") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "layout") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "model") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "props") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "annotations") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "children") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.UIStruct",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
-	getMethodsList: function(__ctx)
+	getMethodsList: function(ctx)
 	{
 		var a = [
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(__ctx,field_name)
+	getMethodInfoByName: function(ctx,field_name)
 	{
 		return null;
 	},

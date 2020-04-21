@@ -19,17 +19,17 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.AssetsInterface = function(ctx)
+Runtime.Interfaces.BusInterface = function(ctx)
 {
 };
-Object.assign(Runtime.Interfaces.AssetsInterface.prototype,
+Object.assign(Runtime.Interfaces.BusInterface.prototype,
 {
 	getClassName: function(ctx)
 	{
-		return "Runtime.Interfaces.AssetsInterface";
+		return "Runtime.Interfaces.BusInterface";
 	},
 });
-Object.assign(Runtime.Interfaces.AssetsInterface,
+Object.assign(Runtime.Interfaces.BusInterface,
 {
 	getCurrentNamespace: function()
 	{
@@ -37,7 +37,7 @@ Object.assign(Runtime.Interfaces.AssetsInterface,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Interfaces.AssetsInterface";
+		return "Runtime.Interfaces.BusInterface";
 	},
 });
-Runtime.rtl.defClass(Runtime.Interfaces.AssetsInterface);
+Runtime.rtl.defClass(Runtime.Interfaces.BusInterface);

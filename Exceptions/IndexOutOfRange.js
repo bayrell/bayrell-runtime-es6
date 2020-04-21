@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library 
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,31 +19,31 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
-Runtime.Exceptions.IndexOutOfRange = function(__ctx, context, prev)
+Runtime.Exceptions.IndexOutOfRange = function(ctx)
 {
-	Runtime.Exceptions.RuntimeException.call(this, __ctx, Runtime.rtl.translate(__ctx, "Index out of range", null, "", context), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE, context, prev);
+	Runtime.Exceptions.RuntimeException.call(this, ctx, ctx.constructor.translate(ctx, ctx, "Index out of range", null), Runtime.RuntimeConstant.ERROR_INDEX_OUT_OF_RANGE);
 };
 Runtime.Exceptions.IndexOutOfRange.prototype = Object.create(Runtime.Exceptions.RuntimeException.prototype);
 Runtime.Exceptions.IndexOutOfRange.prototype.constructor = Runtime.Exceptions.IndexOutOfRange;
 Object.assign(Runtime.Exceptions.IndexOutOfRange.prototype,
 {
-	assignObject: function(__ctx,o)
+	assignObject: function(ctx,o)
 	{
 		if (o instanceof Runtime.Exceptions.IndexOutOfRange)
 		{
 		}
-		Runtime.Exceptions.RuntimeException.prototype.assignObject.call(this,__ctx,o);
+		Runtime.Exceptions.RuntimeException.prototype.assignObject.call(this,ctx,o);
 	},
-	assignValue: function(__ctx,k,v)
+	assignValue: function(ctx,k,v)
 	{
-		Runtime.Exceptions.RuntimeException.prototype.assignValue.call(this,__ctx,k,v);
+		Runtime.Exceptions.RuntimeException.prototype.assignValue.call(this,ctx,k,v);
 	},
-	takeValue: function(__ctx,k,d)
+	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		return Runtime.Exceptions.RuntimeException.prototype.takeValue.call(this,__ctx,k,d);
+		return Runtime.Exceptions.RuntimeException.prototype.takeValue.call(this,ctx,k,d);
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.Exceptions.IndexOutOfRange";
 	},
@@ -64,12 +64,12 @@ Object.assign(Runtime.Exceptions.IndexOutOfRange,
 	{
 		return "Runtime.Exceptions.RuntimeException";
 	},
-	getClassInfo: function(__ctx)
+	getClassInfo: function(ctx)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(__ctx, {
+		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Exceptions.IndexOutOfRange",
 			"name": "Runtime.Exceptions.IndexOutOfRange",
@@ -77,23 +77,26 @@ Object.assign(Runtime.Exceptions.IndexOutOfRange,
 			]),
 		});
 	},
-	getFieldsList: function(__ctx, f)
+	getFieldsList: function(ctx, f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(__ctx,field_name)
+	getFieldInfoByName: function(ctx,field_name)
 	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return null;
 	},
-	getMethodsList: function(__ctx)
+	getMethodsList: function(ctx)
 	{
 		var a = [
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(__ctx,field_name)
+	getMethodInfoByName: function(ctx,field_name)
 	{
 		return null;
 	},

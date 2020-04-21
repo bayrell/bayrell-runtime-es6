@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.StringInterface = function(__ctx)
+Runtime.Interfaces.StringInterface = function(ctx)
 {
 };
 Object.assign(Runtime.Interfaces.StringInterface.prototype,
@@ -27,10 +27,10 @@ Object.assign(Runtime.Interfaces.StringInterface.prototype,
 	/**
 	 * Returns string
 	 */
-	toString: function(__ctx)
+	toString: function(ctx)
 	{
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.Interfaces.StringInterface";
 	},

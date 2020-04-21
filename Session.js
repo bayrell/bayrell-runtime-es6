@@ -3,7 +3,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2018-2019 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2018-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Session = function(__ctx)
+Runtime.Session = function(ctx)
 {
 	Runtime.CoreProvider.apply(this, arguments);
 };
@@ -26,39 +26,37 @@ Runtime.Session.prototype = Object.create(Runtime.CoreProvider.prototype);
 Runtime.Session.prototype.constructor = Runtime.Session;
 Object.assign(Runtime.Session.prototype,
 {
-	_init: function(__ctx)
+	_init: function(ctx)
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
-		this.__user_id = 0;
-		if (a.indexOf("user_id") == -1) defProp(this, "user_id");
-		this.__session_key = "";
-		if (a.indexOf("session_key") == -1) defProp(this, "session_key");
-		Runtime.CoreProvider.prototype._init.call(this,__ctx);
+		this.user_id = 0;
+		this.session_key = "";
+		Runtime.CoreProvider.prototype._init.call(this,ctx);
 	},
-	assignObject: function(__ctx,o)
+	assignObject: function(ctx,o)
 	{
 		if (o instanceof Runtime.Session)
 		{
-			this.__user_id = o.__user_id;
-			this.__session_key = o.__session_key;
+			this.user_id = o.user_id;
+			this.session_key = o.session_key;
 		}
-		Runtime.CoreProvider.prototype.assignObject.call(this,__ctx,o);
+		Runtime.CoreProvider.prototype.assignObject.call(this,ctx,o);
 	},
-	assignValue: function(__ctx,k,v)
+	assignValue: function(ctx,k,v)
 	{
-		if (k == "user_id")this.__user_id = v;
-		else if (k == "session_key")this.__session_key = v;
-		else Runtime.CoreProvider.prototype.assignValue.call(this,__ctx,k,v);
+		if (k == "user_id")this.user_id = v;
+		else if (k == "session_key")this.session_key = v;
+		else Runtime.CoreProvider.prototype.assignValue.call(this,ctx,k,v);
 	},
-	takeValue: function(__ctx,k,d)
+	takeValue: function(ctx,k,d)
 	{
 		if (d == undefined) d = null;
-		if (k == "user_id")return this.__user_id;
-		else if (k == "session_key")return this.__session_key;
-		return Runtime.CoreProvider.prototype.takeValue.call(this,__ctx,k,d);
+		if (k == "user_id")return this.user_id;
+		else if (k == "session_key")return this.session_key;
+		return Runtime.CoreProvider.prototype.takeValue.call(this,ctx,k,d);
 	},
-	getClassName: function(__ctx)
+	getClassName: function(ctx)
 	{
 		return "Runtime.Session";
 	},
@@ -66,15 +64,15 @@ Object.assign(Runtime.Session.prototype,
 Object.assign(Runtime.Session, Runtime.CoreProvider);
 Object.assign(Runtime.Session,
 {
-	isApp: function(__ctx, s)
+	isApp: function(ctx, s)
 	{
 		return s.user_id < 0;
 	},
-	isUser: function(__ctx, s)
+	isUser: function(ctx, s)
 	{
 		return s.user_id > 0;
 	},
-	isValid: function(__ctx, s)
+	isValid: function(ctx, s)
 	{
 		return s.user_id != 0 && s.session_key != 0;
 	},
@@ -91,12 +89,12 @@ Object.assign(Runtime.Session,
 	{
 		return "Runtime.CoreProvider";
 	},
-	getClassInfo: function(__ctx)
+	getClassInfo: function(ctx)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
 		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(__ctx, {
+		return new IntrospectionInfo(ctx, {
 			"kind": IntrospectionInfo.ITEM_CLASS,
 			"class_name": "Runtime.Session",
 			"name": "Runtime.Session",
@@ -104,7 +102,7 @@ Object.assign(Runtime.Session,
 			]),
 		});
 	},
-	getFieldsList: function(__ctx, f)
+	getFieldsList: function(ctx, f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
@@ -115,17 +113,34 @@ Object.assign(Runtime.Session,
 		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(__ctx,field_name)
+	getFieldInfoByName: function(ctx,field_name)
 	{
+		var Collection = Runtime.Collection;
+		var Dict = Runtime.Dict;
+		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		if (field_name == "user_id") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Session",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "session_key") return new IntrospectionInfo(ctx, {
+			"kind": IntrospectionInfo.ITEM_FIELD,
+			"class_name": "Runtime.Session",
+			"name": field_name,
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
-	getMethodsList: function(__ctx)
+	getMethodsList: function(ctx)
 	{
 		var a = [
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(__ctx,field_name)
+	getMethodInfoByName: function(ctx,field_name)
 	{
 		return null;
 	},
