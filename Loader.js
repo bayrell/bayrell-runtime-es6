@@ -1,5 +1,4 @@
 "use strict;"
-var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,26 +17,17 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.AssetsInterface = function(ctx)
+/* Run web app */
+function runWebApp(env, module_name, class_name)
 {
-};
-Object.assign(Runtime.Interfaces.AssetsInterface.prototype,
-{
-	getClassName: function(ctx)
-	{
-		return "Runtime.Interfaces.AssetsInterface";
-	},
-});
-Object.assign(Runtime.Interfaces.AssetsInterface,
-{
-	getCurrentNamespace: function()
-	{
-		return "Runtime.Interfaces";
-	},
-	getCurrentClassName: function()
-	{
-		return "Runtime.Interfaces.AssetsInterface";
-	},
-});
-Runtime.rtl.defClass(Runtime.Interfaces.AssetsInterface);
+	window.addEventListener
+	(
+		"load",
+		(function(obj){ return function() {
+			(async () => {
+				var ctx = null;
+				Runtime.Context.startApp(Runtime.Dict.from(obj.env),obj.module_name,obj.class_name);
+			})();
+		}})({ "env": env, "module_name": module_name, "class_name": class_name })
+	);
+}

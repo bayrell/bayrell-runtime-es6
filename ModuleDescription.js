@@ -1,5 +1,4 @@
 "use strict;"
-var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,25 +17,12 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.ModuleDescription = function(ctx)
+Runtime.ModuleDescription = function()
 {
 };
 Object.assign(Runtime.ModuleDescription.prototype,
 {
-	assignObject: function(ctx,o)
-	{
-		if (o instanceof Runtime.ModuleDescription)
-		{
-		}
-	},
-	assignValue: function(ctx,k,v)
-	{
-	},
-	takeValue: function(ctx,k,d)
-	{
-		if (d == undefined) d = null;
-	},
-	getClassName: function(ctx)
+	getClassName: function()
 	{
 		return "Runtime.ModuleDescription";
 	},
@@ -47,7 +33,7 @@ Object.assign(Runtime.ModuleDescription,
 	 * Returns module name
 	 * @return string
 	 */
-	getModuleName: function(ctx)
+	getModuleName: function()
 	{
 		return "Runtime";
 	},
@@ -55,46 +41,24 @@ Object.assign(Runtime.ModuleDescription,
 	 * Returns module name
 	 * @return string
 	 */
-	getModuleVersion: function(ctx)
+	getModuleVersion: function()
 	{
-		return "0.9.0";
+		return "0.11.0";
 	},
 	/**
 	 * Returns required modules
 	 * @return Map<string>
 	 */
-	requiredModules: function(ctx)
+	requiredModules: function()
 	{
 		return null;
 	},
 	/**
-	 * Compatibility with older versions
-	 */
-	getRequiredModules: function(ctx)
-	{
-		return this.requiredModules(ctx);
-	},
-	/**
-	 * Returns module files load order
-	 * @return Collection<string>
-	 */
-	assets: function(ctx)
-	{
-		return Runtime.Collection.from(["Runtime/rtl","Runtime/rs","Runtime/re","Runtime/lib","Runtime/Collection","Runtime/CoreObject","Runtime/Dict","Runtime/RuntimeConstant","Runtime/RuntimeUtils","Runtime/Exceptions/RuntimeException","Runtime/Interfaces/AssetsInterface","Runtime/Interfaces/BusInterface","Runtime/Interfaces/ModuleDescriptionInterface","Runtime/Interfaces/SerializeInterface","Runtime/Interfaces/StringInterface","Runtime/CoreStruct","Runtime/CoreProvider","Runtime/CoreEvent","Runtime/Map","Runtime/Message","Runtime/MessageRPC","Runtime/PathInfo","Runtime/ModuleDescription","Runtime/Monad","Runtime/Reference","Runtime/Vector","Runtime/Exceptions/ApiException","Runtime/Exceptions/IndexOutOfRange","Runtime/Exceptions/KeyNotFound","Runtime/Exceptions/UnknownError","Runtime/DateTime","Runtime/Annotations/Entity","Runtime/Annotations/IntrospectionClass","Runtime/Annotations/IntrospectionInfo","Runtime/Annotations/LambdaChain","Runtime/Annotations/LambdaChainDeclare","Runtime/Annotations/Driver","Runtime/Annotations/Provider","Runtime/UIStruct","Runtime/Context","Runtime/AsyncAwait"]);
-	},
-	/**
 	 * Returns enities
 	 */
-	entities: function(ctx)
+	entities: function()
 	{
-		return Runtime.Collection.from([new Runtime.Annotations.LambdaChainDeclare(ctx, Runtime.Dict.from({"name":"Runtime.Entities"}))]);
-	},
-	/**
-	 * Returns enities
-	 */
-	resources: function(ctx)
-	{
-		return null;
+		return Runtime.Collection.from([]);
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -109,46 +73,40 @@ Object.assign(Runtime.ModuleDescription,
 	{
 		return "";
 	},
-	getClassInfo: function(ctx)
+	getClassInfo: function()
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.ModuleDescription",
-			"name": "Runtime.ModuleDescription",
+		return Dict.from({
 			"annotations": Collection.from([
 			]),
 		});
 	},
-	getFieldsList: function(ctx, f)
+	getFieldsList: function(f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(ctx,field_name)
+	getFieldInfoByName: function(field_name)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
 		return null;
 	},
-	getMethodsList: function(ctx)
+	getMethodsList: function(f)
 	{
-		var a = [
+		if (f==undefined) f=0;
+		var a = [];
+		if ((f&4)==4) a=[
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(ctx,field_name)
+	getMethodInfoByName: function(field_name)
 	{
 		return null;
 	},
-	__implements__:
-	[
-		Runtime.Interfaces.ModuleDescriptionInterface,
-		Runtime.Interfaces.AssetsInterface,
-	],
 });
 Runtime.rtl.defClass(Runtime.ModuleDescription);
+window["Runtime.ModuleDescription"] = Runtime.ModuleDescription;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.ModuleDescription;

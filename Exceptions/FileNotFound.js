@@ -17,78 +17,38 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Map = function()
+if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
+Runtime.Exceptions.FileNotFound = function(name, object, code, prev)
 {
-	Runtime.Dict.apply(this, arguments);
+	if (object == undefined) object = "File";
+	if (code == undefined) code = -5;
+	if (prev == undefined) prev = null;
+	Runtime.Exceptions.RuntimeException.call(this, Runtime.rtl.getContext().translate("Runtime", "%object% '%name%' not found", Runtime.Dict.from({"name":name,"object":object})), code, prev);
 };
-Runtime.Map.prototype = Object.create(Runtime.Dict.prototype);
-Runtime.Map.prototype.constructor = Runtime.Map;
-Object.assign(Runtime.Map.prototype,
+Runtime.Exceptions.FileNotFound.prototype = Object.create(Runtime.Exceptions.RuntimeException.prototype);
+Runtime.Exceptions.FileNotFound.prototype.constructor = Runtime.Exceptions.FileNotFound;
+Object.assign(Runtime.Exceptions.FileNotFound.prototype,
 {
-	/**
-	 * Set value size_to position
-	 * @param string key - position
-	 * @param T value 
-	 * @return self
-	 */
-	setValue: function(key, value)
-	{
-		key = this.toStr(key);
-		this._map["|" + key] = value;
-		return this;
-	},
-	/**
-	 * Remove value from position
-	 * @param string key
-	 * @return self
-	 */
-	removeValue: function(key)
-	{
-		key = this.toStr(key);
-		if (typeof this._map["|" + key] != "undefined")
-		{
-			delete this._map["|" + key];
-		}
-		return this;
-	},
-	/**
-	 * Clear all values from vector
-	 * @return self
-	 */
-	clear: function()
-	{
-		this._map = {};
-		return this;
-	},
 	getClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.Exceptions.FileNotFound";
 	},
 });
-Object.assign(Runtime.Map, Runtime.Dict);
-Object.assign(Runtime.Map,
+Object.assign(Runtime.Exceptions.FileNotFound, Runtime.Exceptions.RuntimeException);
+Object.assign(Runtime.Exceptions.FileNotFound,
 {
-	/**
-	 * Returns new Instance
-	 * @return Object
-	 */
-	Instance: function(val)
-	{
-		if (val == undefined) val = null;
-		return new Runtime.Map(val);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
-		return "Runtime";
+		return "Runtime.Exceptions";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.Exceptions.FileNotFound";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Dict";
+		return "Runtime.Exceptions.RuntimeException";
 	},
 	getClassInfo: function()
 	{
@@ -124,6 +84,6 @@ Object.assign(Runtime.Map,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.Map);
-window["Runtime.Map"] = Runtime.Map;
-if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Map;
+Runtime.rtl.defClass(Runtime.Exceptions.FileNotFound);
+window["Runtime.Exceptions.FileNotFound"] = Runtime.Exceptions.FileNotFound;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Exceptions.FileNotFound;

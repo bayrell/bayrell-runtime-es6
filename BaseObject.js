@@ -17,65 +17,36 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Map = function()
+Runtime.BaseObject = function()
 {
-	Runtime.Dict.apply(this, arguments);
+	/* Init object */
+	this._init();
 };
-Runtime.Map.prototype = Object.create(Runtime.Dict.prototype);
-Runtime.Map.prototype.constructor = Runtime.Map;
-Object.assign(Runtime.Map.prototype,
+Object.assign(Runtime.BaseObject.prototype,
 {
 	/**
-	 * Set value size_to position
-	 * @param string key - position
-	 * @param T value 
-	 * @return self
+	 * Init function
 	 */
-	setValue: function(key, value)
+	_init: function()
 	{
-		key = this.toStr(key);
-		this._map["|" + key] = value;
-		return this;
-	},
-	/**
-	 * Remove value from position
-	 * @param string key
-	 * @return self
-	 */
-	removeValue: function(key)
-	{
-		key = this.toStr(key);
-		if (typeof this._map["|" + key] != "undefined")
-		{
-			delete this._map["|" + key];
-		}
-		return this;
-	},
-	/**
-	 * Clear all values from vector
-	 * @return self
-	 */
-	clear: function()
-	{
-		this._map = {};
-		return this;
 	},
 	getClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.BaseObject";
 	},
 });
-Object.assign(Runtime.Map, Runtime.Dict);
-Object.assign(Runtime.Map,
+Object.assign(Runtime.BaseObject,
 {
 	/**
-	 * Returns new Instance
-	 * @return Object
+	 * Returns new instance
 	 */
-	Instance: function(val)
+	newInstance: function(items)
 	{
-		if (val == undefined) val = null;
-		return new Runtime.Map(val);
+		return null;
+	},
+	createInstance: function(items)
+	{
+		return this.newInstance(items);
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -84,11 +55,11 @@ Object.assign(Runtime.Map,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.BaseObject";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Dict";
+		return "";
 	},
 	getClassInfo: function()
 	{
@@ -124,6 +95,6 @@ Object.assign(Runtime.Map,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.Map);
-window["Runtime.Map"] = Runtime.Map;
-if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Map;
+Runtime.rtl.defClass(Runtime.BaseObject);
+window["Runtime.BaseObject"] = Runtime.BaseObject;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.BaseObject;

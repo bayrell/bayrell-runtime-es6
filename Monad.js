@@ -1,5 +1,4 @@
 "use strict;"
-var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,30 +17,31 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Monad = function(ctx, value, err)
+Runtime.Monad = function(value, err)
 {
+	if (err == undefined) err = null;
 	this.val = value;
-	this.err = null;
+	this.err = err;
 };
 Object.assign(Runtime.Monad.prototype,
 {
 	/**
 	 * Return attr of object
 	 */
-	attr: function(ctx, attr_name)
+	attr: function(attr_name)
 	{
-		if (this.val == null || this.err != null)
+		if (this.val === null || this.err != null)
 		{
 			return this;
 		}
-		return new Runtime.Monad(ctx, Runtime.rtl.attr(ctx, this.val, Runtime.Collection.from([attr_name]), null));
+		return new Runtime.Monad(Runtime.rtl.attr(this.val, Runtime.Collection.from([attr_name]), null));
 	},
 	/**
 	 * Call function on value
 	 */
-	call: function(ctx, f)
+	call: function(f)
 	{
-		if (this.val == null || this.err != null)
+		if (this.val === null || this.err != null)
 		{
 			return this;
 		}
@@ -49,7 +49,7 @@ Object.assign(Runtime.Monad.prototype,
 		var err = null;
 		try
 		{
-			res = f(ctx, this.val);
+			res = f(this.val);
 		}
 		catch (_ex)
 		{
@@ -65,81 +65,22 @@ Object.assign(Runtime.Monad.prototype,
 				throw _ex;
 			}
 		}
-		return new Runtime.Monad(ctx, res, err);
+		return new Runtime.Monad(res, err);
 	},
 	/**
 	 * Call async function on value
 	 */
-	callAsync: function(ctx, f)
+	callAsync: async function(f)
 	{
-		var res,err;
-		return (__async_t) =>
+		if (this.val === null || this.err != null)
 		{
-			if (__async_t.pos(ctx) == "0")
-			{
-				if (this.val == null || this.err != null)
-				{
-					return __async_t.ret(ctx, this);
-				}
-				res = null;
-				err = null;
-				return __async_t.jump(ctx, "1");
-			}
-			/* Start Try */
-			else if (__async_t.pos(ctx) == "1")
-			{
-				__async_t = __async_t.catch_push("1.0");
-				return __async_t.jump(ctx, "1.1").call(ctx, f(ctx, this.val),"__v0");
-			}
-			else if (__async_t.pos(ctx) == "1.1")
-			{
-				res = __async_t.getVar(ctx, "__v0");
-				return __async_t.catch_pop().jump(ctx, "2");
-			}
-			/* Start Catch */
-			else if (__async_t.pos(ctx) == "1.0")
-			{
-				if (_ex instanceof Runtime.Exceptions.RuntimeException)
-				{
-					var e = _ex;
-					
-					res = null;
-					err = e;
-				}
-				else
-				{
-					throw _ex;
-				}
-				return __async_t.jump(ctx, "2");
-			}
-			/* End Catch */
-			else if (__async_t.pos(ctx) == "2")
-			{
-				return __async_t.ret(ctx, new Runtime.Monad(ctx, res, err));
-			}
-			return __async_t.ret_void(ctx);
-		};
-	},
-	/**
-	 * Call method on value
-	 */
-	callMethod: function(ctx, method_name, args)
-	{
-		if (args == undefined) args = null;
-		if (this.val == null || this.err != null)
-		{
-			return this;
+			return Promise.resolve(this);
 		}
 		var res = null;
 		var err = null;
 		try
 		{
-			var f = Runtime.rtl.method(ctx, this.val.getClassName(ctx), method_name);
-			if (args != null)
-			{
-				f = Runtime.rtl.apply(ctx, f, args);
-			}
-			res = f(ctx, this.val);
+			res = await f(this.val);
 		}
 		catch (_ex)
 		{
@@ -155,109 +96,100 @@ Object.assign(Runtime.Monad.prototype,
 				throw _ex;
 			}
 		}
-		return new Runtime.Monad(ctx, res, err);
+		return Promise.resolve(new Runtime.Monad(res, err));
+	},
+	/**
+	 * Call method on value
+	 */
+	callMethod: function(f, args)
+	{
+		if (args == undefined) args = null;
+		if (this.val === null || this.err != null)
+		{
+			return this;
+		}
+		var res = null;
+		var err = null;
+		try
+		{
+			res = Runtime.rtl.apply(f, args);
+		}
+		catch (_ex)
+		{
+			if (_ex instanceof Runtime.Exceptions.RuntimeException)
+			{
+				var e = _ex;
+				
+				res = null;
+				err = e;
+			}
+			else
+			{
+				throw _ex;
+			}
+		}
+		return new Runtime.Monad(res, err);
 	},
 	/**
 	 * Call async method on value
 	 */
-	callMethodAsync: function(ctx, method_name, args)
+	callMethodAsync: async function(f, args)
 	{
-		var res,err,f;
-		return (__async_t) =>
+		if (args == undefined) args = null;
+		if (this.val === null || this.err != null)
 		{
-			if (__async_t.pos(ctx) == "0")
+			return Promise.resolve(this);
+		}
+		var res = null;
+		var err = null;
+		try
+		{
+			res = await Runtime.rtl.applyAsync(f, args);
+		}
+		catch (_ex)
+		{
+			if (_ex instanceof Runtime.Exceptions.RuntimeException)
 			{
-				if (this.val == null || this.err != null)
-				{
-					return __async_t.ret(ctx, this);
-				}
+				var e = _ex;
+				
 				res = null;
-				err = null;
-				return __async_t.jump(ctx, "1");
+				err = e;
 			}
-			/* Start Try */
-			else if (__async_t.pos(ctx) == "1")
+			else
 			{
-				__async_t = __async_t.catch_push("1.0");
-				f = Runtime.rtl.method(ctx, this.val.getClassName(ctx), method_name);
-				if (args != null)
-				{
-					f = Runtime.rtl.apply(ctx, f, args);
-				}
-				return __async_t.jump(ctx, "1.1").call(ctx, f(ctx, this.val),"__v0");
+				throw _ex;
 			}
-			else if (__async_t.pos(ctx) == "1.1")
-			{
-				res = __async_t.getVar(ctx, "__v0");
-				return __async_t.catch_pop().jump(ctx, "2");
-			}
-			/* Start Catch */
-			else if (__async_t.pos(ctx) == "1.0")
-			{
-				if (_ex instanceof Runtime.Exceptions.RuntimeException)
-				{
-					var e = _ex;
-					
-					res = null;
-					err = e;
-				}
-				else
-				{
-					throw _ex;
-				}
-				return __async_t.jump(ctx, "2");
-			}
-			/* End Catch */
-			else if (__async_t.pos(ctx) == "2")
-			{
-				return __async_t.ret(ctx, new Runtime.Monad(ctx, res, err));
-			}
-			return __async_t.ret_void(ctx);
-		};
+		}
+		return Promise.resolve(new Runtime.Monad(res, err));
 	},
 	/**
 	 * Call function on monad
 	 */
-	monad: function(ctx, f)
+	monad: function(f)
 	{
-		return f(ctx, this);
+		return f(this);
 	},
 	/**
 	 * Returns value
 	 */
-	value: function(ctx)
+	value: function()
 	{
-		if (this.val == null || this.err != null)
+		if (this.err != null)
+		{
+			throw this.err
+		}
+		if (this.val === null || this.err != null)
 		{
 			return null;
 		}
 		return this.val;
 	},
-	_init: function(ctx)
+	_init: function()
 	{
 		this.val = null;
 		this.err = null;
 	},
-	assignObject: function(ctx,o)
-	{
-		if (o instanceof Runtime.Monad)
-		{
-			this.val = o.val;
-			this.err = o.err;
-		}
-	},
-	assignValue: function(ctx,k,v)
-	{
-		if (k == "val")this.val = v;
-		else if (k == "err")this.err = v;
-	},
-	takeValue: function(ctx,k,d)
-	{
-		if (d == undefined) d = null;
-		if (k == "val")return this.val;
-		else if (k == "err")return this.err;
-	},
-	getClassName: function(ctx)
+	getClassName: function()
 	{
 		return "Runtime.Monad";
 	},
@@ -277,60 +209,55 @@ Object.assign(Runtime.Monad,
 	{
 		return "";
 	},
-	getClassInfo: function(ctx)
+	getClassInfo: function()
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Monad",
-			"name": "Runtime.Monad",
+		return Dict.from({
 			"annotations": Collection.from([
 			]),
 		});
 	},
-	getFieldsList: function(ctx, f)
+	getFieldsList: function(f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
-		if ((f|2)==2)
+		if ((f&2)==2)
 		{
 			a.push("val");
 			a.push("err");
 		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(ctx,field_name)
+	getFieldInfoByName: function(field_name)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		if (field_name == "val") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Monad",
-			"name": field_name,
+		if (field_name == "val") return Dict.from({
+			"t": "var",
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "err") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Monad",
-			"name": field_name,
+		if (field_name == "err") return Dict.from({
+			"t": "var",
 			"annotations": Collection.from([
 			]),
 		});
 		return null;
 	},
-	getMethodsList: function(ctx)
+	getMethodsList: function(f)
 	{
-		var a = [
+		if (f==undefined) f=0;
+		var a = [];
+		if ((f&4)==4) a=[
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(ctx,field_name)
+	getMethodInfoByName: function(field_name)
 	{
 		return null;
 	},
 });
 Runtime.rtl.defClass(Runtime.Monad);
+window["Runtime.Monad"] = Runtime.Monad;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Monad;

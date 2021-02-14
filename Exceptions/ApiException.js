@@ -1,5 +1,4 @@
 "use strict;"
-var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library 
  *
@@ -19,31 +18,25 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  */
 if (typeof Runtime == 'undefined') Runtime = {};
 if (typeof Runtime.Exceptions == 'undefined') Runtime.Exceptions = {};
-Runtime.Exceptions.ApiException = function(ctx, message, code, context, prev)
+Runtime.Exceptions.ApiException = function(message, code, response, prev)
 {
-	Runtime.Exceptions.RuntimeException.call(this, ctx, message, code, context, prev);
+	if (message == undefined) message = "";
+	if (code == undefined) code = -1;
+	if (response == undefined) response = null;
+	if (prev == undefined) prev = null;
+	Runtime.Exceptions.RuntimeException.call(this, message, code, prev);
+	this.response = response;
 };
 Runtime.Exceptions.ApiException.prototype = Object.create(Runtime.Exceptions.RuntimeException.prototype);
 Runtime.Exceptions.ApiException.prototype.constructor = Runtime.Exceptions.ApiException;
 Object.assign(Runtime.Exceptions.ApiException.prototype,
 {
-	assignObject: function(ctx,o)
+	_init: function()
 	{
-		if (o instanceof Runtime.Exceptions.ApiException)
-		{
-		}
-		Runtime.Exceptions.RuntimeException.prototype.assignObject.call(this,ctx,o);
+		this.response = null;
+		Runtime.Exceptions.RuntimeException.prototype._init.call(this);
 	},
-	assignValue: function(ctx,k,v)
-	{
-		Runtime.Exceptions.RuntimeException.prototype.assignValue.call(this,ctx,k,v);
-	},
-	takeValue: function(ctx,k,d)
-	{
-		if (d == undefined) d = null;
-		return Runtime.Exceptions.RuntimeException.prototype.takeValue.call(this,ctx,k,d);
-	},
-	getClassName: function(ctx)
+	getClassName: function()
 	{
 		return "Runtime.Exceptions.ApiException";
 	},
@@ -64,41 +57,49 @@ Object.assign(Runtime.Exceptions.ApiException,
 	{
 		return "Runtime.Exceptions.RuntimeException";
 	},
-	getClassInfo: function(ctx)
+	getClassInfo: function()
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Exceptions.ApiException",
-			"name": "Runtime.Exceptions.ApiException",
+		return Dict.from({
 			"annotations": Collection.from([
 			]),
 		});
 	},
-	getFieldsList: function(ctx, f)
+	getFieldsList: function(f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
+		if ((f&2)==2)
+		{
+			a.push("response");
+		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(ctx,field_name)
+	getFieldInfoByName: function(field_name)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
+		if (field_name == "response") return Dict.from({
+			"t": "var",
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
-	getMethodsList: function(ctx)
+	getMethodsList: function(f)
 	{
-		var a = [
+		if (f==undefined) f=0;
+		var a = [];
+		if ((f&4)==4) a=[
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(ctx,field_name)
+	getMethodInfoByName: function(field_name)
 	{
 		return null;
 	},
 });
 Runtime.rtl.defClass(Runtime.Exceptions.ApiException);
+window["Runtime.Exceptions.ApiException"] = Runtime.Exceptions.ApiException;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Exceptions.ApiException;

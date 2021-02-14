@@ -1,5 +1,4 @@
 "use strict;"
-var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,15 +17,155 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Context = function(ctx)
+Runtime.Context = function()
 {
-	Runtime.CoreStruct.apply(this, arguments);
+	Runtime.BaseStruct.apply(this, arguments);
 };
-Runtime.Context.prototype = Object.create(Runtime.CoreStruct.prototype);
+Runtime.Context.prototype = Object.create(Runtime.BaseStruct.prototype);
 Runtime.Context.prototype.constructor = Runtime.Context;
 Object.assign(Runtime.Context.prototype,
 {
-	_init: function(ctx)
+	/**
+	 * Returns enviroment by eky
+	 */
+	env: function(key, def_value)
+	{
+		if (def_value == undefined) def_value = "";
+		var __v0 = new Runtime.Monad(this);
+		__v0 = __v0.attr("enviroments");
+		__v0 = __v0.call(Runtime.lib.get(key, def_value));
+		return __v0.value();
+	},
+	/**
+	 * Returns settings
+	 * @return Dict<string>
+	 */
+	config: function(items, d)
+	{
+		if (d == undefined) d = null;
+		var __v0 = new Runtime.Monad(this);
+		__v0 = __v0.attr("settings");
+		__v0 = __v0.call(Runtime.lib.get("config", null));
+		__v0 = __v0.call(Runtime.lib.attr(items, d));
+		return __v0.value();
+	},
+	/**
+	 * Returns docker secret key
+	 */
+	secret: function(key)
+	{
+		var __v0 = new Runtime.Monad(this);
+		__v0 = __v0.attr("settings");
+		__v0 = __v0.call(Runtime.lib.get("secrets", null));
+		__v0 = __v0.call(Runtime.lib.get(key, ""));
+		return __v0.value();
+	},
+	/**
+	 * Add driver
+	 */
+	addDriver: function(obj)
+	{
+		this.drivers.setValue(obj.getObjectName(), obj);
+		return this;
+	},
+	/**
+	 * Add driver
+	 */
+	getDriver: function(name)
+	{
+		return this.drivers.get(name, null);
+	},
+	/* ---------------------- Chain --------------------- */
+	/**
+	 * Apply Lambda Chain
+	 */
+	chain: function(chain_name, args)
+	{
+		var entities = this.entities.filter((item) => 
+		{
+			return item instanceof Runtime.LambdaChain && item.name == chain_name && item.is_async == false;
+		});
+		entities = entities.sortIm((a, b) => 
+		{
+			return a.pos > b.pos;
+		});
+		for (var i = 0;i < entities.count();i++)
+		{
+			var item = entities.item(i);
+			var item_chain_name = item.chain;
+			if (item_chain_name != "")
+			{
+				args = this.chain(item_chain_name, args);
+			}
+			else
+			{
+				var arr = Runtime.rs.split("::", item.value);
+				var class_name = arr.get(0, "");
+				var method_name = arr.get(1, "");
+				var f = Runtime.rtl.method(class_name, method_name);
+				args = Runtime.rtl.apply(f, args);
+			}
+		}
+		return args;
+	},
+	/**
+	 * Apply Lambda Chain Await
+	 */
+	chainAsync: async function(chain_name, args)
+	{
+		var entities = this.entities.filter((item) => 
+		{
+			return item instanceof Runtime.LambdaChain && item.name == chain_name;
+		});
+		entities = entities.sortIm((a, b) => 
+		{
+			return a.pos > b.pos;
+		});
+		for (var i = 0;i < entities.count();i++)
+		{
+			var item = entities.item(i);
+			var item_chain_name = item.chain;
+			if (item_chain_name != "")
+			{
+				args = await this.chainAsync(item_chain_name, args);
+			}
+			else
+			{
+				var arr = Runtime.rs.split("::", item.value);
+				var class_name = arr.get(0, "");
+				var method_name = arr.get(1, "");
+				var f = Runtime.rtl.method(class_name, method_name);
+				if (item.is_async)
+				{
+					args = await Runtime.rtl.applyAsync(f, args);
+				}
+				else
+				{
+					args = Runtime.rtl.apply(f, args);
+				}
+			}
+		}
+		return Promise.resolve(args);
+	},
+	/**
+	 * Translate message
+	 * @params string space - message space
+	 * @params string message - message need to be translated
+	 * @params Map params - Messages params. Default null.
+	 * @params string locale - Different locale. Default "".
+	 * @return string - translated string
+	 */
+	translate: function(space, message, params, locale)
+	{
+		if (params == undefined) params = null;
+		if (locale == undefined) locale = "";
+		message = (params == null) ? (message) : (params.reduce((message, value, key) => 
+		{
+			return Runtime.rs.replace("%" + Runtime.rtl.toStr(key) + Runtime.rtl.toStr("%"), value, message);
+		}, message));
+		return message;
+	},
+	_init: function()
 	{
 		var defProp = use('Runtime.rtl').defProp;
 		var a = Object.getOwnPropertyNames(this);
@@ -35,80 +174,31 @@ Object.assign(Runtime.Context.prototype,
 		this.settings = null;
 		this.modules = null;
 		this.entities = null;
-		this.drivers = null;
-		this.providers = null;
-		this.tags = null;
+		this.cli_args = null;
+		this.drivers = new Runtime.Map();
 		this.initialized = false;
 		this.started = false;
 		this.start_time = 0;
-		this.logs = new Runtime.Vector(ctx);
-		Runtime.CoreStruct.prototype._init.call(this,ctx);
+		this.tz = "UTC";
+		this.app_name = "";
+		this.entry_point = "";
+		this.main_module = "";
+		this.main_class = "";
+		Runtime.BaseStruct.prototype._init.call(this);
 	},
-	assignObject: function(ctx,o)
-	{
-		if (o instanceof Runtime.Context)
-		{
-			this.base_path = o.base_path;
-			this.enviroments = o.enviroments;
-			this.settings = o.settings;
-			this.modules = o.modules;
-			this.entities = o.entities;
-			this.drivers = o.drivers;
-			this.providers = o.providers;
-			this.tags = o.tags;
-			this.initialized = o.initialized;
-			this.started = o.started;
-			this.start_time = o.start_time;
-			this.logs = o.logs;
-		}
-		Runtime.CoreStruct.prototype.assignObject.call(this,ctx,o);
-	},
-	assignValue: function(ctx,k,v)
-	{
-		if (k == "base_path")this.base_path = v;
-		else if (k == "enviroments")this.enviroments = v;
-		else if (k == "settings")this.settings = v;
-		else if (k == "modules")this.modules = v;
-		else if (k == "entities")this.entities = v;
-		else if (k == "drivers")this.drivers = v;
-		else if (k == "providers")this.providers = v;
-		else if (k == "tags")this.tags = v;
-		else if (k == "initialized")this.initialized = v;
-		else if (k == "started")this.started = v;
-		else if (k == "start_time")this.start_time = v;
-		else if (k == "logs")this.logs = v;
-		else Runtime.CoreStruct.prototype.assignValue.call(this,ctx,k,v);
-	},
-	takeValue: function(ctx,k,d)
-	{
-		if (d == undefined) d = null;
-		if (k == "base_path")return this.base_path;
-		else if (k == "enviroments")return this.enviroments;
-		else if (k == "settings")return this.settings;
-		else if (k == "modules")return this.modules;
-		else if (k == "entities")return this.entities;
-		else if (k == "drivers")return this.drivers;
-		else if (k == "providers")return this.providers;
-		else if (k == "tags")return this.tags;
-		else if (k == "initialized")return this.initialized;
-		else if (k == "started")return this.started;
-		else if (k == "start_time")return this.start_time;
-		else if (k == "logs")return this.logs;
-		return Runtime.CoreStruct.prototype.takeValue.call(this,ctx,k,d);
-	},
-	getClassName: function(ctx)
+	getClassName: function()
 	{
 		return "Runtime.Context";
 	},
 });
-Object.assign(Runtime.Context, Runtime.CoreStruct);
+Object.assign(Runtime.Context, Runtime.BaseStruct);
 Object.assign(Runtime.Context,
 {
 	/**
 	 * Returns app name
 	 * @return string
 	 */
-	appName: function(ctx)
+	appName: function()
 	{
 		return "";
 	},
@@ -116,55 +206,16 @@ Object.assign(Runtime.Context,
 	 * Returns context settings
 	 * @return Dict<string>
 	 */
-	getSettings: function(ctx, env)
+	getSettings: function(env)
 	{
 		return null;
 	},
 	/**
 	 * Extends entities
 	 */
-	getEntities: function(ctx, entities)
+	getEntities: function(entities)
 	{
 		return null;
-	},
-	/**
-	 * Returns enviroment by eky
-	 */
-	env: function(ctx, key, def_value)
-	{
-		if (def_value == undefined) def_value = "";
-		return (ctx, c) => 
-		{
-			return (c.enviroments != null) ? c.enviroments.get(ctx, key, def_value) : def_value;
-		};
-	},
-	/**
-	 * Returns settings
-	 * @return Dict<string>
-	 */
-	config: function(ctx, items, d)
-	{
-		if (d == undefined) d = null;
-		return (ctx, c) => 
-		{
-			if (c.settings == null)
-			{
-				return null;
-			}
-			var config = c.settings.get(ctx, "config", null);
-			return (config != null) ? Runtime.rtl.attr(ctx, config, items, d) : null;
-		};
-	},
-	/**
-	 * Returns docker secret key
-	 */
-	secret: function(ctx, key)
-	{
-		return (ctx, c) => 
-		{
-			var secrets = c.settings.get(ctx, "secrets", null);
-			return (secrets != null) ? secrets.get(ctx, "key", "") : "";
-		};
 	},
 	/**
 	 * Create context
@@ -174,421 +225,206 @@ Object.assign(Runtime.Context,
 	 * @params Dict settings
 	 * @return Context
 	 */
-	create: function(ctx, env, entities)
+	create: function(env)
 	{
-		if (entities == undefined) entities = null;
-		var settings = this.getSettings(ctx, env);
+		if (env == undefined) env = null;
+		var settings = Runtime.Dict.from({});
 		/* Context data */
-		var obj = Runtime.Dict.from({"enviroments":env,"settings":settings,"modules":(settings != null) ? settings.get(ctx, "modules", null) : null,"entities":entities});
+		var obj = Runtime.Dict.from({"enviroments":env,"settings":settings,"modules":Runtime.Collection.from([])});
 		/* Create context */
-		var ctx = this.newInstance(ctx, obj);
+		var ctx = this.newInstance(obj);
 		return ctx;
+	},
+	/**
+	 * Set main module
+	 */
+	setMainModule: function(c, main_module)
+	{
+		var settings = Runtime.Dict.from({});
+		var main_module_class_name = "";
+		/* Get settings */
+		if (main_module)
+		{
+			main_module_class_name = main_module + Runtime.rtl.toStr(".ModuleDescription");
+			if (Runtime.rtl.method_exists(main_module_class_name, "appSettings"))
+			{
+				var f = Runtime.rtl.method(main_module_class_name, "appSettings");
+				settings = f(c.enviroments);
+			}
+		}
+		/* Add main module */
+		if (main_module)
+		{
+			c = Runtime.rtl.setAttr(c, Runtime.Collection.from(["modules"]), c.modules.pushIm(main_module));
+		}
+		/* Set main module */
+		c = Runtime.rtl.setAttr(c, Runtime.Collection.from(["main_module"]), main_module);
+		c = Runtime.rtl.setAttr(c, Runtime.Collection.from(["main_class"]), main_module_class_name);
+		/* Set entry point */
+		c = Runtime.rtl.setAttr(c, Runtime.Collection.from(["entry_point"]), main_module_class_name);
+		/* Set new settings */
+		c = Runtime.rtl.setAttr(c, Runtime.Collection.from(["settings"]), settings);
+		return c;
+	},
+	/**
+	 * Set app name
+	 */
+	setAppName: function(c, app_name)
+	{
+		return c.copy(Runtime.Dict.from({"app_name":app_name}));
+	},
+	/**
+	 * Set main class
+	 */
+	setMainClass: function(c, main_class)
+	{
+		return c.copy(Runtime.Dict.from({"main_class":main_class,"entry_point":main_class}));
+	},
+	/**
+	 * Set entry point
+	 */
+	setEntryPoint: function(c, entry_point)
+	{
+		return c.copy(Runtime.Dict.from({"entry_point":entry_point}));
 	},
 	/**
 	 * Init context
 	 */
-	init: function(ctx, c)
+	appInit: function(c)
 	{
+		Runtime.rtl.setContext(c);
 		if (c.initialized)
 		{
 			return c;
 		}
 		/* Extends modules */
-		var modules = this.getRequiredModules(ctx, c.modules);
+		var modules = this.getRequiredModules(c.modules);
 		/* Get modules entities */
-		var entities = this.getEntitiesFromModules(ctx, modules);
-		entities = entities.prependCollectionIm(ctx, this.getEntities(ctx, c.env));
+		var entities = this.getEntitiesFromModules(modules);
+		entities = entities.prependCollectionIm(this.getEntities(c.env));
 		/* Base path */
-		var base_path = (c.base_path != "") ? c.base_path : Runtime.rtl.attr(ctx, c.env, Runtime.Collection.from(["BASE_PATH"]), "", "string");
+		var base_path = (c.base_path != "") ? (c.base_path) : (Runtime.rtl.attr(c.env, Runtime.Collection.from(["BASE_PATH"]), "", "string"));
 		/* Add entities */
 		if (c.entities != null)
 		{
-			entities = entities.appendCollectionIm(ctx, c.entities);
+			entities = entities.appendCollectionIm(c.entities);
 		}
-		c = c.copy(ctx, { "entities": entities });
+		c = Runtime.rtl.setAttr(c, Runtime.Collection.from(["entities"]), entities);
 		/* Extend entities */
-		var __v0 = new Runtime.Monad(ctx, c);
-		__v0 = __v0.callMethod(ctx, "chain", Runtime.Collection.from(["Runtime.Entities", Runtime.Collection.from([c,entities])]));
-		entities = __v0.value(ctx);
-		entities = this.extendEntities(ctx, c, entities);
-		entities = this.extendEntitiesFromAnnotations(ctx, entities);
-		/* Get providers */
-		var providers = this.getProvidersFromEntities(ctx, entities);
-		/* Register drivers */
-		var drivers = this.getDriversFromEntities(ctx, entities);
-		return c.copy(ctx, Runtime.Dict.from({"modules":modules,"entities":entities,"providers":providers,"drivers":drivers,"base_path":base_path,"initialized":true}));
+		var __v0 = new Runtime.Monad(c.chain("Runtime.Entities", Runtime.Collection.from([c,entities])));
+		__v0 = __v0.attr(1);
+		entities = __v0.value();
+		entities = this.extendEntities(c, entities);
+		entities = this.getRequiredEntities(entities);
+		/* Add lambda chains */
+		entities = entities.concat(this.getSubEntities(entities, "Runtime.LambdaChainClass", "Runtime.LambdaChain"));
+		return c.copy(Runtime.Dict.from({"modules":modules,"entities":entities,"base_path":base_path,"initialized":true}));
 	},
 	/**
 	 * Start context
 	 */
-	start: function(ctx, c)
+	appStart: async function(c)
 	{
-		var drivers,i,driver_name,driver;
-		return (__async_t) =>
+		Runtime.rtl.setContext(c);
+		if (c.started)
 		{
-			if (__async_t.pos(ctx) == "0")
+			return Promise.resolve(c);
+		}
+		/* Get drivers from entity */
+		var drivers = c.entities.filter((item) => 
+		{
+			return item instanceof Runtime.Driver;
+		});
+		/* Create drivers */
+		for (var i = 0;i < drivers.count();i++)
+		{
+			var driver_entity = drivers.item(i);
+			var driver_name = driver_entity.name;
+			var class_name = driver_entity.value;
+			if (class_name == "")
 			{
-				if (c.started)
-				{
-					return __async_t.ret(ctx, c);
-				}
-				drivers = c.drivers.keys(ctx);
-				return __async_t.jump(ctx, "1.0");
+				class_name = driver_entity.name;
 			}
-			/* Start Loop */
-			else if (__async_t.pos(ctx) == "1.0")
+			var driver = Runtime.rtl.newInstance(class_name, Runtime.Collection.from([driver_name,driver_entity]));
+			var __v0 = new Runtime.Monad(Runtime.rtl.getContext().chain(class_name, Runtime.Collection.from([driver])));
+			__v0 = __v0.attr(0);
+			driver = __v0.value();
+			if (class_name != driver_name)
 			{
-				i = 0;
-				return __async_t.jump(ctx, "1.1");
+				var __v1 = new Runtime.Monad(Runtime.rtl.getContext().chain(driver_name, Runtime.Collection.from([driver])));
+				__v1 = __v1.attr(0);
+				driver = __v1.value();
 			}
-			/* Loop Expression */
-			else if (__async_t.pos(ctx) == "1.1")
+			if (driver == null)
 			{
-				var __async_var = i < drivers.count(ctx);
-				if (__async_var)
-				{
-					return __async_t.jump(ctx, "1.2");
-				}
-				return __async_t.jump(ctx, "2");
+				throw new Runtime.Exceptions.RuntimeException("Driver '" + Runtime.rtl.toStr(class_name) + Runtime.rtl.toStr("' not found"))
 			}
-			/* Loop */
-			else if (__async_t.pos(ctx) == "1.2")
+			c.drivers.setValue(driver_name, driver);
+		}
+		/* Start drivers */
+		var keys = c.drivers.keys();
+		for (var i = 0;i < keys.count();i++)
+		{
+			var driver_name = Runtime.rtl.get(keys, i);
+			var driver = Runtime.rtl.get(c.drivers, driver_name);
+			await driver.startDriver();
+			if (driver.entity.global)
 			{
-				i++;
-				driver_name = drivers.item(ctx, i);
-				driver = c.drivers.item(ctx, driver_name);
-				return __async_t.jump(ctx, "1.3").call(ctx, driver.startDriver(ctx),"__v0");
+				window[driver_name] = driver;
 			}
-			else if (__async_t.pos(ctx) == "1.3")
-			{
-				return __async_t.jump(ctx, "1.1");
-			}
-			/* End Loop */
-			else if (__async_t.pos(ctx) == "2")
-			{
-				return __async_t.ret(ctx, c.copy(ctx, Runtime.Dict.from({"started":true})));
-			}
-			return __async_t.ret_void(ctx);
-		};
-	},
-	/* ---------------------- Driver -------------------- */
-	/**
-	 * Get driver
-	 *
-	 * @params string driver_name
-	 * @return Runtime.anager
-	 */
-	getDriver: function(ctx, driver_name)
-	{
-		return (ctx, c) => 
-		{
-			if (c.drivers.has(ctx, driver_name))
-			{
-				return c.drivers.item(ctx, driver_name);
-			}
-			return null;
-		};
-	},
-	/* --------------------- Provider ------------------- */
-	/**
-	 * Create provider
-	 *
-	 * @params string provider_name
-	 * @return CoreProvider
-	 */
-	createProvider: function(ctx, provider_name, params, settings_name)
-	{
-		if (settings_name == undefined) settings_name = "default";
-		return (ctx, c) => 
-		{
-			var provider = null;
-			if (c.providers.has(ctx, provider_name))
-			{
-				var info = c.providers.item(ctx, provider_name);
-				if (info.kind == "interface")
-				{
-					throw new Runtime.Exceptions.RuntimeException(ctx, "Provider " + Runtime.rtl.toStr(provider_name) + Runtime.rtl.toStr(" does not declared"))
-				}
-				var class_name = info.value;
-				if (class_name == "")
-				{
-					class_name = info.name;
-				}
-				/* Set default params */
-				if (params == null)
-				{
-					params = Runtime.rtl.attr(ctx, c.settings, Runtime.Collection.from(["providers",class_name,settings_name]));
-				}
-				if (params == null)
-				{
-					params = Runtime.Dict.from({});
-				}
-				provider = Runtime.rtl.newInstance(ctx, class_name, Runtime.Collection.from([params]));
-				provider = this.chain(ctx, c, class_name, Runtime.Collection.from([provider]));
-				if (provider_name != class_name)
-				{
-					provider = this.chain(ctx, c, provider_name, Runtime.Collection.from([provider]));
-				}
-			}
-			else
-			{
-				throw new Runtime.Exceptions.RuntimeException(ctx, "Provider " + Runtime.rtl.toStr(provider_name) + Runtime.rtl.toStr(" not found"))
-			}
-			return provider;
-		};
+		}
+		return Promise.resolve(c.copy(Runtime.Dict.from({"started":true})));
 	},
 	/**
-	 * Returns provider
-	 *
-	 * @params string provider_name
-	 * @return CoreProvider
+	 * Init
 	 */
-	getProvider: function(ctx, provider_name, settings_name)
+	init: async function(c)
 	{
-		if (settings_name == undefined) settings_name = "default";
-		return (ctx, c) => 
+		var main_class = c.main_class;
+		/* Init app */
+		if (main_class != "" && Runtime.rtl.method_exists(main_class, "appInit"))
 		{
-			var provider = this.createProvider(ctx, c, provider_name, null, settings_name);
-			return provider;
-		};
-	},
-	/* ---------------------- Chain --------------------- */
-	/**
-	 * Apply Lambda Chain
-	 */
-	chain: function(ctx, chain_name, args)
-	{
-		return (ctx, c) => 
+			var appInit = Runtime.rtl.method(main_class, "appInit");
+			c = appInit(c);
+		}
+		else
 		{
-			var entities = c.entities.filter(ctx, (ctx, item) => 
-			{
-				return item instanceof Runtime.Annotations.LambdaChain && item.name == chain_name && item.is_async == false;
-			});
-			entities = entities.sortIm(ctx, (a, b) => 
-			{
-				return a.pos > b.pos;
-			});
-			for (var i = 0;i < entities.count(ctx);i++)
-			{
-				var item = entities.item(ctx, i);
-				var item_chain_name = item.chain;
-				if (item_chain_name != "")
-				{
-					var res = c.chain(ctx, item_chain_name, args);
-					args = args.setIm(ctx, args.count(ctx) - 1, res);
-				}
-				else
-				{
-					var arr = Runtime.rs.split(ctx, "::", item.value);
-					var class_name = arr.get(ctx, 0, "");
-					var method_name = arr.get(ctx, 1, "");
-					var f = Runtime.rtl.method(ctx, class_name, method_name);
-					var res = Runtime.rtl.apply(ctx, f, args);
-					args = args.setIm(ctx, args.count(ctx) - 1, res);
-				}
-			}
-			var res = args.last(ctx);
-			return res;
-		};
+			c = c.constructor.appInit(c);
+		}
+		return Promise.resolve(c);
 	},
 	/**
-	 * Apply Lambda Chain Await
+	 * Start
 	 */
-	chainAwait: function(ctx, chain_name, args)
+	start: async function(c)
 	{
-		return (__async_t) =>
+		var main_class = c.main_class;
+		/* Start app */
+		if (main_class != "" && Runtime.rtl.method_exists(main_class, "appStart"))
 		{
-			if (__async_t.pos(ctx) == "0")
-			{
-				return __async_t.ret(ctx, (ctx, c) => 
-				{
-					var entities = c.entities.filter(ctx, (ctx, item) => 
-					{
-						return item instanceof Runtime.Annotations.LambdaChain && item.name == chain_name;
-					});
-					entities = entities.sortIm(ctx, (a, b) => 
-					{
-						return a.pos > b.pos;
-					});
-					for (var i = 0;i < entities.count(ctx);i++)
-					{
-						var item = entities.item(ctx, i);
-						var item_chain_name = item.chain;
-						if (item_chain_name != "")
-						{
-							var res = this.chainAwait(ctx, item_chain_name, args);
-							args = args.setIm(ctx, args.count(ctx) - 1, res);
-						}
-						else
-						{
-							var arr = Runtime.rs.split(ctx, "::", item.value);
-							var class_name = arr.get(ctx, 0, "");
-							var method_name = arr.get(ctx, 1, "");
-							var f = Runtime.rtl.method(ctx, class_name, method_name);
-							if (item.is_async)
-							{
-								var res = Runtime.rtl.apply(ctx, f, args);
-								args = args.setIm(ctx, args.count(ctx) - 1, res);
-							}
-							else
-							{
-								var res = Runtime.rtl.apply(ctx, f, args);
-								args = args.setIm(ctx, args.count(ctx) - 1, res);
-							}
-						}
-					}
-					var res = args.last(ctx);
-					return res;
-				});
-			}
-			return __async_t.ret_void(ctx);
-		};
+			var appStart = Runtime.rtl.method(main_class, "appStart");
+			c = await appStart(c);
+		}
+		else
+		{
+			c = await c.constructor.appStart(c);
+		}
+		return Promise.resolve(c);
 	},
 	/**
-	 * Translate message
-	 * @params string message - message need to be translated
-	 * @params string space - message space
-	 * @params Map params - Messages params. Default null.
-	 * @params string locale - Different locale. Default "".
-	 * @return string - translated string
+	 * Run entry point
 	 */
-	translate: function(ctx, message, space, params, locale)
+	run: async function(c)
 	{
-		if (params == undefined) params = null;
-		if (locale == undefined) locale = "";
-		return (ctx, c) => 
+		Runtime.rtl.setContext(c);
+		var entry_point = c.entry_point;
+		/* Run entrypoint */
+		if (entry_point != "")
 		{
-			return message;
-		};
-	},
-	/* ----------------------- Bus ---------------------- */
-	/**
-	 * Send message
-	 * @param Message msg
-	 * @param Context ctx
-	 * @return Message
-	 */
-	sendMessage: function(ctx, msg)
-	{
-		return (__async_t) =>
-		{
-			if (__async_t.pos(ctx) == "0")
-			{
-				return __async_t.ret(ctx, (ctx, c) => 
-				{
-					var provider = this.getProvider(ctx, c, Runtime.RuntimeConstant.BUS_INTERFACE, "default");
-					msg = provider.constructor.sendMessage(ctx, provider, msg);
-					return msg;
-				});
-			}
-			return __async_t.ret_void(ctx);
-		};
-	},
-	/* ---------------------- Logs ---------------------- */
-	/**
-	 * Log message
-	 * @param string message
-	 * @param int loglevel
-	 */
-	debug: function(ctx, message, loglevel)
-	{
-		if (loglevel == undefined) loglevel = 0;
-		return (ctx, c) => 
-		{
-			this.logs.push(ctx, message + Runtime.rtl.toStr("\n"));
-		};
-	},
-	/**
-	 * Timer message
-	 * @param string message
-	 * @param int loglevel
-	 */
-	log_timer: function(ctx, message, loglevel)
-	{
-		if (loglevel == undefined) loglevel = 0;
-		return (ctx, c) => 
-		{
-			var __v0 = new Runtime.Monad(ctx, c);
-			__v0 = __v0.callMethod(ctx, "utime", Runtime.Collection.from([]));
-			var time = __v0.value(ctx);
-			time = time - c.start_time;
-			var s = "[" + Runtime.rtl.toStr(Runtime.rtl.round(ctx, time * 1000)) + Runtime.rtl.toStr("]ms ") + Runtime.rtl.toStr(message) + Runtime.rtl.toStr("\n");
-			c.logs.push(ctx, s);
-		};
-	},
-	/**
-	 * Dump var to log
-	 * @param var v
-	 * @param int loglevel
-	 */
-	dump: function(ctx, v, loglevel)
-	{
-		if (loglevel == undefined) loglevel = 0;
-		return (ctx, c) => 
-		{
-		};
-	},
-	/**
-	 * Append logs message
-	 * @param Collection<string> logs
-	 */
-	logAppend: function(ctx, logs)
-	{
-		return (ctx, c) => 
-		{
-			/*this.logs.appendVector(logs);*/
-		};
-	},
-	/**
-	 * Return logs
-	 */
-	getLogs: function(ctx)
-	{
-		return (ctx, c) => 
-		{
-			/*return this.logs.toCollection();*/
-			return Runtime.Collection.from([]);
-		};
-	},
-	/* ---------------------- Tags ---------------------- */
-	/**
-	 * Set tag
-	 */
-	setTagIm: function(ctx, tag_name, value)
-	{
-		return (ctx, c) => 
-		{
-			return c.copy(ctx, Runtime.Dict.from({"tags":c.tags.setIm(ctx, c, tag_name, value)}));
-		};
-	},
-	/**
-	 * Returns tag
-	 */
-	getTag: function(ctx, tag_name)
-	{
-		return (ctx, c) => 
-		{
-			return c.tags.get(ctx, c, tag_name, null);
-		};
-	},
-	/* ---------------------- Other --------------------- */
-	/**
-	 * Returns unix timestamp
-	 */
-	time: function(ctx)
-	{
-		return (ctx, c) => 
-		{
-		};
-	},
-	/**
-	 * Returns unix timestamp
-	 */
-	utime: function(ctx)
-	{
-		return (ctx, c) => 
-		{
-		};
+			var appRun = Runtime.rtl.method(entry_point, "appRun");
+			await appRun(c);
+		}
+		return Promise.resolve(c);
 	},
 	/* -------------------- Functions ------------------- */
 	/**
@@ -596,7 +432,7 @@ Object.assign(Runtime.Context,
 	 * @param string class_name
 	 * @return Collection<string>
 	 */
-	_getRequiredModules: function(ctx, res, cache, modules, filter)
+	_getRequiredModules: function(res, cache, modules, filter)
 	{
 		if (filter == undefined) filter = null;
 		if (modules == null)
@@ -605,22 +441,22 @@ Object.assign(Runtime.Context,
 		}
 		if (filter)
 		{
-			modules = modules.filter(ctx, filter);
+			modules = modules.filter(filter);
 		}
-		for (var i = 0;i < modules.count(ctx);i++)
+		for (var i = 0;i < modules.count();i++)
 		{
-			var module_name = modules.item(ctx, i);
-			if (cache.get(ctx, module_name, false) == false)
+			var module_name = modules.item(i);
+			if (cache.get(module_name, false) == false)
 			{
-				cache.set(ctx, module_name, true);
-				var f = Runtime.rtl.method(ctx, module_name + Runtime.rtl.toStr(".ModuleDescription"), "requiredModules");
-				var sub_modules = f(ctx);
+				cache.setValue(module_name, true);
+				var f = Runtime.rtl.method(module_name + Runtime.rtl.toStr(".ModuleDescription"), "requiredModules");
+				var sub_modules = f();
 				if (sub_modules != null)
 				{
-					var sub_modules = sub_modules.keys(ctx);
-					this._getRequiredModules(ctx, res, cache, sub_modules);
+					var sub_modules = sub_modules.keys();
+					this._getRequiredModules(res, cache, sub_modules);
 				}
-				res.push(ctx, module_name);
+				res.pushValue(module_name);
 			}
 		}
 	},
@@ -629,112 +465,143 @@ Object.assign(Runtime.Context,
 	 * @param Collection<string> modules
 	 * @return Collection<string>
 	 */
-	getRequiredModules: function(ctx, modules)
+	getRequiredModules: function(modules)
 	{
-		var res = new Runtime.Vector(ctx);
-		var cache = new Runtime.Map(ctx);
-		this._getRequiredModules(ctx, res, cache, modules);
-		res = res.removeDublicatesIm(ctx);
-		return res.toCollection(ctx);
+		var res = new Runtime.Vector();
+		var cache = new Runtime.Map();
+		this._getRequiredModules(res, cache, modules);
+		res = res.removeDuplicates();
+		return res.toCollection();
 	},
 	/**
 	 * Returns modules entities
 	 */
-	getEntitiesFromModules: function(ctx, modules)
+	getEntitiesFromModules: function(modules)
 	{
-		var entities = new Runtime.Vector(ctx);
-		for (var i = 0;i < modules.count(ctx);i++)
+		var entities = new Runtime.Vector();
+		for (var i = 0;i < modules.count();i++)
 		{
-			var module_class_name = modules.item(ctx, i) + Runtime.rtl.toStr(".ModuleDescription");
-			var f = Runtime.rtl.method(ctx, module_class_name, "entities");
-			var arr = f(ctx);
-			entities.appendVector(ctx, arr);
+			var module_class_name = modules.item(i) + Runtime.rtl.toStr(".ModuleDescription");
+			if (Runtime.rtl.method_exists(module_class_name, "entities"))
+			{
+				var f = Runtime.rtl.method(module_class_name, "entities");
+				var arr = f();
+				entities.appendVector(arr);
+			}
 		}
-		return entities.toCollection(ctx);
+		return entities.toCollection();
 	},
 	/**
 	 * Extend entities
 	 */
-	extendEntitiesFromAnnotations: function(ctx, entities)
+	getRequiredEntities: function(entities)
 	{
-		var e = entities.toVector(ctx);
-		for (var i = 0;i < entities.count(ctx);i++)
+		var e = entities.toVector();
+		for (var i = 0;i < entities.count();i++)
 		{
-			var item1 = entities.item(ctx, i);
-			var item1_class_name = item1.getClassName(ctx);
-			if (item1_class_name == "Runtime.Annotations.Entity")
+			var item1 = entities.item(i);
+			var item1_class_name = item1.getClassName();
+			if (item1_class_name == "Runtime.Entity")
 			{
-				var class_name = (item1.value != "") ? item1.value : item1.name;
-				var info = Runtime.RuntimeUtils.getClassIntrospection(ctx, class_name);
-				if (info != null && info.class_info)
+				var class_name = (item1.value != "") ? (item1.value) : (item1.name);
+				var annotations = Runtime.rtl.getClassAnnotations(class_name);
+				for (var j = 0;j < annotations.count();j++)
 				{
-					for (var j = 0;j < info.class_info.count(ctx);j++)
+					var item2 = annotations.item(j);
+					var item2_class_name = item2.getClassName();
+					if (item2 instanceof Runtime.Entity && item2_class_name != "Runtime.Entity")
 					{
-						var item2 = info.class_info.item(ctx, j);
-						var item2_class_name = item2.getClassName(ctx);
-						if (item2 instanceof Runtime.Annotations.Entity && item2_class_name != "Runtime.Annotations.Entity")
-						{
-							item2 = item2.copy(ctx, Runtime.Dict.from({"name":class_name}));
-							e.push(ctx, item2);
-						}
+						item2 = item2.copy(Runtime.Dict.from({"name":class_name}));
+						e.pushValue(item2);
 					}
 				}
 			}
 		}
-		return e.toCollection(ctx);
+		return e.toCollection();
 	},
 	/**
-	 * Returns providers from entities
+	 * Returns sub entities from classes
 	 */
-	getProvidersFromEntities: function(ctx, entities)
+	getSubEntities: function(entitites, entity_class_name, entity_class_method)
 	{
-		var arr = entities.filter(ctx, (ctx, item) => 
+		var class_names = entitites.filter(Runtime.lib.isInstance(entity_class_name));
+		var methods = new Runtime.Vector();
+		methods.appendVector(entitites.filter(Runtime.lib.isInstance(entity_class_method)));
+		for (var class_names_inc = 0;class_names_inc < class_names.count();class_names_inc++)
 		{
-			return item instanceof Runtime.Annotations.Provider;
-		});
-		var providers = new Runtime.Map(ctx);
-		for (var i = 0;i < arr.count(ctx);i++)
-		{
-			var item = arr.item(ctx, i);
-			providers.set(ctx, item.name, item);
-		}
-		return providers.toDict(ctx);
-	},
-	/**
-	 * Register drivers
-	 */
-	getDriversFromEntities: function(ctx, entities)
-	{
-		var arr = entities.filter(ctx, (ctx, item) => 
-		{
-			return item instanceof Runtime.Annotations.Driver;
-		});
-		var drivers = new Runtime.Map(ctx);
-		for (var i = 0;i < arr.count(ctx);i++)
-		{
-			var item = arr.item(ctx, i);
-			var driver_name = item.name;
-			var class_name = item.value;
+			var class_item = Runtime.rtl.get(class_names, class_names_inc);
+			var class_name = class_item.name;
 			if (class_name == "")
 			{
-				class_name = item.name;
+				continue;
 			}
-			var driver = Runtime.rtl.newInstance(ctx, class_name, Runtime.Collection.from([]));
-			driver = this.chain(ctx, class_name, Runtime.Collection.from([driver]));
-			if (class_name != driver_name)
+			var annotations = Runtime.rtl.getMethodsAnnotations(class_name);
+			annotations.each((annotations, class_method_name) => 
 			{
-				driver = this.chain(ctx, driver_name, Runtime.Collection.from([driver]));
-			}
-			drivers.set(ctx, item.name, driver);
+				var method_info = Runtime.rtl.methodApply(class_name, "getMethodInfoByName", Runtime.Collection.from([class_method_name]));
+				for (var annotations_inc = 0;annotations_inc < annotations.count();annotations_inc++)
+				{
+					var annotation = Runtime.rtl.get(annotations, annotations_inc);
+					if (annotation)
+					{
+						if (Runtime.rtl.is_instanceof(annotation, entity_class_method))
+						{
+							annotation = annotation.addClassItem(class_name, class_method_name, class_item, method_info);
+							methods.pushValue(annotation);
+						}
+					}
+				}
+			});
 		}
-		return drivers.toDict(ctx);
+		return methods;
 	},
 	/**
 	 * Extends entities
 	 */
-	extendEntities: function(ctx, c, entities)
+	extendEntities: function(c, entities)
 	{
 		return entities;
+	},
+	/**
+	 * Start App
+	 */
+	startApp: async function(env, module_name, main_class)
+	{
+		var context = this.create(env);
+		/* Set global context */
+		Runtime.rtl.setContext(context);
+		Runtime.rtl.setContext(context);
+		window["globalContext"] = context;
+		context = context.constructor.setAppName(context, module_name);
+		context = context.constructor.setMainModule(context, module_name);
+		context = context.constructor.setMainClass(context, main_class);
+		context = context.constructor.setEntryPoint(context, main_class);
+		/* Init context */
+		context = await context.constructor.init(context);
+		/* Start context */
+		context = await context.constructor.start(context);
+		/* Set global context */
+		Runtime.rtl.setContext(context);
+		Runtime.rtl.setContext(context);
+		window["globalContext"] = context;
+		try
+		{
+			/* Run app */
+			await context.constructor.run(context);
+		}
+		catch (_ex)
+		{
+			if (true)
+			{
+				var e = _ex;
+				
+				console.log( e.stack );
+			}
+			else
+			{
+				throw _ex;
+			}
+		}
 	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
@@ -747,142 +614,141 @@ Object.assign(Runtime.Context,
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.CoreStruct";
+		return "Runtime.BaseStruct";
 	},
-	getClassInfo: function(ctx)
+	getClassInfo: function()
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_CLASS,
-			"class_name": "Runtime.Context",
-			"name": "Runtime.Context",
+		return Dict.from({
 			"annotations": Collection.from([
 			]),
 		});
 	},
-	getFieldsList: function(ctx, f)
+	getFieldsList: function(f)
 	{
 		var a = [];
 		if (f==undefined) f=0;
-		if ((f|3)==3)
+		if ((f&3)==3)
 		{
 			a.push("base_path");
 			a.push("enviroments");
 			a.push("settings");
 			a.push("modules");
 			a.push("entities");
+			a.push("cli_args");
 			a.push("drivers");
-			a.push("providers");
-			a.push("tags");
 			a.push("initialized");
 			a.push("started");
 			a.push("start_time");
-			a.push("logs");
+			a.push("tz");
+			a.push("app_name");
+			a.push("entry_point");
+			a.push("main_module");
+			a.push("main_class");
 		}
 		return Runtime.Collection.from(a);
 	},
-	getFieldInfoByName: function(ctx,field_name)
+	getFieldInfoByName: function(field_name)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
-		var IntrospectionInfo = Runtime.Annotations.IntrospectionInfo;
-		if (field_name == "base_path") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "base_path") return Dict.from({
+			"t": "string",
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "enviroments") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "enviroments") return Dict.from({
+			"t": "Runtime.Dict",
+			"s": ["string"],
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "settings") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "settings") return Dict.from({
+			"t": "Runtime.Dict",
+			"s": ["var"],
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "modules") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "modules") return Dict.from({
+			"t": "Runtime.Collection",
+			"s": ["string"],
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "entities") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "entities") return Dict.from({
+			"t": "Runtime.Collection",
+			"s": ["Runtime.BaseStruct"],
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "drivers") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "cli_args") return Dict.from({
+			"t": "Runtime.Collection",
+			"s": ["string"],
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "providers") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "drivers") return Dict.from({
+			"t": "Runtime.Map",
+			"s": ["Runtime.BaseDriver"],
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "tags") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "initialized") return Dict.from({
+			"t": "bool",
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "initialized") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "started") return Dict.from({
+			"t": "bool",
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "started") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "start_time") return Dict.from({
+			"t": "int",
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "start_time") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "tz") return Dict.from({
+			"t": "string",
 			"annotations": Collection.from([
 			]),
 		});
-		if (field_name == "logs") return new IntrospectionInfo(ctx, {
-			"kind": IntrospectionInfo.ITEM_FIELD,
-			"class_name": "Runtime.Context",
-			"name": field_name,
+		if (field_name == "app_name") return Dict.from({
+			"t": "string",
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "entry_point") return Dict.from({
+			"t": "string",
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "main_module") return Dict.from({
+			"t": "string",
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "main_class") return Dict.from({
+			"t": "string",
 			"annotations": Collection.from([
 			]),
 		});
 		return null;
 	},
-	getMethodsList: function(ctx)
+	getMethodsList: function(f)
 	{
-		var a = [
+		if (f==undefined) f=0;
+		var a = [];
+		if ((f&4)==4) a=[
 		];
 		return Runtime.Collection.from(a);
 	},
-	getMethodInfoByName: function(ctx,field_name)
+	getMethodInfoByName: function(field_name)
 	{
 		return null;
 	},
 });
 Runtime.rtl.defClass(Runtime.Context);
+window["Runtime.Context"] = Runtime.Context;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Context;

@@ -1,9 +1,8 @@
 "use strict;"
-var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
- *  (c) Copyright 2016-2018 "Ildar Bikmamatov" <support@bayrell.org>
+ *  (c) Copyright 2016-2020 "Ildar Bikmamatov" <support@bayrell.org>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,26 +17,33 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.LocalBusInterface = function(__ctx)
+Runtime.StringInterface = function()
 {
 };
-Object.assign(Runtime.Interfaces.LocalBusInterface.prototype,
+Object.assign(Runtime.StringInterface.prototype,
 {
-	getClassName: function(__ctx)
+	/**
+	 * Returns string
+	 */
+	toString: function()
 	{
-		return "Runtime.Interfaces.LocalBusInterface";
+	},
+	getClassName: function()
+	{
+		return "Runtime.StringInterface";
 	},
 });
-Object.assign(Runtime.Interfaces.LocalBusInterface,
+Object.assign(Runtime.StringInterface,
 {
 	getCurrentNamespace: function()
 	{
-		return "Runtime.Interfaces";
+		return "Runtime";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Interfaces.LocalBusInterface";
+		return "Runtime.StringInterface";
 	},
 });
-Runtime.rtl.defClass(Runtime.Interfaces.LocalBusInterface);
+Runtime.rtl.defClass(Runtime.StringInterface);
+window["Runtime.StringInterface"] = Runtime.StringInterface;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.StringInterface;

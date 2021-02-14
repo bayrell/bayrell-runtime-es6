@@ -17,66 +17,29 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Map = function()
+Runtime.Driver = function()
 {
-	Runtime.Dict.apply(this, arguments);
+	Runtime.Entity.apply(this, arguments);
 };
-Runtime.Map.prototype = Object.create(Runtime.Dict.prototype);
-Runtime.Map.prototype.constructor = Runtime.Map;
-Object.assign(Runtime.Map.prototype,
+Runtime.Driver.prototype = Object.create(Runtime.Entity.prototype);
+Runtime.Driver.prototype.constructor = Runtime.Driver;
+Object.assign(Runtime.Driver.prototype,
 {
-	/**
-	 * Set value size_to position
-	 * @param string key - position
-	 * @param T value 
-	 * @return self
-	 */
-	setValue: function(key, value)
+	_init: function()
 	{
-		key = this.toStr(key);
-		this._map["|" + key] = value;
-		return this;
-	},
-	/**
-	 * Remove value from position
-	 * @param string key
-	 * @return self
-	 */
-	removeValue: function(key)
-	{
-		key = this.toStr(key);
-		if (typeof this._map["|" + key] != "undefined")
-		{
-			delete this._map["|" + key];
-		}
-		return this;
-	},
-	/**
-	 * Clear all values from vector
-	 * @return self
-	 */
-	clear: function()
-	{
-		this._map = {};
-		return this;
+		var defProp = use('Runtime.rtl').defProp;
+		var a = Object.getOwnPropertyNames(this);
+		this.global = false;
+		Runtime.Entity.prototype._init.call(this);
 	},
 	getClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.Driver";
 	},
 });
-Object.assign(Runtime.Map, Runtime.Dict);
-Object.assign(Runtime.Map,
+Object.assign(Runtime.Driver, Runtime.Entity);
+Object.assign(Runtime.Driver,
 {
-	/**
-	 * Returns new Instance
-	 * @return Object
-	 */
-	Instance: function(val)
-	{
-		if (val == undefined) val = null;
-		return new Runtime.Map(val);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
@@ -84,11 +47,11 @@ Object.assign(Runtime.Map,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.Driver";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Dict";
+		return "Runtime.Entity";
 	},
 	getClassInfo: function()
 	{
@@ -103,12 +66,21 @@ Object.assign(Runtime.Map,
 	{
 		var a = [];
 		if (f==undefined) f=0;
+		if ((f&3)==3)
+		{
+			a.push("global");
+		}
 		return Runtime.Collection.from(a);
 	},
 	getFieldInfoByName: function(field_name)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
+		if (field_name == "global") return Dict.from({
+			"t": "bool",
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
 	getMethodsList: function(f)
@@ -124,6 +96,6 @@ Object.assign(Runtime.Map,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.Map);
-window["Runtime.Map"] = Runtime.Map;
-if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Map;
+Runtime.rtl.defClass(Runtime.Driver);
+window["Runtime.Driver"] = Runtime.Driver;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Driver;

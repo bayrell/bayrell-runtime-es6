@@ -1,5 +1,4 @@
 "use strict;"
-var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ? Runtime.rtl.find_class : null;
 /*!
  *  Bayrell Runtime Library
  *
@@ -18,26 +17,36 @@ var use = (typeof Runtime != 'undefined' && typeof Runtime.rtl != 'undefined') ?
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-if (typeof Runtime.Interfaces == 'undefined') Runtime.Interfaces = {};
-Runtime.Interfaces.BusInterface = function(ctx)
+Runtime.SerializeInterface = function()
 {
 };
-Object.assign(Runtime.Interfaces.BusInterface.prototype,
+Object.assign(Runtime.SerializeInterface.prototype,
 {
-	getClassName: function(ctx)
+	/**
+	 * Returns instance of the value by variable name
+	 * @param string variable_name
+	 * @return var
+	 */
+	get: function(variable_name, default_value)
 	{
-		return "Runtime.Interfaces.BusInterface";
+		if (default_value == undefined) default_value = null;
+	},
+	getClassName: function()
+	{
+		return "Runtime.SerializeInterface";
 	},
 });
-Object.assign(Runtime.Interfaces.BusInterface,
+Object.assign(Runtime.SerializeInterface,
 {
 	getCurrentNamespace: function()
 	{
-		return "Runtime.Interfaces";
+		return "Runtime";
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Interfaces.BusInterface";
+		return "Runtime.SerializeInterface";
 	},
 });
-Runtime.rtl.defClass(Runtime.Interfaces.BusInterface);
+Runtime.rtl.defClass(Runtime.SerializeInterface);
+window["Runtime.SerializeInterface"] = Runtime.SerializeInterface;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.SerializeInterface;

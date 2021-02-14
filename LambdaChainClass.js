@@ -17,66 +17,22 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Map = function()
+Runtime.LambdaChainClass = function()
 {
-	Runtime.Dict.apply(this, arguments);
+	Runtime.Entity.apply(this, arguments);
 };
-Runtime.Map.prototype = Object.create(Runtime.Dict.prototype);
-Runtime.Map.prototype.constructor = Runtime.Map;
-Object.assign(Runtime.Map.prototype,
+Runtime.LambdaChainClass.prototype = Object.create(Runtime.Entity.prototype);
+Runtime.LambdaChainClass.prototype.constructor = Runtime.LambdaChainClass;
+Object.assign(Runtime.LambdaChainClass.prototype,
 {
-	/**
-	 * Set value size_to position
-	 * @param string key - position
-	 * @param T value 
-	 * @return self
-	 */
-	setValue: function(key, value)
-	{
-		key = this.toStr(key);
-		this._map["|" + key] = value;
-		return this;
-	},
-	/**
-	 * Remove value from position
-	 * @param string key
-	 * @return self
-	 */
-	removeValue: function(key)
-	{
-		key = this.toStr(key);
-		if (typeof this._map["|" + key] != "undefined")
-		{
-			delete this._map["|" + key];
-		}
-		return this;
-	},
-	/**
-	 * Clear all values from vector
-	 * @return self
-	 */
-	clear: function()
-	{
-		this._map = {};
-		return this;
-	},
 	getClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.LambdaChainClass";
 	},
 });
-Object.assign(Runtime.Map, Runtime.Dict);
-Object.assign(Runtime.Map,
+Object.assign(Runtime.LambdaChainClass, Runtime.Entity);
+Object.assign(Runtime.LambdaChainClass,
 {
-	/**
-	 * Returns new Instance
-	 * @return Object
-	 */
-	Instance: function(val)
-	{
-		if (val == undefined) val = null;
-		return new Runtime.Map(val);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
@@ -84,11 +40,11 @@ Object.assign(Runtime.Map,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.LambdaChainClass";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Dict";
+		return "Runtime.Entity";
 	},
 	getClassInfo: function()
 	{
@@ -124,6 +80,6 @@ Object.assign(Runtime.Map,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.Map);
-window["Runtime.Map"] = Runtime.Map;
-if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Map;
+Runtime.rtl.defClass(Runtime.LambdaChainClass);
+window["Runtime.LambdaChainClass"] = Runtime.LambdaChainClass;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.LambdaChainClass;

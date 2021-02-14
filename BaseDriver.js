@@ -17,66 +17,52 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Map = function()
+Runtime.BaseDriver = function(object_name, entity)
 {
-	Runtime.Dict.apply(this, arguments);
+	if (object_name == undefined) object_name = "";
+	if (entity == undefined) entity = null;
+	Runtime.BaseObject.call(this);
+	this.object_name = object_name;
+	this.entity = entity;
 };
-Runtime.Map.prototype = Object.create(Runtime.Dict.prototype);
-Runtime.Map.prototype.constructor = Runtime.Map;
-Object.assign(Runtime.Map.prototype,
+Runtime.BaseDriver.prototype = Object.create(Runtime.BaseObject.prototype);
+Runtime.BaseDriver.prototype.constructor = Runtime.BaseDriver;
+Object.assign(Runtime.BaseDriver.prototype,
 {
 	/**
-	 * Set value size_to position
-	 * @param string key - position
-	 * @param T value 
-	 * @return self
+	 * Returns object name
 	 */
-	setValue: function(key, value)
+	getObjectName: function()
 	{
-		key = this.toStr(key);
-		this._map["|" + key] = value;
-		return this;
+		return this.object_name;
 	},
 	/**
-	 * Remove value from position
-	 * @param string key
-	 * @return self
+	 * Returns entity
 	 */
-	removeValue: function(key)
+	getEntity: function()
 	{
-		key = this.toStr(key);
-		if (typeof this._map["|" + key] != "undefined")
-		{
-			delete this._map["|" + key];
-		}
-		return this;
+		return this.entity;
 	},
 	/**
-	 * Clear all values from vector
-	 * @return self
+	 * Start driver
 	 */
-	clear: function()
+	startDriver: async function()
 	{
-		this._map = {};
-		return this;
+	},
+	_init: function()
+	{
+		this.object_name = "";
+		this.entity = null;
+		Runtime.BaseObject.prototype._init.call(this);
 	},
 	getClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.BaseDriver";
 	},
 });
-Object.assign(Runtime.Map, Runtime.Dict);
-Object.assign(Runtime.Map,
+Object.assign(Runtime.BaseDriver, Runtime.BaseObject);
+Object.assign(Runtime.BaseDriver,
 {
-	/**
-	 * Returns new Instance
-	 * @return Object
-	 */
-	Instance: function(val)
-	{
-		if (val == undefined) val = null;
-		return new Runtime.Map(val);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
@@ -84,11 +70,11 @@ Object.assign(Runtime.Map,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.BaseDriver";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Dict";
+		return "Runtime.BaseObject";
 	},
 	getClassInfo: function()
 	{
@@ -103,12 +89,27 @@ Object.assign(Runtime.Map,
 	{
 		var a = [];
 		if (f==undefined) f=0;
+		if ((f&2)==2)
+		{
+			a.push("object_name");
+			a.push("entity");
+		}
 		return Runtime.Collection.from(a);
 	},
 	getFieldInfoByName: function(field_name)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
+		if (field_name == "object_name") return Dict.from({
+			"t": "string",
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "entity") return Dict.from({
+			"t": "Runtime.Entity",
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
 	getMethodsList: function(f)
@@ -124,6 +125,6 @@ Object.assign(Runtime.Map,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.Map);
-window["Runtime.Map"] = Runtime.Map;
-if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Map;
+Runtime.rtl.defClass(Runtime.BaseDriver);
+window["Runtime.BaseDriver"] = Runtime.BaseDriver;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.BaseDriver;

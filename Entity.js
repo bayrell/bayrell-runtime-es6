@@ -17,66 +17,40 @@
  *  limitations under the License.
  */
 if (typeof Runtime == 'undefined') Runtime = {};
-Runtime.Map = function()
+Runtime.Entity = function()
 {
-	Runtime.Dict.apply(this, arguments);
+	Runtime.BaseStruct.apply(this, arguments);
 };
-Runtime.Map.prototype = Object.create(Runtime.Dict.prototype);
-Runtime.Map.prototype.constructor = Runtime.Map;
-Object.assign(Runtime.Map.prototype,
+Runtime.Entity.prototype = Object.create(Runtime.BaseStruct.prototype);
+Runtime.Entity.prototype.constructor = Runtime.Entity;
+Object.assign(Runtime.Entity.prototype,
 {
-	/**
-	 * Set value size_to position
-	 * @param string key - position
-	 * @param T value 
-	 * @return self
-	 */
-	setValue: function(key, value)
+	/* Functions */
+	className: function()
 	{
-		key = this.toStr(key);
-		this._map["|" + key] = value;
-		return this;
+		return (this.name != "") ? ((this.value != "") ? (this.value) : (this.name)) : ("");
 	},
-	/**
-	 * Remove value from position
-	 * @param string key
-	 * @return self
-	 */
-	removeValue: function(key)
+	logName: function()
 	{
-		key = this.toStr(key);
-		if (typeof this._map["|" + key] != "undefined")
-		{
-			delete this._map["|" + key];
-		}
-		return this;
+		return this.getClassName() + Runtime.rtl.toStr(" -> ") + Runtime.rtl.toStr(((this.value != "") ? (this.name + Runtime.rtl.toStr(" -> ") + Runtime.rtl.toStr(this.value)) : (this.name)));
 	},
-	/**
-	 * Clear all values from vector
-	 * @return self
-	 */
-	clear: function()
+	_init: function()
 	{
-		this._map = {};
-		return this;
+		var defProp = use('Runtime.rtl').defProp;
+		var a = Object.getOwnPropertyNames(this);
+		this.name = "";
+		this.value = "";
+		this.params = Runtime.Dict.from({});
+		Runtime.BaseStruct.prototype._init.call(this);
 	},
 	getClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.Entity";
 	},
 });
-Object.assign(Runtime.Map, Runtime.Dict);
-Object.assign(Runtime.Map,
+Object.assign(Runtime.Entity, Runtime.BaseStruct);
+Object.assign(Runtime.Entity,
 {
-	/**
-	 * Returns new Instance
-	 * @return Object
-	 */
-	Instance: function(val)
-	{
-		if (val == undefined) val = null;
-		return new Runtime.Map(val);
-	},
 	/* ======================= Class Init Functions ======================= */
 	getCurrentNamespace: function()
 	{
@@ -84,11 +58,11 @@ Object.assign(Runtime.Map,
 	},
 	getCurrentClassName: function()
 	{
-		return "Runtime.Map";
+		return "Runtime.Entity";
 	},
 	getParentClassName: function()
 	{
-		return "Runtime.Dict";
+		return "Runtime.BaseStruct";
 	},
 	getClassInfo: function()
 	{
@@ -103,12 +77,33 @@ Object.assign(Runtime.Map,
 	{
 		var a = [];
 		if (f==undefined) f=0;
+		if ((f&3)==3)
+		{
+			a.push("name");
+			a.push("value");
+			a.push("params");
+		}
 		return Runtime.Collection.from(a);
 	},
 	getFieldInfoByName: function(field_name)
 	{
 		var Collection = Runtime.Collection;
 		var Dict = Runtime.Dict;
+		if (field_name == "name") return Dict.from({
+			"t": "string",
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "value") return Dict.from({
+			"t": "string",
+			"annotations": Collection.from([
+			]),
+		});
+		if (field_name == "params") return Dict.from({
+			"t": "Runtime.Dict",
+			"annotations": Collection.from([
+			]),
+		});
 		return null;
 	},
 	getMethodsList: function(f)
@@ -124,6 +119,6 @@ Object.assign(Runtime.Map,
 		return null;
 	},
 });
-Runtime.rtl.defClass(Runtime.Map);
-window["Runtime.Map"] = Runtime.Map;
-if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Map;
+Runtime.rtl.defClass(Runtime.Entity);
+window["Runtime.Entity"] = Runtime.Entity;
+if (typeof module != "undefined" && typeof module.exports != "undefined") module.exports = Runtime.Entity;
